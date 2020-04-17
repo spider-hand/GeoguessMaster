@@ -176,7 +176,8 @@
         // Focus on map
         if (this.$viewport.width > 450) {
           document.getElementById('map').style.opacity = 1.0
-          document.getElementById('map').style.transform = 'scale(1.25)'
+          document.getElementById('map').style.width = '80%'
+          document.getElementById('map').style.height = '80%'
         }
       },
       mouseOutMap() {
@@ -184,7 +185,8 @@
         // Otherwise set the opacity of the map
         if (this.isSelected == false && this.$viewport.width > 450) {
           document.getElementById('map').style.opacity = 0.7
-          document.getElementById('map').style.transform = 'scale(1.0)'
+          document.getElementById('map').style.width = ''
+          document.getElementById('map').style.height = ''
         }
       }
     },
@@ -251,7 +253,7 @@
     height: 240px;
     width: 360px;
     transform-origin: bottom left;
-    transition: transform 0.3s;
+    transition: width 0.3s, height 0.3s;
   }
 
   #make-guess-button, #guess-button {
@@ -295,7 +297,7 @@
       height: 200px; 
       width: 300px;
       opacity: 1.0;
-      transition: transform 1s;
+      transition: width 1s, height 1s;
     }
 
     #hide-map-button {
