@@ -68,12 +68,12 @@
           dark
           depressed
           color="#FF5252"
-          @click="clickNext">NEXT</v-btn>
+          @click="cancel">CANCEL</v-btn>
         <v-btn
           dark
           depressed
           color="#43B581"
-          @click="cancel">CANCEL</v-btn>
+          @click="clickNext">NEXT</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -109,7 +109,11 @@
           {
             text: '5',
             value: 5,
-          },          
+          },
+          {
+            text: '6',
+            value: 6,
+          },
         ],
         timeLimitation: 0,
         timeLimitationItems: [
