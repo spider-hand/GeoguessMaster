@@ -29,7 +29,8 @@
                 maxlength="10"
                 autofocus
                 :error-messages="errorMessage"
-                v-model="roomName"></v-text-field>
+                v-model="roomName"
+                @keyup.enter="clickNext()"></v-text-field>
             </v-col>
             <v-col 
               cols="4"
@@ -57,7 +58,8 @@
               <v-text-field 
                 dark
                 maxlength="10"
-                v-model="playerName"></v-text-field>
+                v-model="playerName"
+                @keyup.enter="clickNext()"></v-text-field>
             </v-col>
           </v-row>
         </v-container>
