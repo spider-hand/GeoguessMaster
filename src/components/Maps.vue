@@ -18,7 +18,6 @@
           <v-icon dark >mdi-pin{{(pinActive)? '-off': ''}}</v-icon>
         </v-btn>
       </div>
-    
     </div>
     <v-btn
       id="hide-map-button"
@@ -26,7 +25,8 @@
       fab
       x-small
       color="red"
-      @click="hideMap">
+      @click="hideMap"
+      >
       <v-icon color="white">mdi-close</v-icon>
     </v-btn>
     <div 
@@ -57,7 +57,7 @@
       @click="dialogSummary = true"
       >VIEW SUMMARY
     </button>
-    <DialogSummary 
+    <DialogSummary
       :dialogSummary="dialogSummary"
       :score="score"
       @playAgain="playAgain" />
@@ -140,12 +140,12 @@
         var infoWindow = new google.maps.InfoWindow({
           content: '<b>' + this.distance + '</b> km away!'
         })
-        infoWindow.open(this.map, this.markers[0])        
+        infoWindow.open(this.map, this.markers[0])
       },
       drawPolyline() {
         this.polyline = new google.maps.Polyline({
           path: [this.selectedLatLng, this.randomLatLng],
-          strokeColor: '#FF0000',  
+          strokeColor: '#FF0000',
         })
         this.polyline.setMap(this.map)
       },
@@ -197,7 +197,7 @@
 
             // Save latLng
             that.selectedLatLng = e.latLng
-          })          
+          })
         }
       }
     },

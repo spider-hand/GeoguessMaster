@@ -212,7 +212,7 @@
 
           // Save latLng
           this.selectedLatLng = e.latLng
-        })   
+        })
       },
       goToNextRound() {
         // Reset
@@ -244,7 +244,7 @@
           zoom: 1,
           fullscreenControl: false,
           mapTypeControl: false,
-          streetViewControl: false,        
+          streetViewControl: false,
       })
 
       this.room = firebase.database().ref(this.roomName)
