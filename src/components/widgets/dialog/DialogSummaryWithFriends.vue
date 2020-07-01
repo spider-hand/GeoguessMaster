@@ -77,10 +77,6 @@
 </script>
 
 <style scoped>
-  span {
-    font-family: Montsetrrat;
-  }
-
   #exit-button {
     height: 44px;
     width: 240px;

@@ -77,10 +77,6 @@
 </script>
 
 <style scoped>
-  span, .section-header {
-    font-family: Montsetrrat;
-  }
-
   #section-top {
     position: absolute;
     width: 100%;

@@ -99,10 +99,6 @@
 </script>
 
 <style scoped>
-  span {
-    font-family: Montsetrrat;
-  }
-
   #copyright-text, #credit-text {
     font-size: 12px;
     color: #7D7D7D;

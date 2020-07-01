@@ -153,10 +153,6 @@
 </script>
 
 <style scoped>
-  span {
-    font-family: Montsetrrat;
-  }
-
   #multi-player-button {
     height: 44px;
     width: 240px;

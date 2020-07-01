@@ -28,10 +28,6 @@
 </script>
 
 <style scoped>
-  span {
-    font-family: Montsetrrat;
-  }
-
   #card-title {
     font-size: 16px;
     font-weight: 500;

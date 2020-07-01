@@ -71,16 +71,11 @@
 </script>
 
 <style scoped>
-  span, .section-header {
-    font-family: Montsetrrat;
-  }
-
   #page {
     background-color: #FAFAFA;
   }
 
   .section-header {
-    font-family: Montsetrrat;
     color: #52575C;
     margin-top: 32px;
   }

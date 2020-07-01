@@ -75,10 +75,6 @@
 </script>
 
 <style scoped>
-  span {
-    font-family: Montsetrrat;
-  }
-
   #card-text {
     padding: 80px 10% 80px 10%;
   }
