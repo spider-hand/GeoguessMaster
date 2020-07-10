@@ -87,6 +87,10 @@
       return {
       languages: [
           {
+            text: 'čeština',
+            value: 'cs',
+          },
+          {
             text: 'English',
             value: 'en',
           },

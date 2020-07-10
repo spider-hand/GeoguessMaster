@@ -1,5 +1,5 @@
 export default {
-  en: {
+  cs: {
     Home: {
       record: 'Rekord',
       singlePlayer: 'Hrát sám',
