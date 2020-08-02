@@ -11,7 +11,7 @@ import './registerServiceWorker'
 
 Vue.config.productionTip = false
 
-const updateSizes = (obj = {}) => {
+const updateSizes = (obj: any = {}) => {
 	obj.width = window.innerWidth
 	obj.height = window.innerHeight
 	return obj

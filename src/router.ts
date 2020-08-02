@@ -1,14 +1,14 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-import Home from '@/pages/Home'
-import StreetView from '@/pages/StreetView'
-import StreetViewWithFriends from '@/pages/StreetViewWithFriends'
-import PrivacyPolicy from '@/pages/PrivacyPolicy'
+import Home from '@/pages/Home.vue'
+import StreetView from '@/pages/StreetView.vue'
+import StreetViewWithFriends from '@/pages/StreetViewWithFriends.vue'
+import PrivacyPolicy from '@/pages/PrivacyPolicy.vue'
 
 const originalPush = Router.prototype.push
-Router.prototype.push = function push(location) {
-  return originalPush.call(this, location).catch(err => err)
+Router.prototype.push = function push(location: string) {
+  return originalPush.call(this, location).catch((err: any) => err)
 }
 
 Vue.use(Router)
@@ -22,11 +22,6 @@ export default new Router ({
     },
     {
       path: '/',
-      name: 'home',
-      component: Home,
-    },
-    {
-      path: '/index.html',
       name: 'home',
       component: Home,
     },

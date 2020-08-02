@@ -11,13 +11,13 @@ const translations = Object.assign(cs, en, ja)
 
 var languages = ['cs', 'en', 'ja',]
 
-function checkLanguage(language) {
+function checkLanguage(language: string) {
   return navigator.language.split('-')[0] == language
 }
 
 export default new VueI18n({
-  locale: localStorage.getItem('language') != null 
-    ? localStorage.getItem('language') 
+  locale: localStorage.getItem('languages') != null
+    ? localStorage.getItem('language') as string
     : (languages.some(checkLanguage) 
       ? navigator.language.split('-')[0] 
       : 'en'),
