@@ -24,31 +24,31 @@
 </template>
 
 <script lang="ts">
-	import Vue, { PropType } from 'vue'
+  import Vue, { PropType } from 'vue'
 
-	export default Vue.extend({
+  export default Vue.extend({
     name: 'HeaderGame',
 
-		props: {
-			score: Number,
-			round: Number,
-			remainingTime: Number,
-		},
+    props: {
+      score: Number,
+      round: Number,
+      remainingTime: Number,
+    },
 
-		computed: {
-			countdownText(): string {
-				let minutes = Math.floor(this.remainingTime / 60)
-				let seconds = this.remainingTime % 60
-				if (minutes < 10) {
+    computed: {
+      countdownText(): string {
+        let minutes = Math.floor(this.remainingTime / 60)
+        let seconds = this.remainingTime % 60
+        if (minutes < 10) {
           let minutesText = `0${minutes}`
-				}
-				if (seconds < 10) {
+        }
+        if (seconds < 10) {
           let secondsText = `0${seconds}`
-				}
-				return `{$minutesText}:{$secondsText}`
-			},
-		},
-	})
+        }
+        return `{$minutesText}:{$secondsText}`
+      },
+    },
+  })
 </script>
 
 <style scoped>
@@ -73,5 +73,5 @@
     .main-text, .sub-text, #countdown-text {
       font-size: 14px;
     }
-  }	
+  } 
 </style>

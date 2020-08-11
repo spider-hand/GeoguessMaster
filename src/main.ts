@@ -12,17 +12,17 @@ import './registerServiceWorker'
 Vue.config.productionTip = false
 
 const updateSizes = (obj: any = {}) => {
-	obj.width = window.innerWidth
-	obj.height = window.innerHeight
-	return obj
+  obj.width = window.innerWidth
+  obj.height = window.innerHeight
+  return obj
 }
 
 Object.defineProperty(Vue.prototype, '$viewport', {
-	value: Vue.observable(updateSizes())
+  value: Vue.observable(updateSizes())
 })
 
 window.addEventListener('resize', () => {
-	updateSizes(Vue.prototype.$viewport)
+  updateSizes(Vue.prototype.$viewport)
 })
 
 declare interface Viewport {

@@ -51,34 +51,34 @@
       </v-container>
     </div>
     <Footer />
-  </div>	
+  </div>  
 </template>
 
 <script lang="ts">
-	import Vue from 'vue'
+  import Vue from 'vue'
 
-	import firebase from 'firebase/app'
-	import 'firebase/database'
+  import firebase from 'firebase/app'
+  import 'firebase/database'
 
   import Header from '@/components/widgets/bar/Header.vue'
   import DialogRoom from '@/components/widgets/dialog/DialogRoom.vue'
   import Footer from '@/components/widgets/footer/Footer.vue'
 
-	export default Vue.extend({
-		name: 'Home',
+  export default Vue.extend({
+    name: 'Home',
 
-		components: {
-			Header,
-			DialogRoom,
-			Footer,
-		},
+    components: {
+      Header,
+      DialogRoom,
+      Footer,
+    },
 
-		computed: {
-			record(): number {
-				return Number(localStorage.getItem('record'))
-			}
-		},
-	})
+    computed: {
+      record(): number {
+        return Number(localStorage.getItem('record'))
+      }
+    },
+  })
 </script>
 
 <style scoped>
@@ -193,5 +193,5 @@
       top: 96px;
       padding: 0 12%;
     }
-  }	
+  } 
 </style>
