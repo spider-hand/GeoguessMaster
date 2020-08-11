@@ -31,23 +31,32 @@
   </v-card>
 </template>
 
-<script>
-  export default {
-    data() {
+<script lang="ts">
+  import Vue from 'vue'
+
+  export type Datatype = {
+    playerName: string,
+  }
+
+  export default Vue.extend({
+    name: 'CardRoomPlayerName',
+    
+    data(): Datatype {
       return {
-        playerName: '',     
+        playerName: '',
       }
     },
+
     methods: {
-      setPlayerName() {
-        // Pass room name to parent component
+      setPlayerName(): void {
         this.$emit('setPlayerName', this.playerName)
       },
+
       cancel() {
         this.$emit('cancel')
       }
-    }
-  }
+    }    
+  })
 </script>
 
 <style scoped>

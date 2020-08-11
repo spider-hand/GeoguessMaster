@@ -2,7 +2,7 @@
   <div>
     <div id="section-top">
       <v-img
-        id="image-earth"
+        id="background-image"
         src="../assets/earth.jpg" />
       <Header />
       <v-container fluid>
@@ -51,29 +51,34 @@
       </v-container>
     </div>
     <Footer />
-  </div>
+  </div>	
 </template>
 
-<script>
-  import firebase from 'firebase/app'
-  import 'firebase/database'
+<script lang="ts">
+	import Vue from 'vue'
 
-  import Header from '@/components/widgets/bar/Header'
-  import DialogRoom from '@/components/widgets/dialog/DialogRoom'
-  import Footer from '@/components/widgets/footer/Footer'
+	import firebase from 'firebase/app'
+	import 'firebase/database'
 
-  export default {
-    components: {
-      Header,
-      DialogRoom,
-      Footer,
-    },
-    data() {
-      return {
-        record: localStorage.getItem('record')
-      }
-    }
-  }
+  import Header from '@/components/widgets/bar/Header.vue'
+  import DialogRoom from '@/components/widgets/dialog/DialogRoom.vue'
+  import Footer from '@/components/widgets/footer/Footer.vue'
+
+	export default Vue.extend({
+		name: 'Home',
+
+		components: {
+			Header,
+			DialogRoom,
+			Footer,
+		},
+
+		computed: {
+			record(): number {
+				return Number(localStorage.getItem('record'))
+			}
+		},
+	})
 </script>
 
 <style scoped>
@@ -86,7 +91,7 @@
     background: linear-gradient(#071D3E, #06121D);
   }
 
-  #image-earth {
+  #background-image {
     position: absolute;
     width: 100%;
     height: 100%;
@@ -188,5 +193,5 @@
       top: 96px;
       padding: 0 12%;
     }
-  }
+  }	
 </style>

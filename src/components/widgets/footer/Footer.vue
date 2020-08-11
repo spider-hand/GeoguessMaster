@@ -55,19 +55,32 @@
         <v-col cols="6">
           <v-select
             :items="languages"
-            :label="getCurrentLanguage"
+            :label="currentLanguage"
             solo
             @change="switchLanguage">
           </v-select>
         </v-col>
       </v-row>
     </v-container>
-  </v-footer>
+  </v-footer>  
 </template>
 
-<script>
-  export default {
-    data() {
+<script lang="ts">
+  import Vue from 'vue'
+
+  declare interface Language {
+    text: string,
+    value: string,
+  }
+
+  export type DataType = {
+    languages: Language[],
+  }
+
+  export default Vue.extend({
+    name: 'Footer',
+
+    data(): DataType {
       return {
         languages: [
           {
@@ -82,24 +95,23 @@
             text: '日本語',
             value: 'ja',
           }
-        ],
+        ],        
       }
     },
+
     computed: {
-      getCurrentLanguage() {
-        return this.languages.find(language => language.value == this.$i18n.locale).text
-      },
+      currentLanguage(): string {
+        return this.languages.find((language: Language) => language.value === this.$i18n.locale)!.text
+      }
     },
+
     methods: {
-      switchLanguage(language) {
+      switchLanguage(language: string) {
         this.$i18n.locale = language
-        this.saveLanguage(language)
-      },
-      saveLanguage(language) {
         localStorage.setItem('language', language)
-      },
-    },
-  }
+      }
+    }
+  })
 </script>
 
 <style scoped>
@@ -121,5 +133,5 @@
     #footer {
       top: 1440px;
     }   
-  }
+  }  
 </style>

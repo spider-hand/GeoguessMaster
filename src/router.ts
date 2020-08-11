@@ -6,11 +6,6 @@ import StreetView from '@/pages/StreetView.vue'
 import StreetViewWithFriends from '@/pages/StreetViewWithFriends.vue'
 import PrivacyPolicy from '@/pages/PrivacyPolicy.vue'
 
-const originalPush = Router.prototype.push
-Router.prototype.push = function push(location: string) {
-  return originalPush.call(this, location).catch((err: any) => err)
-}
-
 Vue.use(Router)
 
 export default new Router ({

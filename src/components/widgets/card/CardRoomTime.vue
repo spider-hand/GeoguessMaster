@@ -36,9 +36,25 @@
   </v-card>
 </template>
 
-<script>
-  export default {
-    data() {
+<script lang="ts">
+  import Vue from 'vue'
+
+  import { TranslateResult } from 'vue-i18n'
+
+  declare interface timeLimitationItem {
+    text: string | TranslateResult,
+    value: number,
+  }
+
+  export type DataType = {
+    timeLimitation: number,
+    timeLimitationItems: timeLimitationItem[],
+  }
+
+  export default Vue.extend({
+    name: 'CardRoomTime',
+
+    data(): DataType {
       return {
         timeLimitation: 0,
         timeLimitationItems: [
@@ -89,16 +105,17 @@
         ],
       }
     },
+
     methods: {
       setTimeLimitation() {
-        // Pass time limitation to parent component
         this.$emit('setTimeLimitation', this.timeLimitation)
       },
+
       cancel() {
         this.$emit('cancel')
-      }
+      },    
     }
-  }
+  })
 </script>
 
 <style scoped>

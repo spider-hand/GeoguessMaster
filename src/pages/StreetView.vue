@@ -42,16 +42,29 @@
   </div>
 </template>
 
-<script>
-  import HeaderGame from '@/components/widgets/bar/HeaderGame'
-  import Maps from '@/components/Maps'
+<script lang="ts">
+  import Vue from 'vue'
 
-  export default {
+  import HeaderGame from '@/components/widgets/bar/HeaderGame.vue'
+  import Maps from '@/components/Maps.vue'
+
+  export type DataType = {
+    randomLatLng: google.maps.LatLng | null,
+    panorama: google.maps.StreetViewPanorama | null,
+    score: number,
+    round: number,
+    overlay: boolean,
+  }
+
+  export default Vue.extend({
+    name: 'StreetView',
+
     components: {
       HeaderGame,
       Maps,
     },
-    data() {
+
+    data(): DataType {
       return {
         randomLatLng: null,
         panorama: null,
@@ -60,27 +73,28 @@
         overlay: false,
       }
     },
+
     methods: {
-      loadStreetView() {
-        var service = new google.maps.StreetViewService()
+      loadStreetView(): void {
+        let service = new google.maps.StreetViewService()
         service.getPanorama({
           location: this.getRandomLatLng(),
-          preference: 'nearest',
+          preference: google.maps.StreetViewPreference.NEAREST,
           radius: 100000,
-          source: 'outdoor',
+          source: google.maps.StreetViewSource.OUTDOOR,
         }, this.checkStreetView)
       },
-      getRandomLatLng() {
-        // Generate a random latitude and longitude
-        var lat = (Math.random() * 170) - 85
-        var lng = (Math.random() * 360) - 180
+
+      getRandomLatLng(): google.maps.LatLng  {
+        let lat = (Math.random() * 170) - 85
+        let lng = (Math.random() * 360) - 180
         return new google.maps.LatLng(lat, lng)
       },
-      checkStreetView(data, status) {
-        // Generate random streetview until the valid one is generated
-        if (status == 'OK') {
-          this.panorama = new google.maps.StreetViewPanorama(document.getElementById('street-view'))
-          this.panorama.setOptions({
+
+      checkStreetView(data: google.maps.StreetViewPanoramaData | null, status: google.maps.StreetViewStatus): void {
+        if (status === google.maps.StreetViewStatus.OK) {
+          this.panorama = new google.maps.StreetViewPanorama(document.getElementById('street-view')! as HTMLElement)
+          this.panorama!.setOptions({
             zoomControl: false,
             addressControl: false,
             fullscreenControl: false,
@@ -88,63 +102,61 @@
             motionTrackingControl: false,
             showRoadLabels: false,
           })
-          this.panorama.setPano(data.location.pano)
-          this.panorama.setPov({
+          this.panorama!.setPano(data!.location!.pano!)
+          this.panorama!.setPov({
             heading: 270,
             pitch: 0,
           })
 
-          // Save the location's latitude and longitude
-          this.randomLatLng = data.location.latLng
+          this.randomLatLng = data!.location!.latLng! as google.maps.LatLng
         } else {
           this.loadStreetView()
         }
       },
-      updateScore(distance) {
+
+      updateScore(distance: number): void {
         this.score += distance
         this.overlay = true
       },
-      goToNextRound() {
-        // Reset
+
+      goToNextRound(): void {
         this.randomLatLng = null
         this.overlay = false
-
-        // Update the round
         this.round += 1
 
-        // Replace streetview with new one
         this.loadStreetView()
       },
-      playAgain() {
-        // Reset
+
+      playAgain(): void {
         this.randomLatLng = null
-        this.distance = null
         this.score = 0
         this.round = 1
         this.overlay = false
 
-        // Load streetview
         this.loadStreetView()
       },
-      resetLocation() {
-        this.panorama.setPosition(this.randomLatLng)
+
+      resetLocation(): void {
+        this.panorama!.setPosition(this.randomLatLng!)
       },
-      zoomIn() {
-        var currentLevel = this.panorama.getZoom()
+
+      zoomIn(): void {
+        let currentLevel = this.panorama!.getZoom()
         currentLevel++
-        this.panorama.setZoom(currentLevel)
+        this.panorama!.setZoom(currentLevel)
       },
-      zoomOut() {
-        var currentLevel = this.panorama.getZoom()
+
+      zoomOut(): void {
+        let currentLevel = this.panorama!.getZoom()
         currentLevel--
-        this.panorama.setZoom(currentLevel)
-      },
+        this.panorama!.setZoom(currentLevel)
+      }
     },
-    mounted() {
-      // Generate the first streetview and check if it's valid
+
+    mounted(): void {
       this.loadStreetView()
-    },
-  }
+    }
+  })
 </script>
 
 <style scoped>

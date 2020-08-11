@@ -17,14 +17,18 @@
   </v-dialog>
 </template>
 
-<script>
-  export default {
-    props: [
-      'dialogMessage',
-      'dialogTitle',
-      'dialogText',
-    ]
-  }
+<script lang="ts">
+  import Vue, { PropType } from 'vue'
+
+  export default Vue.extend({
+    name: 'DialogMessage',
+
+    props: {
+      dialogMessage: Boolean,
+      dialogTitle: String,
+      dialogText: String,
+    }
+  })
 </script>
 
 <style scoped>

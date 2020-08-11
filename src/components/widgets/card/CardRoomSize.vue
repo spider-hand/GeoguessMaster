@@ -31,9 +31,23 @@
   </v-card>
 </template>
 
-<script>
-  export default {
-    data() {
+<script lang="ts">
+  import Vue from 'vue'
+
+  declare interface RoomSizeItem {
+    text: string,
+    value: number,
+  }
+
+  export type DataType = {
+    roomSize: number,
+    roomSizeItems: RoomSizeItem[], 
+  }
+
+  export default Vue.extend({
+    name: 'CardRoomSize',
+
+    data(): DataType {
       return {
         roomSize: 2,
         roomSizeItems: [
@@ -53,19 +67,20 @@
             text: '5',
             value: 5,
           },          
-        ],
+        ],        
       }
     },
+
     methods: {
-      setRoomSize() {
-        // Pass room size to parent component
+      setRoomSize(): void {
         this.$emit('setRoomSize', this.roomSize)
       },
-      cancel() {
+
+      cancel(): void {
         this.$emit('cancel')
       }
     }
-  }
+  })
 </script>
 
 <style scoped>

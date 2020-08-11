@@ -25,6 +25,17 @@ window.addEventListener('resize', () => {
 	updateSizes(Vue.prototype.$viewport)
 })
 
+declare interface Viewport {
+  width: number,
+  height: number,
+}
+
+declare module 'vue/types/vue' {
+  interface Vue {
+    $viewport: Viewport,
+  }
+}
+
 var firebaseConfig = {
   apiKey: process.env.VUE_APP_FIREBASE_API_KEY,
   authDomain: process.env.VUE_APP_FIREBASE_PROJECT_ID + ".firebaseapp.com",

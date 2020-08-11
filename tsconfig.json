@@ -13,7 +13,9 @@
     "baseUrl": ".",
     "types": [
       "webpack-env",
-      "vuetify"
+      "vuetify",
+      "googlemaps",
+      "firebase",
     ],
     "paths": {
       "@/*": [
