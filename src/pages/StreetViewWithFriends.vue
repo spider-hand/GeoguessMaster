@@ -273,7 +273,7 @@
       }
 
       // Set a default room name if it's null to check if the user refresh the page
-      if (this.roomName === null) {
+      if (this.roomName === null || this.roomName === undefined) {
         this.exitGame()
       } else {
         this.room = firebase.database().ref(this.roomName)
@@ -336,6 +336,7 @@
         // Remove the room when the player refreshes the window
         window.addEventListener('beforeunload', (event) => {
           this.room!.child('active').remove()
+          this.room!.off()
         })
       }
     }
