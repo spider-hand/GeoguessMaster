@@ -29,7 +29,12 @@ export default new Router ({
       path: '/street-view/with-friends',
       name: 'with-friends',
       component: StreetViewWithFriends,
-      props: true,
+      props: (route) => {
+        return {
+          roomName: route.params.roomName,
+          playerNumber: Number(route.params.playerNumber),
+        }
+      },
     },
     {
       path: '/privacy-policy',
