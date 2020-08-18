@@ -90,7 +90,7 @@
                   this.currentComponent = 'roomSize'
                 }
               })
-            } else if (!snapshot.hasChild('size') || !snapshot.hasChild('streetview')) {
+            } else if (!snapshot.hasChild('size') || !snapshot.hasChild('streetView')) {
               this.errorMessage = this.$t('DialogRoom.inProgress')
             } else if (numberOfPlayers >= snapshot.child('size').val()) {
               this.errorMessage = this.$t('DialogRoom.roomIsFull')
