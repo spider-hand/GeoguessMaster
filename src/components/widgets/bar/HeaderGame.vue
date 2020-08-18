@@ -37,15 +37,15 @@
 
     computed: {
       countdownText(): string {
-        let minutes = Math.floor(this.remainingTime / 60)
-        let seconds = this.remainingTime % 60
+        let minutes: string | number = Math.floor(this.remainingTime / 60)
+        let seconds: string | number = this.remainingTime % 60
         if (minutes < 10) {
-          let minutesText = `0${minutes}`
+          minutes = `0${minutes}`
         }
         if (seconds < 10) {
-          let secondsText = `0${seconds}`
+          seconds = `0${seconds}`
         }
-        return `{$minutesText}:{$secondsText}`
+        return `${minutes}:${seconds}`
       },
     },
   })
