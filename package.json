@@ -8,7 +8,7 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
-    "@types/googlemaps": "^3.39.11",
+    "@types/googlemaps": "^3.39.13",
     "core-js": "^2.6.5",
     "firebase": "^7.6.2",
     "firebase-admin": "^8.8.0",
