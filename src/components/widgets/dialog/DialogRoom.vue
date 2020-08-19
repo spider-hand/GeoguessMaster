@@ -5,8 +5,8 @@
     v-model="dialogRoom"
     max-width="600">
     <template v-slot:activator="{ on }">
-      <v-btn 
-        id="multi-player-button"
+      <v-btn
+        id="multiplayer-button"
         class="ml-8 mr-8"
         dark
         color="#43B581"
@@ -25,81 +25,88 @@
   </v-dialog>
 </template>
 
-<script>
+<script lang="ts">
+  import Vue from 'vue'
+
   import firebase from 'firebase/app'
   import 'firebase/database'
+  import { TranslateResult } from 'vue-i18n'
 
-  import CardRoomName from '@/components/widgets/card/CardRoomName'
-  import CardRoomSize from '@/components/widgets/card/CardRoomSize'
-  import CardRoomTime from '@/components/widgets/card/CardRoomTime'
-  import CardRoomPlayerName from '@/components/widgets/card/CardRoomPlayerName'
+  import CardRoomName from '@/components/widgets/card/CardRoomName.vue'
+  import CardRoomSize from '@/components/widgets/card/CardRoomSize.vue'
+  import CardRoomTime from '@/components/widgets/card/CardRoomTime.vue'
+  import CardRoomPlayerName from '@/components/widgets/card/CardRoomPlayerName.vue'
 
-  export default {
-    data() {
+  export type DataType = {
+      dialogRoom: boolean,
+      errorMessage: TranslateResult,
+      room: firebase.database.Reference | null,
+      roomName: string,
+      currentComponent: string,
+      playerNumber: number,
+  }
+
+  export default Vue.extend({
+    name: 'DialogRoom',
+
+    data(): DataType {
       return {
         dialogRoom: false,
-        errorMessage: '',
+        errorMessage: '', 
         room: null,
         roomName: '',
         currentComponent: 'roomName',
+        playerNumber: 0,
       }
     },
+
     components: {
       'roomName': CardRoomName,
       'roomSize': CardRoomSize,
       'timeLimitation': CardRoomTime,
       'playerName': CardRoomPlayerName,
     },
+
     methods: {
-      searchRoom(roomName) {
-        if (roomName == '') {
-          this.errorMessage = this.$t('DialogRoom.invalidRoomName')
+      searchRoom(roomName: string): void {
+        if (roomName === '') {
+          this.errorMessage = this.$t('DialogRoom.invalidRoomName') as TranslateResult
         } else {
           this.room = firebase.database().ref(roomName)
-
-          // Save room name so it can be used in setPlayerName()
           this.roomName = roomName
 
-          this.room.once('value', (snapshot) => {
-            var numberOfPlayers = snapshot.child('playerName').numChildren()
+          this.room!.once('value', (snapshot) => {
+            let numberOfPlayers = snapshot.child('playerName').numChildren()
             this.playerNumber = numberOfPlayers + 1
 
-            if (numberOfPlayers == 0) {
-              // Put the tentative player's name into the room node
-              // So that other player can't enter as the first player while the player decide the name and room size
-              this.room.child('playerName').update({
-                player1: 'player1'
+            if (numberOfPlayers === 0) {
+              this.room!.child('playerName').update({
+                player1: 'player1',
               }, (error) => {
                 if (!error) {
-                  // Put the timestamp the room is created so the expired rooms can be removed by cloud function
-                  this.room.update({
+                  this.room!.update({
                     createdAt: firebase.database.ServerValue.TIMESTAMP,
                   })
                   this.currentComponent = 'roomSize'
                 }
               })
-
             } else if (!snapshot.hasChild('size') || !snapshot.hasChild('streetView')) {
-              // Prevent other players from getting into the room earlier than the first player
               this.errorMessage = this.$t('DialogRoom.inProgress')
-
             } else if (numberOfPlayers >= snapshot.child('size').val()) {
               this.errorMessage = this.$t('DialogRoom.roomIsFull')
-
             } else {
-              // Put other player's tentative name
-              this.room.child('playerName/player' + this.playerNumber).set('player' + this.playerNumber, (error) => {
+              this.room!.child('playerName/player' + this.playerNumber).set('player' + this.playerNumber, (error) => {
                 if (!error) {
                   this.currentComponent = 'playerName'
                 }
-              })
+              })            
             }
-
           })
         }
       },
-      setRoomSize(roomSize) {
-        this.room.update({
+
+      setRoomSize(roomSize: number): void {
+        this.room!.update({
           size: roomSize
         }, (error) => {
           if (!error) {
@@ -107,8 +114,9 @@
           }
         })
       },
-      setTimeLimitation(timeLimitation) {
-        this.room.update({
+
+      setTimeLimitation(timeLimitation: number): void {
+        this.room!.update({
           timeLimitation: timeLimitation
         }, (error) => {
           if (!error) {
@@ -116,46 +124,46 @@
           }
         })
       },
-      setPlayerName(playerName) {
-        this.room.child('playerName/player' + this.playerNumber).set(playerName, (error) => {
+
+      setPlayerName(playerName: string): void {
+        this.room!.child('playerName/player' + this.playerNumber).set(playerName, (error) => {
           if (!error) {
             // Start the game
             this.$router.push({
               name: 'with-friends',
               params: { 
                 roomName: this.roomName, 
-                playerNumber: this.playerNumber, 
+                playerNumber: String(this.playerNumber), 
               }
             })
           }
         })
       },
-      cancel() {
-        // Reset
+
+      cancel(): void {
         this.currentComponent = 'roomName'
         this.roomName = ''
         this.errorMessage = ''
 
-        // Remove the room
         this.dialogRoom = false
-        if (this.room != null) {
-          if (this.playerNumber == 1) {
+        if (this.room !== null) {
+          if (this.playerNumber === 1) {
             // Remove the entire node if the player is the first player
-            this.room.remove()
+            this.room!.remove()
           } else {
             // Remove only the player's name node if the player isn't the first player
-            this.room.child('playerName/player' + this.playerNumber).remove()
+            this.room!.child('playerName/player' + this.playerNumber).remove()
           }
         }
       }
     }
-  }
+  })
 </script>
 
 <style scoped>
-  #multi-player-button {
+  #multiplayer-button {
     height: 44px;
     width: 240px;
     border-radius: 40px;
-  }
+  } 
 </style>

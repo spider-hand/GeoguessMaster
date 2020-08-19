@@ -47,28 +47,57 @@
       :summaryTexts="summaryTexts"
       :score="score"
       @finishGame="finishGame" />
-  </div>
+  </div>  
 </template>
 
-<script>
+<script lang="ts">
+  import Vue, { PropType } from 'vue'
+
   import firebase from 'firebase/app'
   import 'firebase/database'
+  
+  import DialogSummaryWithFriends from '@/components/widgets/dialog/DialogSummaryWithFriends.vue'
 
-  import DialogSummaryWithFriends from '@/components/widgets/dialog/DialogSummaryWithFriends'
+  declare interface Summary {
+    playerName: string,
+    finalScore: number,
+  }
 
-  export default {
-    props: [
-      'randomLatLng',
-      'roomName',
-      'playerNumber',
-      'isReady',
-      'round',
-      'score',
-    ],
+  export type DataType = {
+    markers: google.maps.Marker[],
+    polylines: google.maps.Polyline[],
+    summaryTexts: Summary[],
+    strokeColors: string[],
+    map: google.maps.Map | null,
+    room: firebase.database.Reference | null,
+    selectedLatLng: google.maps.LatLng | null,
+    distance: number,
+    isGuessButtonClicked: boolean,
+    isMakeGuessButtonClicked: boolean,
+    isSelected: boolean,
+    isNextStreetViewReady: boolean,
+    isNextButtonVisible: boolean,
+    isSummaryButtonVisible: boolean,
+    dialogSummary: boolean,
+  }
+
+  export default Vue.extend({
+    name: 'MapsWithFriends',
+
+    props: {
+      randomLatLng: Object as PropType<google.maps.LatLng>,
+      roomName: String,
+      playerNumber: Number,
+      isReady: Boolean,
+      round: Number,
+      score: Number,
+    },
+
     components: {
       DialogSummaryWithFriends,
     },
-    data() {
+
+    data(): DataType {
       return {
         markers: [],
         polylines: [],
@@ -83,160 +112,157 @@
         map: null,
         room: null,
         selectedLatLng: null,
-        distance: null,
+        distance: 0,
         isGuessButtonClicked: false,
         isMakeGuessButtonClicked: false,
         isSelected: false,
         isNextStreetViewReady: false,
         isNextButtonVisible: false,
         isSummaryButtonVisible: false,
-        dialogSummary: false,
+        dialogSummary: false,        
       }
     },
+
     computed: {
-      isNextButtonEnabled() {
-        if (this.playerNumber == 1) {
+      isNextButtonEnabled(): boolean {
+        if (this.playerNumber === 1) {
           return true
         } else {
-          return this.isNextStreetViewReady == true
+          return this.isNextStreetViewReady === true
         }
-      }
+      }      
     },
+
     methods: {
-      showMap() {
-        document.getElementById('map').style.transform = "translateY(-300px)"
+      showMap(): void {
+        document.getElementById('map')!.style.transform = "translateY(-300px)"
         this.isMakeGuessButtonClicked = true
       },
-      hideMap() {
-        document.getElementById('map').style.transform = "translateY(300px)"
+
+      hideMap(): void {
+        document.getElementById('map')!.style.transform = "translateY(300px)"
         this.isMakeGuessButtonClicked = false
       },
-      selectLocation() {
+
+      selectLocation(): void {
         this.calculateDistance()
 
-        // Save the selected location into database
-        // So that it uses for putting the markers and polylines
-        this.room.child('guess/player' + this.playerNumber).set({
-            latitude: this.selectedLatLng.lat(),
-            longitude:this.selectedLatLng.lng()
+        this.room!.child('guess/player' + this.playerNumber).set({
+            latitude: this.selectedLatLng!.lat(),
+            longitude:this.selectedLatLng!.lng()
         })
 
-        // Clear the event
-        google.maps.event.clearListeners(this.map, 'click')
+        google.maps.event.clearListeners(this.map!, 'click')
 
-        // Diable guess button and opacity of the map
         this.isGuessButtonClicked = true
         this.isSelected = true
-
-        // Turn off the flag before the next button appears
         this.isNextStreetViewReady = false
 
-        // Focus on the map
         this.mouseOverMap()
       },
-      selectRandomLocation(randomLatLng) {
-        // set a random location if the player didn't select in time
+
+      selectRandomLocation(randomLatLng: google.maps.LatLng): void {
         this.selectedLatLng = randomLatLng
         this.removeMarkers()
-        this.putMarker(this.selectedLatLng)
+        this.putMarker(this.selectedLatLng!)
         this.selectLocation()
       },
-      putMarker(position) {
-        var marker = new google.maps.Marker({
+
+      putMarker(position: google.maps.LatLng): void {
+        let marker = new google.maps.Marker({
           position: position,
-          map: this.map,
+          map: this.map!,
         })
         this.markers.push(marker)
       },
-      removeMarkers() {
-        for (var i = 0; i < this.markers.length; i++) {
+
+      removeMarkers(): void {
+        for (let i in this.markers) {
           this.markers[i].setMap(null)
         }
         this.markers = []
       },
-      calculateDistance() {
-        this.distance = Math.floor(google.maps.geometry.spherical.computeDistanceBetween(this.randomLatLng, this.selectedLatLng) / 1000)
 
-        // Save the distance into firebase
-        this.room.child('round' + this.round + '/player' + this.playerNumber).set(this.distance)
+      calculateDistance(): void {
+        this.distance = 
+          Math.floor(google.maps.geometry.spherical.computeDistanceBetween(this.randomLatLng, this.selectedLatLng!) / 1000)
+
+        this.room!.child('round' + this.round + '/player' + this.playerNumber).set(this.distance)
 
         this.$emit('calculateDistance', this.distance)
       },
-      setInfoWindow(playerName, distance) {
-        var infoWindow = new google.maps.InfoWindow({
+
+      setInfoWindow(playerName: string, distance: number): void {
+        let infoWindow = new google.maps.InfoWindow({
           content: '<b>' + playerName + '</b>' + ' is <b>' + distance + '</b> km away!'
         })
-        infoWindow.open(this.map, this.markers[this.markers.length - 1])
+        infoWindow.open(this.map!, this.markers[this.markers.length - 1])
       },
-      drawPolyline(selectedLatLng, i) {
-        var polyline = new google.maps.Polyline({
+
+      drawPolyline(selectedLatLng: google.maps.LatLng, i: number): void {
+        let polyline = new google.maps.Polyline({
           path: [selectedLatLng, this.randomLatLng],
           strokeColor: this.strokeColors[i],
         })
-        polyline.setMap(this.map)
+        polyline.setMap(this.map!)
         this.polylines.push(polyline)
       },
-      removePolylines() {
-        for (var i = 0; i < this.polylines.length; i++) {
+
+      removePolylines(): void {
+        for (let i in this.polylines) {
           this.polylines[i].setMap(null)
         }
       },
-      startNextRound() {
-        this.map.addListener('click', (e) => {
-          // Clear the previous marker when clicking the map
+
+      startNextRound(): void {
+        this.map!.addListener('click', (e) => {
           this.removeMarkers()
-
-          // Show the new marker
           this.putMarker(e.latLng)
-
-          // Save latLng
           this.selectedLatLng = e.latLng
         })
       },
-      goToNextRound() {
-        // Reset
+
+      goToNextRound(): void {
         this.selectedLatLng = null
         this.isGuessButtonClicked = false
         this.isSelected = false
         this.isNextButtonVisible = false
 
         if (this.$viewport.width < 450) {
-          // Hide the map if the player is on mobile
           this.hideMap()
         } else {
-          // Set the opacity of the map again if the player is on pc
           this.mouseOutMap()
         }
 
         this.removeMarkers()
         this.removePolylines()
 
-        // Replace the streetview with the next one
         this.$emit('goToNextRound')
       },
-      finishGame() {
+
+      finishGame(): void {
         this.dialogSummary = false
-        this.room.child('isGameDone/player' + this.playerNumber).set(true)
+        this.room!.child('isGameDone/player' + this.playerNumber).set(true)
         this.$emit('finishGame')
       },
-      mouseOverMap() {
-        // Focus on map
+
+      mouseOverMap(): void {
         if (this.$viewport.width > 450) {
-          document.getElementById('map').style.opacity = 1.0
-          document.getElementById('map').style.transform = 'scale(1)'
+          document.getElementById('map')!.style.opacity = '1.0'
+          document.getElementById('map')!.style.transform = 'scale(1)'
         }
       },
-      mouseOutMap() {
-        // Focus on map while the player selected a location
-        // Otherwise set the opacity of the map
-        if (this.isSelected == false && this.$viewport.width > 450) {
-          document.getElementById('map').style.opacity = 0.7
-          document.getElementById('map').style.transform = 'scale(0.75)'
+
+      mouseOutMap(): void {
+        if (this.isSelected === false && this.$viewport.width > 450) {
+          document.getElementById('map')!.style.opacity = '0.7'
+          document.getElementById('map')!.style.transform = 'scale(0.75)'
         }
       },
     },
-    mounted() {
-      this.map = new google.maps.Map(document.getElementById('map'), {
+
+    mounted(): void {
+      this.map = new google.maps.Map(document.getElementById('map') as HTMLElement, {
           center: {lat: 37.869260, lng: -122.254811},
           zoom: 1,
           fullscreenControl: false,
@@ -245,24 +271,24 @@
       })
 
       this.room = firebase.database().ref(this.roomName)
-      this.room.on('value', (snapshot) => {
+      this.room!.on('value', (snapshot) => {
         // Check if the room is already removed
         if (snapshot.hasChild('active')) {
 
-          // Allow players to move on to the next round when every players guess locations
-          if (snapshot.child('guess').numChildren() == snapshot.child('size').val()) {
+          // Allow players to move on to the next round when all players guess locations
+          if (snapshot.child('guess').numChildren() === snapshot.child('size').val()) {
             this.$emit('showResult')
 
-            // Put markers and draw polylines on the map
+            // Set markers and draw polylines on the map
             var i = 0
             var j = 1
             snapshot.child('guess').forEach((childSnapshot) => {
-              var lat = childSnapshot.child('latitude').val()
-              var lng = childSnapshot.child('longitude').val()
-              var latLng = new google.maps.LatLng({lat: lat, lng: lng});
+              let lat = childSnapshot.child('latitude').val()
+              let lng = childSnapshot.child('longitude').val()
+              let latLng = new google.maps.LatLng({lat: lat, lng: lng});
 
-              var playerName = snapshot.child('playerName').child(childSnapshot.key).val()
-              var distance = snapshot.child('round' + this.round + '/player' + j).val()
+              let playerName = snapshot.child('playerName').child(childSnapshot!.key!).val()
+              let distance = snapshot.child('round' + this.round + '/player' + j).val()
 
               this.drawPolyline(latLng, i)
               this.putMarker(latLng)
@@ -273,13 +299,13 @@
             this.putMarker(this.randomLatLng)
 
             // Remove guess node every time the round is done
-            this.room.child('guess').remove()
+            this.room!.child('guess').remove()
 
             if (this.round >= 5) {
               // Show summary button
               snapshot.child('finalScore').forEach((childSnapshot) => {
-                var playerName = snapshot.child('playerName').child(childSnapshot.key).val()
-                var finalScore = childSnapshot.val()
+                let playerName = snapshot.child('playerName').child(childSnapshot!.key!).val()
+                let finalScore = childSnapshot.val()
                 this.summaryTexts.push({
                   playerName: playerName,
                   finalScore: finalScore,
@@ -301,7 +327,7 @@
         }
       })
     },
-  }
+  })
 </script>
 
 <style scoped>
@@ -391,5 +417,5 @@
       left: 300px;
       z-index: 3;
     }
-  }
+  }  
 </style>

@@ -1,14 +1,12 @@
 <template>
   <v-app-bar
-    v-if="$viewport.width > 450" 
+    v-if="$viewport.width > 450"
     color="transparent"
     flat>
     <div>
       <v-img src="@/assets/logo.png" width="45" />
     </div>
-    <span id="title">
-      Geoguess Master
-    </span>
+    <span id="header-title">Geoguess Master</span>
     <div class="flex-grow-1"></div>
     <v-menu>
       <template v-slot:activator="{ on }">
@@ -77,15 +75,28 @@
             </v-list-item-content>
           </v-list-item>
         </v-list>
-    </v-menu>
+    </v-menu>    
   </v-app-bar>
 </template>
 
-<script>
-  export default {
-    data() {
+<script lang="ts">
+  import Vue from 'vue'
+
+  declare interface Language {
+    text: string,
+    value: string,
+  }
+
+  export type DataType = {
+    languages: Language[],
+  }
+
+  export default Vue.extend({
+    name: 'Header',
+
+    data(): DataType {
       return {
-      languages: [
+        languages: [
           {
             text: 'čeština',
             value: 'cs',
@@ -97,24 +108,22 @@
           {
             text: '日本語',
             value: 'ja',
-          }
-        ],        
+          },        
+        ],
       }
     },
+
     methods: {
-      switchLanguage(language) {
+      switchLanguage(language: string): void {
         this.$i18n.locale = language
-        this.saveLanguage(language)
-      },
-      saveLanguage(language) {
         localStorage.setItem('language', language)
-      },
-    }
-  }
+      }
+    },
+  })
 </script>
 
 <style scoped>
-  #title {
+  #header-title {
     color: #FFFFFF;
     font-weight: 700;
   }

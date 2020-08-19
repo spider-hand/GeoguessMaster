@@ -66,10 +66,6 @@
   </div>
 </template>
 
-<script>
-  
-</script>
-
 <style scoped>
   #page {
     background-color: #FAFAFA;

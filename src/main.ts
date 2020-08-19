@@ -11,19 +11,30 @@ import './registerServiceWorker'
 
 Vue.config.productionTip = false
 
-const updateSizes = (obj = {}) => {
-	obj.width = window.innerWidth
-	obj.height = window.innerHeight
-	return obj
+const updateSizes = (obj: any = {}) => {
+  obj.width = window.innerWidth
+  obj.height = window.innerHeight
+  return obj
 }
 
 Object.defineProperty(Vue.prototype, '$viewport', {
-	value: Vue.observable(updateSizes())
+  value: Vue.observable(updateSizes())
 })
 
 window.addEventListener('resize', () => {
-	updateSizes(Vue.prototype.$viewport)
+  updateSizes(Vue.prototype.$viewport)
 })
+
+declare interface Viewport {
+  width: number,
+  height: number,
+}
+
+declare module 'vue/types/vue' {
+  interface Vue {
+    $viewport: Viewport,
+  }
+}
 
 var firebaseConfig = {
   apiKey: process.env.VUE_APP_FIREBASE_API_KEY,
