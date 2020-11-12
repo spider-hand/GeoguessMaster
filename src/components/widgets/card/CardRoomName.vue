@@ -22,12 +22,12 @@
       <v-btn
         dark
         depressed
-        color="#FF5252"
+        color="#43B581"
         @click="searchRoom">{{ $t('CardRoomName.next') }}</v-btn>
       <v-btn
         dark
         depressed
-        color="#43B581"
+        color="#FF5252"
         @click="cancel">{{ $t('CardRoomName.cancel') }}</v-btn>
     </v-card-actions>
   </v-card>
