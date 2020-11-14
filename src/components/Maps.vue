@@ -186,6 +186,7 @@
       mouseOverMap(): void {
         if (this.$viewport.width > 450) {
           document.getElementById('map')!.style.opacity = '1.0'
+          document.getElementById('map')!.style.transform = 'scale(1)'
           document.getElementById('map')!.style.width = '80%'
           document.getElementById('map')!.style.height = '80%'
         }
@@ -292,7 +293,7 @@
       height: 200px;
       width: 300px;
       opacity: 1.0;
-      transition: width 1s, height 1s;
+      transition: transform 0.3s, width 1s, height 1s;
     }
     #hide-map-button {
       position: absolute;

@@ -249,6 +249,7 @@
       mouseOverMap(): void {
         if (this.$viewport.width > 450) {
           document.getElementById('map')!.style.opacity = '1.0'
+          document.getElementById('map')!.style.transform = 'scale(1)'
           document.getElementById('map')!.style.width = '80%'
           document.getElementById('map')!.style.height = '80%'
         }
@@ -366,7 +367,7 @@
     height: 320px;
     width: 480px;
     transform-origin: bottom left;
-    transition: width 0.3s, height 0.3s;
+    transition: transform 0.3s, width 0.3s, height 0.3s;
   }
 
   #make-guess-button, #guess-button {
