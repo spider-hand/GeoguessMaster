@@ -17,21 +17,21 @@
   </v-dialog>
 </template>
 
-<script>
-  export default {
-    props: [
-      'dialogMessage',
-      'dialogTitle',
-      'dialogText',
-    ]
-  }
+<script lang="ts">
+  import Vue, { PropType } from 'vue'
+
+  export default Vue.extend({
+    name: 'DialogMessage',
+
+    props: {
+      dialogMessage: Boolean,
+      dialogTitle: String,
+      dialogText: String,
+    }
+  })
 </script>
 
 <style scoped>
-  span {
-    font-family: Montsetrrat;
-  }
-
   #card-title {
     font-size: 16px;
     font-weight: 500;

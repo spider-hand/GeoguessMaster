@@ -17,13 +17,13 @@
             class="ml-4 mr-4"
             dark
             color="#FF5252"
-            @click="$router.push('/')">EXIT</v-btn>
+            @click="$router.push('/')">{{ $t('DialogSummary.exit') }}</v-btn>
           <v-btn 
             id="play-again-button"
             class="ml-4 mr-4"
             dark
             color="#43B581"
-            @click="playAgain">PLAY AGAIN</v-btn>
+            @click="playAgain">{{ $t('DialogSummary.playAgain') }}</v-btn>
         </v-row>
       </v-card-text>
       <v-card-text class="text-right">
@@ -47,62 +47,61 @@
   </v-dialog>
 </template>
 
-<script>
-  export default {
-    props: [
-      'dialogSummary',
-      'score',
-    ],
+<script lang="ts">
+  import Vue, { PropType } from 'vue'
+
+  export default Vue.extend({
+    name: 'DialogSummary',
+
+    props: {
+      dialogSummary: Boolean,
+      score: Number,
+    },
+
     methods: {
-      updateRecord() {
-        var currentRecord = localStorage.getItem('record')
+      updateRecord(): void {
+        let currentRecord = Number(localStorage.getItem('record'))
         if (currentRecord == null || this.score < currentRecord) {
-          localStorage.setItem('record', this.score)
+          localStorage.setItem('record', String(this.score))
         }
       },
-      playAgain() {
+
+      playAgain(): void {
         this.$emit('playAgain')
-      }
+      },      
     },
+
     watch: {
-      dialogSummary: function(newVal, oldVal) {
-        if (newVal == true) {
+      dialogSummary: function(newVal: boolean, oldVal: boolean) {
+        if (newVal === true) {
           this.updateRecord()
         }
       }
-    }
-  }
+    },
+  })
 </script>
 
 <style scoped>
-  span {
-    font-family: Montsetrrat;
-  }
-
   #card-text {
     padding: 80px 10% 80px 10%;
   }
-
   #summary-text {
     font-size: 18px;
     color: #FFFFFF;
     opacity: 0.9;
   }
-
   #exit-button, #play-again-button {
     height: 44px;
     width: 210px;
     border-radius: 40px;
   }
-
   @media (max-width: 450px) {
     #exit-button, #play-again-button {
       height: 36px;
     }
-
     #exit-button {
       margin-top: 28px;
       margin-bottom: 24px;
     }
-  }
+  }  
 </style>
