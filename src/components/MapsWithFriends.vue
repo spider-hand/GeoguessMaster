@@ -367,6 +367,7 @@
     height: 320px;
     width: 480px;
     transform-origin: bottom left;
+    transform: scale(0.75);
     transition: transform 0.3s, width 0.3s, height 0.3s;
   }
 
@@ -411,7 +412,7 @@
       height: 200px;
       width: 300px;
       opacity: 1.0;
-      transition: width 1s, height 1s;
+      transition: transform 1s, width 1s, height 1s;
     }
 
     #hide-map-button {
