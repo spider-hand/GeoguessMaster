@@ -29,8 +29,7 @@
                 maxlength="10"
                 autofocus
                 :error-messages="errorMessage"
-                v-model="roomName"
-                @keyup.enter="clickNext()"></v-text-field>
+                v-model="roomName"></v-text-field>
             </v-col>
             <v-col 
               cols="4"
@@ -58,8 +57,7 @@
               <v-text-field 
                 dark
                 maxlength="10"
-                v-model="playerName"
-                @keyup.enter="clickNext()"></v-text-field>
+                v-model="playerName"></v-text-field>
             </v-col>
           </v-row>
         </v-container>
@@ -70,12 +68,12 @@
           dark
           depressed
           color="#FF5252"
-          @click="cancel">CANCEL</v-btn>
+          @click="clickNext">NEXT</v-btn>
         <v-btn
           dark
           depressed
           color="#43B581"
-          @click="clickNext">NEXT</v-btn>
+          @click="cancel">CANCEL</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -111,27 +109,7 @@
           {
             text: '5',
             value: 5,
-          },
-          {
-            text: '6',
-            value: 6,
-          },
-          {
-            text: '7',
-            value: 7,
-          },
-          {
-            text: '8',
-            value: 8,
-          },
-          {
-            text: '9',
-            value: 9,
-          },
-          {
-            text: '10',
-            value: 10,
-          },
+          },          
         ],
         timeLimitation: 0,
         timeLimitationItems: [
