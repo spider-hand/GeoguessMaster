@@ -12,7 +12,8 @@
               maxlength="10"
               autofocus
               :error-messages="errorMessage"
-              v-model="roomName"></v-text-field>
+              v-model="roomName"
+              @keyup.enter="searchRoom"></v-text-field>
           </v-col>          
         </v-row>
       </v-container>

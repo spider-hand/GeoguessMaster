@@ -10,7 +10,8 @@
               <v-text-field 
                 dark
                 maxlength="10"
-                v-model="playerName"></v-text-field>
+                v-model="playerName"
+                @keyup.enter="setPlayerName"></v-text-field>
            </v-col>       
         </v-row>
       </v-container>
