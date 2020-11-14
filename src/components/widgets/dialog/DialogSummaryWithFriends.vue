@@ -20,11 +20,11 @@
         </v-row>
         <v-row justify="center">
           <v-btn
-            class="mt-8"
             id="exit-button"
+            class="mt-8"
             dark
             color="#FF5252"
-            @click="finishGame">EXIT</v-btn>
+            @click="finishGame">{{ $t('DialogSummaryWithFriends.exit') }}</v-btn>
         </v-row>
       </v-card-text>
       <v-card-text class="text-right">
@@ -48,39 +48,47 @@
   </v-dialog>
 </template>
 
-<script>
-  export default {
-    props: [
-      'dialogSummary',
-      'summaryTexts',
-      'score',
-    ],
+<script lang="ts">
+  import Vue, { PropType } from 'vue'
+
+  declare interface Summary {
+    playerName: string,
+    finalScore: number,
+  }
+
+  export default Vue.extend({
+    name: 'DialogSummaryWithFriends',
+
+    props: {
+      dialogSummary: Boolean,
+      summaryTexts: Array as PropType<Summary[]>,
+      score: Number,
+    },
+
     methods: {
-      updateRecord() {
-        var currentRecord = localStorage.getItem('record')
+      updateRecord(): void {
+        let currentRecord = Number(localStorage.getItem('record'))
         if (currentRecord == null || this.score < currentRecord) {
-          localStorage.setItem('record', this.score)
+          localStorage.setItem('record', String(this.score))
         }
       },
-      finishGame() {
+
+      finishGame(): void {
         this.$emit('finishGame')
-      },
+      },      
     },
+
     watch: {
-      dialogSummary: function(newVal, oldVal) {
-        if (newVal == true) {
+      dialogSummary: function(newVal: boolean, oldVal: boolean): void {
+        if (newVal === true) {
           this.updateRecord()
         }
       }      
-    }
-  } 
+    },
+  })
 </script>
 
 <style scoped>
-  span {
-    font-family: Montsetrrat;
-  }
-
   #exit-button {
     height: 44px;
     width: 240px;
@@ -101,5 +109,5 @@
     #exit-button {
       height: 36px;
     }
-  }
+  }  
 </style>
