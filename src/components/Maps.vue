@@ -186,8 +186,8 @@
       mouseOverMap(): void {
         if (this.$viewport.width > 450) {
           document.getElementById('map')!.style.opacity = '1.0'
-          document.getElementById('map').style.width = '80%'
-          document.getElementById('map').style.height = '80%'
+          document.getElementById('map')!.style.width = '80%'
+          document.getElementById('map')!.style.height = '80%'
         }
       },
 
@@ -195,8 +195,8 @@
         if (this.isSelected === false && this.$viewport.width > 450) {
           document.getElementById('map')!.style.opacity = '0.7'
           document.getElementById('map')!.style.transform = 'scale(0.75)'
-          document.getElementById('map').style.width = ''
-          document.getElementById('map').style.height = ''
+          document.getElementById('map')!.style.width = ''
+          document.getElementById('map')!.style.height = ''
         }
       },
     },
