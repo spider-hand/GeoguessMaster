@@ -161,7 +161,7 @@
         this.mouseOverMap()
       },
 
-      selectRandomLocation(randomLatLng: google.maps.LatLng): void {
+      selectGivenLocation(randomLatLng: google.maps.LatLng): void {
         this.selectedLatLng = randomLatLng
         this.removeMarkers()
         this.putMarker(this.selectedLatLng!)

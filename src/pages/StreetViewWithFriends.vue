@@ -191,7 +191,7 @@
           } else {
             // Set a random location if the player didn't select a location in time
             let mapRef = this.$refs.map as any
-            mapRef.selectRandomLocation(this.getRandomLatLng())
+            mapRef!.selectGivenLocation(mapRef.selectedLatLng ? mapRef.selectedLatLng : this.getRandomLatLng())
           }
         }
       },
