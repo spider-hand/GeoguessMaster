@@ -1,6 +1,8 @@
 <template>
-  <div>
-    <HeaderGame />
+  <div class="page">
+    <HeaderGame
+      :score="state.score"
+      :round="state.round" />
     <div class="street-view-wrapper">
       <div id="street-view">
         <Maps
@@ -138,6 +140,14 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.page {
+  position: relative;
+  height: 100%; 
+  width: 100%; 
+  top: 0; 
+  left: 0;
+}
+
 .street-view-wrapper {
   position: absolute;
   height: 100%;
