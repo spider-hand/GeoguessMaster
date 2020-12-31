@@ -1,197 +1,153 @@
 <template>
   <div>
-    <div id="section-top">
-      <v-img
-        id="background-image"
-        src="../assets/earth.jpg" />
+    <div class="section-top">
+      <img
+        id="background-image" 
+        src="@/assets/background.jpg">
       <Header />
-      <v-container fluid>
-        <v-row
-          id="row-record"
-          justify="center">
-          <span id="record">{{ $t('Home.record') }}: {{ record }} km</span>
-        </v-row>
-        <v-row
-          id="row-buttons" 
-          justify="center">
-          <v-btn 
-            id="single-player-button"
-            class="ml-8 mr-8"
-            dark
-            color="#FF5252"
-            @click="$router.push('street-view')">
-            {{ $t('Home.singlePlayer') }}
-          </v-btn>
-          <DialogRoom />
-        </v-row>
-      </v-container>
+      <div class="content-wrapper record-wrapper">
+        <div class="row">
+          <span id="record">Record: {{ record }} km</span>
+        </div>
+      </div>
+      <div class="content-wrapper button-wrapper">
+        <div class="row">
+          <button 
+            id="single-player-btn"
+            @click="$router.push('street-view')"
+          >
+              Single Player
+            </button>
+          <button id="with-friends-btn">With Friends</button>
+        </div>
+      </div>
     </div>
-    <div id="section-about">
-      <v-container>
-        <v-row justify="center">
-          <h3 class="section-header">{{ $t('Home.about') }}</h3>
-        </v-row>
-        <v-row justify="center">
-          <span class="section-description">
-            {{ $t('Home.aboutDescription') }}
-          </span>
-        </v-row>
-      </v-container>
+    <div class="section-about">
+      <div class="content-wrapper">
+        <div class="row">
+          <div class="description-wrapper">
+            Description here.
+          </div>
+        </div>
+      </div>
     </div>
-    <div id="section-limitation">
-      <v-container fluid>
-        <v-row justify="center">
-          <h3 class="section-header">{{ $t('Home.limitation') }}</h3>
-        </v-row>
-        <v-row justify="center">
-          <span class="section-description">
-           {{ $t('Home.limitationDescription') }}
-          </span>
-        </v-row>
-      </v-container>
+    <div class="section-limitation">
+      <div class="content-wrapper">
+        <div class="row">
+          <div class="description-wrapper">
+            Description here.
+          </div>
+        </div>       
+      </div>
     </div>
     <Footer />
-  </div>  
+  </div>
 </template>
 
 <script lang="ts">
-  import Vue from 'vue'
+import { defineComponent, computed, } from '@vue/composition-api'
 
-  import firebase from 'firebase/app'
-  import 'firebase/database'
+import Header from '@/components/widgets/bar/Header.vue'
+import Footer from '@/components/widgets/footer/Footer.vue'
 
-  import Header from '@/components/widgets/bar/Header.vue'
-  import DialogRoom from '@/components/widgets/dialog/DialogRoom.vue'
-  import Footer from '@/components/widgets/footer/Footer.vue'
+export default defineComponent({
+  components: {
+    Header,
+    Footer,
+  },
 
-  export default Vue.extend({
-    name: 'Home',
+  setup() {
+    const record = computed<number>(() => {
+      return 0
+    })
 
-    components: {
-      Header,
-      DialogRoom,
-      Footer,
-    },
-
-    computed: {
-      record(): number {
-        return Number(localStorage.getItem('record'))
-      }
-    },
-  })
+    return {
+      record,
+    }
+  }
+})
 </script>
 
 <style scoped>
-  #section-top {
-    position: absolute;
-    width: 100%;
-    height: 640px;
-    left: 0px;
-    top: 0px;
-    background: linear-gradient(#071D3E, #06121D);
-  }
+button {
+  width: 244px;
+  height: 44px;
+  border: none;
+  border-radius: 40px;
+  font-size: 14px;
+}
 
-  #background-image {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    opacity: 0.4;
-  }
+#single-player-btn {
+  margin-right: 32px;
+  background-color: #FF5252;
+  color: #FFFFFF;
+}
 
-  #row-record {
-    position: absolute;
-    width: 100%;
-    top: 200px;
-  }
+#with-friends-btn {
+  margin-left: 32px;
+  background-color: #43B581;
+  color: #FFFFFF;
+}
 
-  #record {
-    font-size: 26px;
-    font-weight: 700;
-    color: #FFFFFF;
-  }
+.section-top {
+  position: absolute;
+  width: 100%;
+  height: 640px;
+  left: 0px;
+  top: 0px;
+  background: linear-gradient(#071D3E, #06121D);
+}
 
-  #row-buttons {
-    position: absolute;
-    width: 100%;
-    top: 300px;
-  }
+.section-top * {
+  z-index: 1;
+}
 
-  #single-player-button {
-    height: 44px;
-    width: 240px;
-    border-radius: 40px;
-  }
+#background-image {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  opacity: 0.4;
+  z-index: 0 !important;
+}
 
-  #section-about {
-    position: absolute;
-    width: 100%;
-    height: 430px;
-    left: 0px;
-    top: 640px;
-    background: #FAFAFA;
-  }
+.section-about {
+  position: absolute;
+  width: 100%;
+  height: 430px;
+  left: 0px;
+  top: 640px;
+  background: #FAFAFA;
+}
 
-  #section-limitation {
-    position: absolute;
-    width: 100%;
-    height: 430px;
-    left: 0px;
-    top: 1070px;
-    background: #F4F4F4;
-  }
+.section-limitation {
+  position: absolute;
+  width: 100%;
+  height: 430px;
+  left: 0px;
+  top: 1070px;
+  background: #F4F4F4;
+}
 
-  .section-header {
-    position: absolute;
-    top: 94px;
-    color: #52575C;
-  }
+.content-wrapper {
+  padding: 12px;
+}
 
-  .section-description {
-    position: absolute;
-    top: 148px;
-    padding: 0 18%;
-    color: #777777;
-  }
+.record-wrapper {
+  margin-top: 150px;
+}
 
-  @media (max-width: 450px) {
-    #section-top {
-      height: 480px;
-    }
+.description-wrapper {
+  padding: 0 18%;
+}
 
-    #row-record {
-      top: 120px;
-    }
+.row {
+  display: flex;
+  justify-content: center;
+}
 
-    #record {
-      font-size: 18px;
-    }
-
-    #row-buttons {
-      top: 200px;
-    }
-
-    #single-player-button {
-      height: 42px;
-      margin-bottom: 24px;
-    }
-
-    #section-about {
-      top: 480px;
-      height: 480px;
-    }
-
-    #section-limitation {
-      top: 960px;
-      height: 480px;
-    }
-
-    .section-header {
-      top: 48px;
-    }
-
-    .section-description {
-      top: 96px;
-      padding: 0 12%;
-    }
-  } 
+#record {
+  font-size: 26px;
+  font-weight: 700;
+  color: #FFFFFF;
+}
 </style>
