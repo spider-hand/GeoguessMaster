@@ -1,8 +1,8 @@
 import Vue from 'vue'
 import App from './App.vue'
-import vuetify from './plugins/vuetify'
 import router from './router'
 import i18n from './lang'
+import VueCompositionAPI from '@vue/composition-api'
 
 import firebase from 'firebase/app'
 import 'firebase/analytics'
@@ -50,8 +50,10 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig)
 firebase.analytics()
 
+// Composition API
+Vue.use(VueCompositionAPI)
+
 new Vue({
-  vuetify,
   router,
   i18n,
   render: h => h(App)
