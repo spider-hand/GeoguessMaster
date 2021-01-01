@@ -12,7 +12,7 @@ import { Viewport } from '@/types/index'
 export default defineComponent({
 
   setup() {
-    const updateSizes = (obj: any = {}): Viewport  => {
+    function updateSizes(obj: any = {}): Viewport {
       obj.width = window.innerWidth
       obj.height = window.innerHeight
       return obj

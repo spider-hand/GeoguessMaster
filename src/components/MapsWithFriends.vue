@@ -95,7 +95,7 @@ export default defineComponent({
     score: {
       type: Number,
       required: true,
-    },    
+    },
   },
 
   setup(props, context) {
@@ -232,7 +232,7 @@ export default defineComponent({
       state.isGuessButtonClicked = false
       state.isSelected = false
       state.isNextButtonVisible = false
-      if (viewport.value.width < 450) {
+      if (viewport.width < 450) {
         hideMap()
       } else {
         mouseOutMap()

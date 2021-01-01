@@ -50,6 +50,11 @@
     >
       VIEW SUMMARY
     </button>
+    <DialogSummary
+      :dialogSummary="state.dialogSummary"
+      :score="score"
+      @playAgain="playAgain"
+    />
   </div> 
 </template>
 
@@ -57,6 +62,7 @@
 import { defineComponent, reactive, watch, onMounted, PropType, inject, } from '@vue/composition-api'
 
 import { Viewport } from '@/types/index'
+import DialogSummary from '@/components/widgets/dialog/DialogSummary.vue'
 
 export default defineComponent({
   props: {
@@ -72,6 +78,10 @@ export default defineComponent({
       type: Number,
       required: true,
     },
+  },
+
+  components: {
+    DialogSummary,
   },
 
   setup(props, context) {
@@ -165,7 +175,7 @@ export default defineComponent({
       state.isGuessButtonClicked = false
       state.isSelected = false
 
-      if (viewport.value.width < 450) {
+      if (viewport.width < 450) {
         hideMap()
       } else {
         mouseOutMap()
@@ -238,6 +248,7 @@ export default defineComponent({
       showMap,
       selectLocation,
       goToNextRound,
+      playAgain,
     }
   }
 })
