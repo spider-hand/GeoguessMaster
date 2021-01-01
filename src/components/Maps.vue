@@ -3,17 +3,20 @@
     <div 
       id="map"
       @mouseover="mouseOverMap"
-      @mouseleave="mouseOutMap">
-    </div>
-    <button
+      @mouseleave="mouseOutMap"
+    />
+    <v-btn
       id="hide-map-button"
       v-if="viewport.width < 450 && 
-            state.isGuessButtonClicked && 
+            !state.isGuessButtonClicked && 
             state.isMakeGuessButtonClicked"
       @click="hideMap"
+      fab
+      x-small
+      color="red"
     >
-      <span>×</span>
-    </button>
+      <v-icon color="white">mdi-close</v-icon>
+    </v-btn>
     <button
       id="make-guess-button"
       v-if="viewport.width < 450 && 
@@ -37,14 +40,14 @@
       id="next-button"
       v-if="state.isGuessButtonClicked && round < 5"
       @click="goToNextRound"
-      >
+    >
       NEXT ROUND
     </button>
     <button
       id="summary-button"
       v-if="state.isGuessButtonClicked && round >= 5"
       @click="state.dialogSummary = true"
-      >
+    >
       VIEW SUMMARY
     </button>
   </div> 
@@ -97,7 +100,7 @@ export default defineComponent({
     })
 
     function showMap(): void {
-      document.getElementById('map')!.style.transform = "translateY(-300px)"
+      document.getElementById('map')!.style.transform = "translateY(-340px)"
       state.isMakeGuessButtonClicked = true
     }
 
@@ -162,7 +165,7 @@ export default defineComponent({
       state.isGuessButtonClicked = false
       state.isSelected = false
 
-      if (viewport.width < 450) {
+      if (viewport.value.width < 450) {
         hideMap()
       } else {
         mouseOutMap()
@@ -283,6 +286,19 @@ export default defineComponent({
   opacity: 1.0;
 }
 
+@media (max-width: 900px) {
+  #make-guess-button, #guess-button {
+    width: 300px;
+  }
+  #next-button, #summary-button {
+    width: 400px;
+  }
+  #map {
+    height: 265px;
+    width: 400px;
+  }
+}
+
 @media (max-width: 450px) {
   #map {
     bottom: -280px;
@@ -292,17 +308,13 @@ export default defineComponent({
     transition: transform 1s;
   }
 
-  #make-guess-button, #guess-button, #next-button, #summary-button {
-    bottom: -50px;
-  }
-
   #next-button, #summary-button {
     width: 300px;
   }
 
   #hide-map-button {
     position: absolute;
-    bottom: 210px;
+    bottom: 245px;
     left: 300px;
     z-index: 3;
   }

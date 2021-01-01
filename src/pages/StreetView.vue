@@ -5,6 +5,27 @@
       :round="state.round" />
     <div class="street-view-wrapper">
       <div id="street-view">
+        <v-btn 
+          id="reset-button"
+          icon
+          color="#FFFFFF"
+          @click="resetLocation">
+          <v-icon size="36">mdi-flag</v-icon>
+        </v-btn>
+        <v-btn 
+          id="zoom-in-button"
+          icon
+          color="#FFFFFF"
+          @click="zoomIn">
+          <v-icon size="36">mdi-plus</v-icon>
+        </v-btn>
+        <v-btn 
+          id="zoom-out-button"
+          icon
+          color="#FFFFFF"
+          @click="zoomOut">
+          <v-icon size="36">mdi-minus</v-icon>
+        </v-btn>
         <Maps
           :randomLatLng="state.randomLatLng"
           :round="state.round"
@@ -15,6 +36,11 @@
         />
       </div>
     </div>
+    <v-overlay 
+      :value="state.overlay"
+      opacity="0.8" 
+      z-index="2"
+    />
   </div>
 </template>
 
@@ -134,6 +160,9 @@ export default defineComponent({
       updateScore,
       goToNextRound,
       playAgain,
+      resetLocation,
+      zoomIn,
+      zoomOut,
     }
   }
 })
@@ -160,5 +189,39 @@ export default defineComponent({
   position: relative;
   min-height: 100%;
   width: 100%;
+}
+
+#reset-button, #zoom-in-button, #zoom-out-button {
+  position: absolute;
+  z-index: 2;
+  background-color: #212121;
+  opacity: 0.8;
+  right: 12px;
+}
+
+#reset-button {
+  bottom: 200px;
+}
+
+#zoom-in-button {
+  bottom: 150px;
+}
+
+#zoom-out-button {
+  bottom: 100px;
+}
+
+@media (max-width: 450px) {
+  #reset-button {
+    bottom: 120px;
+  }
+
+  #zoom-in-button {
+    bottom: 70px;
+  }
+
+  #zoom-out-button {
+    bottom: 20px;
+  }
 }
 </style>
