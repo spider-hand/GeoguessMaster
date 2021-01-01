@@ -7,10 +7,24 @@
       />
       <span class="title">Geoguess Master</span>
       <div class="flex-grow-1"></div>
-      <span>LANGUAGE</span>
-      <span>ABOUT</span>
-      <span>LIMITATION</span>
-      <span>CONTACT</span>
+      <v-btn 
+        text
+        color="#FFFFFF"
+        href="#section-about">
+        <span>ABOUT</span>
+      </v-btn>
+      <v-btn
+        text
+        color="#FFFFFF"
+        href="#section-limitation">
+        <span>LIMITATION</span>
+      </v-btn>
+      <v-btn
+        text
+        color="#FFFFFF"
+        href="#contact">
+        <span>CONTACT</span>
+      </v-btn>
     </div>
   </div>
 </template>

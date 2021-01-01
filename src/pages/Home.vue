@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="section-top">
+    <div id="section-top">
       <img
         id="background-image" 
         src="@/assets/background.jpg">
@@ -22,7 +22,7 @@
         </div>
       </div>
     </div>
-    <div class="section-about">
+    <div id="section-about">
       <div class="content-wrapper">
         <div class="row">
           <div class="description-wrapper">
@@ -31,7 +31,7 @@
         </div>
       </div>
     </div>
-    <div class="section-limitation">
+    <div id="section-limitation">
       <div class="content-wrapper">
         <div class="row">
           <div class="description-wrapper">
@@ -89,7 +89,7 @@ button {
   color: #FFFFFF;
 }
 
-.section-top {
+#section-top {
   position: absolute;
   width: 100%;
   height: 640px;
@@ -98,7 +98,7 @@ button {
   background: linear-gradient(#071D3E, #06121D);
 }
 
-.section-top * {
+#section-top * {
   z-index: 1;
 }
 
@@ -110,7 +110,7 @@ button {
   z-index: 0 !important;
 }
 
-.section-about {
+#section-about {
   position: absolute;
   width: 100%;
   height: 430px;
@@ -119,7 +119,7 @@ button {
   background: #FAFAFA;
 }
 
-.section-limitation {
+#section-limitation {
   position: absolute;
   width: 100%;
   height: 430px;
