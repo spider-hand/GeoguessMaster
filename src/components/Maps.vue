@@ -68,7 +68,7 @@ export default defineComponent({
   props: {
     randomLatLng: {
       type: Object as PropType<google.maps.LatLng>,
-      required: true,
+      required: false,
     },
     round: {
       type: Number,
@@ -122,7 +122,7 @@ export default defineComponent({
     function selectLocation(): void {
       calculateDistance()
       drawPolyline()
-      putMarker(props.randomLatLng)
+      putMarker(props!.randomLatLng!)
       setInfoWindow()
 
       google.maps.event.clearListeners(state.map!, 'click')
@@ -150,7 +150,7 @@ export default defineComponent({
 
     function calculateDistance(): void {
       state.distance = 
-        Math.floor(google.maps.geometry.spherical.computeDistanceBetween(props.randomLatLng, state.selectedLatLng!) / 1000)
+        Math.floor(google.maps.geometry.spherical.computeDistanceBetween(props!.randomLatLng!, state.selectedLatLng!) / 1000)
       context.emit('calculateDistance', state.distance)
     }
 
@@ -163,7 +163,7 @@ export default defineComponent({
 
     function drawPolyline(): void {
       state.polyline = new google.maps.Polyline({
-        path: [state.selectedLatLng!, props.randomLatLng],
+        path: [state.selectedLatLng!, props!.randomLatLng!],
         strokeColor: '#FF0000',
       })
       state.polyline!.setMap(state.map!)
@@ -218,8 +218,8 @@ export default defineComponent({
 
     watch(
       () => props.randomLatLng,
-      (newVal: google.maps.LatLng, oldVal: google.maps.LatLng) => {
-        if (newVal !== null) {
+      (newVal: google.maps.LatLng | undefined, oldVal: google.maps.LatLng | undefined) => {
+        if (newVal !== undefined) {
           state.map!.addListener('click', (e) => {
             removeMarkers()
             putMarker(e.latLng)

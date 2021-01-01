@@ -74,7 +74,7 @@ export default defineComponent({
   props: {
     randomLatLng: {
       type: Object as PropType<google.maps.LatLng>,
-      required: true,
+      required: false,
     },
     roomName: {
       type: String,
@@ -192,7 +192,7 @@ export default defineComponent({
 
     function calculateDistance(): void {
       state.distance = 
-        Math.floor(google.maps.geometry.spherical.computeDistanceBetween(props.randomLatLng, state.selectedLatLng!) / 1000)
+        Math.floor(google.maps.geometry.spherical.computeDistanceBetween(props!.randomLatLng!, state.selectedLatLng!) / 1000)
       state.room!.child('round' + props.round + '/player' + props.playerNumber).set(state.distance)
       context.emit('calculateDistance', state.distance)
     }
@@ -206,7 +206,7 @@ export default defineComponent({
 
     function drawPolyline(selectedLatLng: google.maps.LatLng, i: number): void {
       let polyline = new google.maps.Polyline({
-        path: [selectedLatLng, props.randomLatLng],
+        path: [selectedLatLng, props!.randomLatLng!],
         strokeColor: state.strokeColors[i],
       })
       polyline.setMap(state.map!)
@@ -293,7 +293,7 @@ export default defineComponent({
               i++
               j++
             })
-            putMarker(props.randomLatLng)
+            putMarker(props!.randomLatLng!)
             // Remove guess node every time the round is done
             state.room!.child('guess').remove()
             if (props.round >= 5) {
