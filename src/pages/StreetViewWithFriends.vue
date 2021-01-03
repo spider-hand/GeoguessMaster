@@ -37,6 +37,7 @@
           :round="state.round"
           :score="state.score"
           @calculateDistance="updateScore"
+          @showResult="showResult"
           @goToNextRound="goToNextRound"
           @finishGame="finishGame"
         />
@@ -340,6 +341,7 @@ export default defineComponent({
       mapRef,
       updateScore,
       goToNextRound,
+      showResult,
       finishGame,
       resetLocation,
       zoomIn,

@@ -40,7 +40,7 @@
     </button>
     <button
       id="next-button"
-      :disabled="!state.isNextButtonEnabled"
+      :disabled="!isNextButtonEnabled"
       :style="{ backgroundColor: isNextButtonEnabled ? '#F44336' : '#B71C1C' }"
       v-if="state.isNextButtonVisible"
       @click="goToNextRound"
@@ -54,6 +54,12 @@
       >
       VIEW SUMMARY
     </button>
+    <DialogSummaryWithFriends
+      :dialogSummary="state.dialogSummary"
+      :summary="state.summary"
+      :score="score"
+      @finishGame="finishGame"
+    />
   </div>
 </template>
 
@@ -64,6 +70,7 @@ import firebase from 'firebase/app'
 import 'firebase/database'  
 
 import { Viewport, } from '@/types/index'
+import DialogSummaryWithFriends from '@/components/widgets/dialog/DialogSummaryWithFriends.vue'
 
 declare interface Summary {
   playerName: string;
@@ -98,13 +105,17 @@ export default defineComponent({
     },
   },
 
+  components: {
+    DialogSummaryWithFriends,
+  },
+
   setup(props, context) {
     const viewport: Viewport = inject('viewport') as Viewport
 
     const state = reactive<{
       markers: google.maps.Marker[];
       polylines: google.maps.Polyline[];
-      summaryTexts: Summary[];
+      summary: Summary[];
       strokeColors: string[];
       map: google.maps.Map | null;
       room: firebase.database.Reference | null;
@@ -120,7 +131,7 @@ export default defineComponent({
     }>({
       markers: [],
       polylines: [],
-      summaryTexts: [],
+      summary: [],
       strokeColors: [
         '#F44336',
         '#76FF03',
@@ -301,12 +312,12 @@ export default defineComponent({
               snapshot.child('finalScore').forEach((childSnapshot) => {
                 let playerName = snapshot.child('playerName').child(childSnapshot!.key!).val()
                 let finalScore = childSnapshot.val()
-                state.summaryTexts.push({
+                state.summary.push({
                   playerName: playerName,
                   finalScore: finalScore,
                 })
               })
-              state.summaryTexts.sort((a, b) => a.finalScore - b.finalScore)
+              state.summary.sort((a, b) => a.finalScore - b.finalScore)
               state.isSummaryButtonVisible = true
             } else {
               // Show next button
@@ -324,12 +335,15 @@ export default defineComponent({
     return {
       state,
       viewport,
+      isNextButtonEnabled,
       mouseOverMap,
       mouseOutMap,
       hideMap,
       showMap,
       selectLocation,
-      goToNextRound,      
+      goToNextRound,
+      startNextRound,
+      finishGame,    
     }
   }
 })
