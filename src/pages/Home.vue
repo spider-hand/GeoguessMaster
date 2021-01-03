@@ -6,6 +6,10 @@
         src="@/assets/background.jpg">
       <Header v-if="viewport.width > 450" />
       <HeaderMobile v-else />
+      <DialogRoom 
+        :dialogRoom="state.dialogRoom"
+        @closeDialog="closeDialog" 
+      />
       <v-container fluid>
         <v-row
           class="record-wrapper" 
@@ -25,6 +29,7 @@
           <button 
             id="with-friends-button"
             class="ml-8 mr-8"
+            @click="state.dialogRoom = true"
           >
             With Friends
           </button>
@@ -64,31 +69,45 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, inject, } from '@vue/composition-api'
+import { defineComponent, reactive, computed, inject, } from '@vue/composition-api'
 
 import Header from '@/components/widgets/bar/Header.vue'
 import HeaderMobile from '@/components/widgets/bar/HeaderMobile.vue'
 import Footer from '@/components/widgets/footer/Footer.vue'
+import DialogRoom from '@/components/widgets/dialog/DialogRoom.vue'
 
 export default defineComponent({
   components: {
     Header,
     HeaderMobile,
     Footer,
+    DialogRoom,
   },
 
   setup() {
     const viewport = inject('viewport')
 
+    const state = reactive<{
+      dialogRoom: boolean;
+    }>({
+      dialogRoom: false,
+    })
+
     const record = computed<string>(() => {
       return localStorage.getItem('record') !== undefined
-              ? localStorage.getItem('record')
+              ? localStorage.getItem('record')!
               : ''
     })
 
+    function closeDialog(): void {
+      state.dialogRoom = false
+    }
+
     return {
       viewport,
+      state,
       record,
+      closeDialog,
     }
   }
 })

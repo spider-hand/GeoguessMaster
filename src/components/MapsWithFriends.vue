@@ -33,7 +33,7 @@
                   !isReady"
       v-if="!state.isNextButtonVisible && 
             !state.isSummaryButtonVisible && 
-            (viewport.width > 450 || isMakeGuessButtonClicked)"
+            (viewport.width > 450 || state.isMakeGuessButtonClicked)"
       @click="selectLocation"
       >
       GUESS

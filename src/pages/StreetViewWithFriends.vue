@@ -3,7 +3,7 @@
     <HeaderGame
       :score="state.scoreHeader"
       :round="state.round"
-      :remainingTime="remainingTime"
+      :remainingTime="state.remainingTime"
     />
     <div class="street-view-wrapper">
       <div id="street-view">
@@ -31,7 +31,8 @@
         <MapsWithFriends
           ref="mapRef"
           :randomLatLng="state.randomLatLng"
-          :roomName="state.roomName"
+          :roomName="roomName"
+          :playerNumber="playerNumber"
           :isReady="state.isReady"
           :round="state.round"
           :score="state.score"
@@ -46,6 +47,11 @@
       opacity="0.8" 
       z-index="2"
     />
+    <DialogMessage 
+      :dialogMessage="state.dialogMessage"
+      :title="state.dialogTitle"
+      :text="state.dialogText" 
+    />
   </div>
 </template>
 
@@ -57,6 +63,7 @@ import 'firebase/database'
 
 import HeaderGame from '@/components/widgets/bar/HeaderGame.vue'
 import MapsWithFriends from '@/components/MapsWithFriends.vue'
+import DialogMessage from '@/components/widgets/dialog/DialogMessage.vue'
 
 declare interface MapRef {
   selectGivenLocation(randomLatLng: google.maps.LatLng): void;
@@ -79,6 +86,7 @@ export default defineComponent({
   components: {
     HeaderGame,
     MapsWithFriends,
+    DialogMessage,
   },
 
   setup(props, context) {
@@ -97,7 +105,9 @@ export default defineComponent({
       overlay: boolean;
       room: firebase.database.Reference | null;
       isReady: boolean;
-      dialogMessage: boolean;      
+      dialogMessage: boolean;
+      dialogTitle: string;
+      dialogText: string;    
     }>({
       panorama: null,
       randomLatLng: null,
@@ -114,6 +124,8 @@ export default defineComponent({
       room: null,
       isReady: false,
       dialogMessage: true,
+      dialogTitle: 'Waiting for other players..',
+      dialogText: '',
     })
 
     const mapRef = ref<MapRef | null>(null)
@@ -199,7 +211,7 @@ export default defineComponent({
       state.hasLocationSelected = true
       state.score += distance
       state.room!.child('finalScore/player' + props.playerNumber).set(state.score)
-      // state.dialogTitle = this.$t('StreetViewWithFriends.waitForOtherPlayers') as TranslateResult
+      state.dialogTitle = 'Waiting for other players..'
       state.dialogMessage = true
     }
 
@@ -227,8 +239,8 @@ export default defineComponent({
     }
 
     function exitGame(): void {
-      // this.dialogTitle = this.$t('StreetViewWithFriends.redirectToHomePage') as TranslateResult
-      // this.dialogText = this.$t('StreetViewWithFriends.exitGame') as TranslateResult
+      state.dialogTitle = 'Redirecting to home page..'
+      state.dialogText = 'You are forced to exit the game. Redirect to home page after 5 seconds..'
       state.dialogMessage = true
       if (state.room !== null) {
         state.room.off()
@@ -240,8 +252,8 @@ export default defineComponent({
     }
 
     function finishGame(): void {
-      // this.dialogTitle = this.$t('StreetViewWithFriends.waitForOtherPlayersToFinish') as TranslateResult
-      // state.dialogText = ''
+      state.dialogTitle = 'Waiting for other players to finish..'
+      state.dialogText = ''
       state.dialogMessage = true
     }
 
@@ -328,6 +340,7 @@ export default defineComponent({
       mapRef,
       updateScore,
       goToNextRound,
+      finishGame,
       resetLocation,
       zoomIn,
       zoomOut,
