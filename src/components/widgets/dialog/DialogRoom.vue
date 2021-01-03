@@ -59,7 +59,7 @@ export default defineComponent({
 
     function searchRoom(roomName: string): void {
       if (roomName === '') {
-        // state.errorMessage = state.$t('DialogRoom.invalidRoomName') as TranslateResult
+        state.errorMessage = 'Invalid room name. Please try another one.'
       } else {
         state.room = firebase.database().ref(roomName)
         state.roomName = roomName
@@ -78,9 +78,9 @@ export default defineComponent({
                 }
             })
           } else if (!snapshot.hasChild('size') || !snapshot.hasChild('streetView')) {
-            // state.errorMessage = state.$t('DialogRoom.inProgress')
+            state.errorMessage = 'The first player is creating the room right now. Please wait and try again.'
           } else if (numberOfPlayers >= snapshot.child('size').val()) {
-            // state.errorMessage = state.$t('DialogRoom.roomIsFull')
+            state.errorMessage = 'This room is already full.'
           } else {
             state.room!.child('playerName/player' + state.playerNumber)
               .set('player' + state.playerNumber, 

@@ -2,7 +2,6 @@ import Vue from 'vue'
 import App from './App.vue'
 import vuetify from '@/vuetify'
 import router from '@/router'
-import i18n from '@/lang'
 import firebase from 'firebase/app'
 import 'firebase/analytics'
 import VueCompositionAPI from '@vue/composition-api'
@@ -30,6 +29,5 @@ firebaseApp.analytics()
 new Vue({
   vuetify,
   router,
-  i18n,
   render: h => h(App)
 }).$mount('#app')
