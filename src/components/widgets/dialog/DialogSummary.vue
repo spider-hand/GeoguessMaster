@@ -65,10 +65,10 @@ export default defineComponent({
 
   setup(props, context) {
     function updateRecord(): void {
-      const currentRecord = localStorage.getItem('record') !== undefined 
+      const currentRecord = localStorage.getItem('record') !== null
                               ? Number(localStorage.getItem('record'))
-                              : undefined
-      if (currentRecord === undefined || props.score < currentRecord) {
+                              : null
+      if (currentRecord === null || props.score < currentRecord) {
         localStorage.setItem('record', String(props.score))
       }
     }
