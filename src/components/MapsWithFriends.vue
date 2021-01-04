@@ -341,6 +341,7 @@ export default defineComponent({
       hideMap,
       showMap,
       selectLocation,
+      selectGivenLocation,
       goToNextRound,
       startNextRound,
       finishGame,    
