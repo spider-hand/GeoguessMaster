@@ -4,7 +4,6 @@ import Router from 'vue-router'
 import Home from '@/pages/Home.vue'
 import StreetView from '@/pages/StreetView.vue'
 import StreetViewWithFriends from '@/pages/StreetViewWithFriends.vue'
-import PrivacyPolicy from '@/pages/PrivacyPolicy.vue'
 
 Vue.use(Router)
 
@@ -35,11 +34,6 @@ export default new Router ({
           playerNumber: Number(route.params.playerNumber),
         }
       },
-    },
-    {
-      path: '/privacy-policy',
-      name: 'privacy-policy',
-      component: PrivacyPolicy,
     },
   ],
 })

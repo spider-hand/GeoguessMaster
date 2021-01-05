@@ -1,11 +1,9 @@
 <template>
-  <v-footer
-    id="footer"
-    absolute
-    color="#061422"
-    :height="$viewport.width > 450 ? 210 : 300">
+  <div class="footer">
     <v-container>
-      <v-row justify="center">
+      <v-row
+        id="contact" 
+        justify="center">
         <v-btn
           class="ml-4 mr-4" 
           icon
@@ -29,109 +27,59 @@
         </v-btn>
       </v-row>
       <v-row
-        class="mt-8" 
-        justify="center">
-        <span id="copyright-text">All rights reserved. Copyright © {{ new Date().getFullYear() }} <strong>Spider Hand</strong></span>
+        class="mt-8"
+        justify="center"
+      >
+        <span id="copyright">All rights reserved. Copyright © {{ new Date().getFullYear() }} <strong>Spider Hand</strong></span>
       </v-row>
-      <v-row
-        class="mt-1"
-        justify="center">
-        <span id="credit-text">
-          Photo by <a href="https://unsplash.com/@nasa">NASA</a> on <a href="https://unsplash.com/">Unsplash</a>, 
-          Design by <a href="http://www.pauloxgomes.com/">Paulo Gomes</a>
-        </span>
-      </v-row>
-      <v-row
-        class="mt-3"
-        justify="center">
-        <v-btn
-          text
-          color="#FFFFFF"
-          @click="$router.push('privacy-policy')">
-          <span id="privacy-policy">{{ $t('Footer.privacyPolicy') }}</span>
-        </v-btn>
-      </v-row>
-      <v-row v-if="$viewport.width < 450">
-        <v-col cols="6">
-          <v-select
-            :items="languages"
-            :label="currentLanguage"
-            solo
-            @change="switchLanguage">
-          </v-select>
-        </v-col>
+      <v-row 
+        class="mt-2"
+        justify="center"
+      >
+        <span id="credit">Photo by <a href="https://unsplash.com/@timowielink?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Timo Wielink</a> on <a href="https://unsplash.com/s/photos/map?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Unsplash</a> ,
+        Design by <a href="http://www.pauloxgomes.com/">Paulo Gomes</a></span>
       </v-row>
     </v-container>
-  </v-footer>  
+  </div>
 </template>
 
 <script lang="ts">
-  import Vue from 'vue'
+import { defineComponent, } from '@vue/composition-api'
 
-  declare interface Language {
-    text: string,
-    value: string,
-  }
+export default defineComponent({
 
-  export type DataType = {
-    languages: Language[],
-  }
-
-  export default Vue.extend({
-    name: 'Footer',
-
-    data(): DataType {
-      return {
-        languages: [
-          {
-            text: 'čeština',
-            value: 'cs',
-          },
-          {
-            text: 'English',
-            value: 'en',
-          },
-          {
-            text: '日本語',
-            value: 'ja',
-          }
-        ],        
-      }
-    },
-
-    computed: {
-      currentLanguage(): string {
-        return this.languages.find((language: Language) => language.value === this.$i18n.locale)!.text
-      }
-    },
-
-    methods: {
-      switchLanguage(language: string) {
-        this.$i18n.locale = language
-        localStorage.setItem('language', language)
-      }
-    }
-  })
+})
 </script>
 
 <style scoped>
-  #copyright-text, #credit-text {
-    font-size: 12px;
-    color: #7D7D7D;
-  }
+span {
+  color: #FFFFFF;
+}
 
-  #privacy-policy {
-    font-size: 12px;
-  }
+.footer {
+  position: absolute;
+  left: 0;
+  top: 1500px;
+  bottom: 0;
+  padding: 12px;
+  height: 210px;
+  width: 100%;
+  background-color: #061422;
+}
 
-  #footer {
-    top: 1500px;
-    bottom: 0px;
-  }
+.footer-content {
+  padding: 12px;
+}
 
-  @media (max-width: 450px) {
-    #footer {
-      top: 1440px;
-    }   
-  }  
+#copyright, #credit {
+  font-size: 12px;
+  color: #7D7D7D;
+}
+
+@media (max-width: 450px) {
+  .footer {
+    top: 1440px;
+    height: 300px;
+  }
+}
 </style>

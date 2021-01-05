@@ -1,18 +1,18 @@
 <template>
-  <v-card color="#061422">
+  <v-card color="#E1F5FE">
     <v-card-title>
-      <span id="card-title">{{ $t('CardRoomName.title') }}</span>
+      <span>Input your room name.</span>
     </v-card-title>
     <v-card-text>
       <v-container>
         <v-row>
           <v-col cols="12">
             <v-text-field
-              dark
               maxlength="10"
               autofocus
               :error-messages="errorMessage"
-              v-model="roomName"></v-text-field>
+              v-model="state.roomName"
+            />
           </v-col>          
         </v-row>
       </v-container>
@@ -23,53 +23,56 @@
         dark
         depressed
         color="#43B581"
-        @click="searchRoom">{{ $t('CardRoomName.next') }}</v-btn>
+        @click="searchRoom">
+        NEXT
+      </v-btn>
       <v-btn
         dark
         depressed
         color="#FF5252"
-        @click="cancel">{{ $t('CardRoomName.cancel') }}</v-btn>
+        @click="cancel">
+        CANCEL
+      </v-btn>
     </v-card-actions>
   </v-card>
 </template>
 
 <script lang="ts">
-  import Vue, { PropType } from 'vue'
+import { defineComponent, reactive, } from '@vue/composition-api'
 
-  export type DataType = {
-    roomName: string,
+export default defineComponent({
+  
+  props: {
+    errorMessage: {
+      type: String,
+      required: true,
+    }
+  },
+
+  setup(props, context) {
+    const state = reactive<{
+      roomName: string;
+    }>({
+      roomName: '',
+    })
+
+    function searchRoom(): void {
+      context.emit('searchRoom', state.roomName)
+    }
+
+    function cancel(): void {
+      context.emit('cancel')
+    }
+
+    return {
+      state,
+      searchRoom,
+      cancel,
+    }
   }
-
-  export default Vue.extend({
-    name: 'CardRoomName',
-
-    props: {
-      errorMessage: String,
-    },
-
-    data(): DataType {
-      return {
-        roomName: '',
-      }
-    },
-
-    methods: {
-      searchRoom(): void {
-        this.$emit('searchRoom', this.roomName)
-      },
-
-      cancel(): void {
-        this.$emit('cancel')
-      },
-    },
-  })
+})
 </script>
 
 <style scoped>
-  #card-title {
-    font-size: 16px;
-    font-weight: 500;
-    color: #FFFFFF;
-    opacity: 0.9;
-  }   
+
 </style>

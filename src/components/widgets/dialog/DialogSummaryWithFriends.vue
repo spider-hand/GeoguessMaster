@@ -1,21 +1,23 @@
 <template>
   <v-dialog
     v-model="dialogSummary"
-    max-width="720"
-    persistent
-    :fullscreen="$viewport.width < 450">
-    <v-card color="#061422">
-      <v-card-text id="card-text">
+    max-width="640"
+    persistent>
+    <v-card color="#E1F5FE">
+      <v-card-text id="card-text-wrapper">
         <v-row
           class="mt-3"
           justify="center" 
-          v-for="(text, index) in summaryTexts"
+          v-for="(text, index) in summary"
           :key="index">
           <span id="summary-text">
             <v-icon 
-              v-if="index == 0 || index == 1 || index == 2"
-              :color="index == 0 ? '#FAA61A': (index == 1 ? '#EEEEEE' : '#F4511E')">mdi-crown</v-icon>
-            <strong>{{ text.playerName }}</strong> is <strong>{{ text.finalScore }}</strong> km away!
+              v-if="index === 0"
+              color="#FAA61A"
+            >
+              mdi-crown
+            </v-icon>
+            <strong :style="{ 'margin-left': index !== 0 ? '24px' : 'none' }">{{ text.playerName }}</strong> is <strong>{{ text.finalScore }}</strong> km away!
           </span>
         </v-row>
         <v-row justify="center">
@@ -24,90 +26,106 @@
             class="mt-8"
             dark
             color="#FF5252"
-            @click="finishGame">{{ $t('DialogSummaryWithFriends.exit') }}</v-btn>
+            @click="finishGame">EXIT</v-btn>
         </v-row>
       </v-card-text>
       <v-card-text class="text-right">
         <v-btn
           target="_blank"
-          :href="'http://www.facebook.com/sharer.php?u=https://geoguessmaster.com/&amp;t=I am ' + score + ' km away! How close can you guess?'" 
+          :href="`http://www.facebook.com/sharer.php?u=https://geoguessmaster.com/&amp;t=I am ${score} km away! How close can you guess?`" 
           rel="nofollow"
           icon
-          color="#FFFFFF">
+          color="#061422">
           <v-icon size="32">mdi-facebook-box</v-icon>
         </v-btn>
         <v-btn
           target="_blank"
-          :href="'http://twitter.com/share?url=https://geoguessmaster.com/&amp;text=I am ' + score +' km away! How close can you guess?'" 
+          :href="`http://twitter.com/share?url=https://geoguessmaster.com/&amp;text=I am ${score} km away! How close can you guess?`" 
           icon
-          color="#FFFFFF">
+          color="#061422">
           <v-icon size="32">mdi-twitter-box</v-icon>
         </v-btn>
       </v-card-text>
     </v-card>
-  </v-dialog>
+  </v-dialog>  
 </template>
 
 <script lang="ts">
-  import Vue, { PropType } from 'vue'
+import { defineComponent, watch, PropType, } from '@vue/composition-api'
 
-  declare interface Summary {
-    playerName: string,
-    finalScore: number,
-  }
+declare interface Summary {
+  playerName: string;
+  finalScore: number;
+}
 
-  export default Vue.extend({
-    name: 'DialogSummaryWithFriends',
-
-    props: {
-      dialogSummary: Boolean,
-      summaryTexts: Array as PropType<Summary[]>,
-      score: Number,
+export default defineComponent({
+  props: {
+    dialogSummary: {
+      type: Boolean,
+      required: true,
     },
-
-    methods: {
-      updateRecord(): void {
-        let currentRecord = Number(localStorage.getItem('record'))
-        if (currentRecord == null || this.score < currentRecord) {
-          localStorage.setItem('record', String(this.score))
-        }
-      },
-
-      finishGame(): void {
-        this.$emit('finishGame')
-      },      
+    score: {
+      type: Number,
+      required: true,
     },
+    summary: {
+      type: Array as PropType<Summary[]>,
+      required: true,
+    }
+  },
 
-    watch: {
-      dialogSummary: function(newVal: boolean, oldVal: boolean): void {
+  setup(props, context) {
+    function updateRecord(): void {
+      const currentRecord = localStorage.getItem('record') !== null
+                              ? Number(localStorage.getItem('record'))
+                              : null
+      if (currentRecord === null || props.score < currentRecord) {
+        localStorage.setItem('record', String(props.score))
+      }
+    }
+
+    function finishGame(): void {
+      context.emit('finishGame')
+    }
+
+    watch(
+      () => props.dialogSummary,
+      (newVal: boolean, oldVal: boolean) => {
         if (newVal === true) {
-          this.updateRecord()
+          updateRecord()
         }
-      }      
-    },
-  })
+      }
+    )
+
+    return {
+      finishGame,
+    }
+  }
+})
 </script>
 
 <style scoped>
+#card-text-wrapper {
+  padding: 80px 10% 80px 10%;
+}
+
+#summary-text {
+  font-size: 18px;
+  color: #061422;
+  opacity: 0.9;
+}
+
+#exit-button {
+  height: 44px;
+  width: 210px;
+  border-radius: 40px;
+}
+
+@media (max-width: 450px) {
   #exit-button {
-    height: 44px;
-    width: 240px;
-    border-radius: 40px; 
+    height: 36px;
+    margin-top: 28px;
+    margin-bottom: 24px;
   }
-
-  #card-text {
-    padding: 80px 10% 80px 10%;
-  }
-
-  #summary-text {
-    font-size: 18px;
-    color: #FFFFFF;
-    opacity: 0.9;
-  }
-
-  @media (max-width: 450px) {
-    #exit-button {
-      height: 36px;
-    }
-  }  
+}
 </style>

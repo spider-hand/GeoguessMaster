@@ -3,14 +3,14 @@
     v-model="dialogMessage"
     max-width="600"
     persistent
-    :fullscreen="$viewport.width < 450">
-    <v-card color="#061422">
+  >
+    <v-card color="#E1F5FE">
       <v-card-title>
-        <span id="card-title">{{ dialogTitle }}</span>
+        <span>{{ title }}</span>
       </v-card-title>
       <v-card-text>
         <v-container>
-          <span>{{ dialogText }}</span>
+          <span>{{ text }}</span>
         </v-container>
       </v-card-text>
     </v-card>
@@ -18,24 +18,27 @@
 </template>
 
 <script lang="ts">
-  import Vue, { PropType } from 'vue'
+import { defineComponent, } from '@vue/composition-api'
 
-  export default Vue.extend({
-    name: 'DialogMessage',
+export default defineComponent({
 
-    props: {
-      dialogMessage: Boolean,
-      dialogTitle: String,
-      dialogText: String,
-    }
-  })
+  props: {
+    dialogMessage: {
+      type: Boolean,
+      required: true,
+    },
+    title: {
+      type: String,
+      required: true,
+    },
+    text: {
+      type: String,
+      required: true,
+    },
+  },
+})
 </script>
 
 <style scoped>
-  #card-title {
-    font-size: 16px;
-    font-weight: 500;
-    color: #FFFFFF;
-    opacity: 0.9;
-  }  
+  
 </style>

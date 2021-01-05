@@ -1,40 +1,16 @@
 import Vue from 'vue'
 import App from './App.vue'
-import vuetify from './plugins/vuetify'
-import router from './router'
-import i18n from './lang'
-
+import vuetify from '@/vuetify'
+import router from '@/router'
 import firebase from 'firebase/app'
 import 'firebase/analytics'
-import 'firebase/database'
+import VueCompositionAPI from '@vue/composition-api'
 import './registerServiceWorker'
 
 Vue.config.productionTip = false
 
-const updateSizes = (obj: any = {}) => {
-  obj.width = window.innerWidth
-  obj.height = window.innerHeight
-  return obj
-}
-
-Object.defineProperty(Vue.prototype, '$viewport', {
-  value: Vue.observable(updateSizes())
-})
-
-window.addEventListener('resize', () => {
-  updateSizes(Vue.prototype.$viewport)
-})
-
-declare interface Viewport {
-  width: number,
-  height: number,
-}
-
-declare module 'vue/types/vue' {
-  interface Vue {
-    $viewport: Viewport,
-  }
-}
+// Composition API
+Vue.use(VueCompositionAPI)
 
 var firebaseConfig = {
   apiKey: process.env.VUE_APP_FIREBASE_API_KEY,
@@ -47,12 +23,11 @@ var firebaseConfig = {
   measurementId: process.env.VUE_APP_FIREBASE_MEASUREMENT_ID
 }
 // Initialize Firebase
-firebase.initializeApp(firebaseConfig)
-firebase.analytics()
+const firebaseApp = firebase.initializeApp(firebaseConfig)
+firebaseApp.analytics()
 
 new Vue({
   vuetify,
   router,
-  i18n,
   render: h => h(App)
 }).$mount('#app')

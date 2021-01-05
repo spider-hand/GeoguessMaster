@@ -1,16 +1,15 @@
 <template>
-  <v-card color="#061422">
+  <v-card color="#E1F5FE">
     <v-card-title>
-      <span id="card-title">{{ $t('CardRoomPlayerName.title') }}</span>
+      <span>Input your name.</span>
     </v-card-title>
     <v-card-text>
       <v-container>
         <v-row>
           <v-col cols="12">
               <v-text-field 
-                dark
                 maxlength="10"
-                v-model="playerName"></v-text-field>
+                v-model="state.playerName"></v-text-field>
            </v-col>       
         </v-row>
       </v-container>
@@ -21,49 +20,45 @@
         dark
         depressed
         color="#43B581"
-        @click="setPlayerName">{{ $t('CardRoomPlayerName.next') }}</v-btn>
+        @click="setPlayerName">NEXT</v-btn>
       <v-btn
         dark
         depressed
         color="#FF5252"
-        @click="cancel">{{ $t('CardRoomPlayerName.cancel') }}</v-btn>
+        @click="cancel">CANCEL</v-btn>
     </v-card-actions>
   </v-card>
 </template>
 
 <script lang="ts">
-  import Vue from 'vue'
+import { defineComponent, reactive, } from '@vue/composition-api'
 
-  export type Datatype = {
-    playerName: string,
+export default defineComponent({
+
+  setup(props, context) {
+    const state = reactive<{
+      playerName: string;
+    }>({
+      playerName: '',
+    })
+
+    function setPlayerName(): void {
+      context.emit('setPlayerName', state.playerName)
+    }
+
+    function cancel(): void {
+      context.emit('cancel')
+    }
+
+    return {
+      state,
+      setPlayerName,
+      cancel,
+    }
   }
-
-  export default Vue.extend({
-    name: 'CardRoomPlayerName',
-    
-    data(): Datatype {
-      return {
-        playerName: '',
-      }
-    },
-
-    methods: {
-      setPlayerName(): void {
-        this.$emit('setPlayerName', this.playerName)
-      },
-
-      cancel() {
-        this.$emit('cancel')
-      }
-    }    
-  })
+})
 </script>
 
 <style scoped>
-  #card-title {
-    font-size: 16px;
-    font-weight: 500;
-    color: #FFFFFF;
-    opacity: 0.9;
-  } 
+
 </style>

@@ -13,7 +13,6 @@
     "baseUrl": ".",
     "types": [
       "webpack-env",
-      "vuetify",
       "googlemaps",
       "firebase",
     ],

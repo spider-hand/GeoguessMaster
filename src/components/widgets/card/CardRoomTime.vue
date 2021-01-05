@@ -1,7 +1,7 @@
 <template>
-  <v-card color="#061422">
+  <v-card color="#E1F5FE">
     <v-card-title>
-      <span id="card-title">{{ $t('CardRoomTime.title') }}</span>
+      <span>Set a time limitation.</span>
     </v-card-title>
     <v-card-text>
       <v-container>
@@ -12,10 +12,9 @@
             md="4"
             lg="4"
             xl="4">
-            <v-select
-              dark 
-              v-model="timeLimitation"
-              :items="timeLimitationItems"></v-select>
+            <v-select 
+              v-model="state.timeLimitation"
+              :items="state.timeLimitationItems"></v-select>
           </v-col>          
         </v-row>
       </v-container>
@@ -26,40 +25,36 @@
         dark
         depressed
         color="#43B581"
-        @click="setTimeLimitation">{{ $t('CardRoomTime.next') }}</v-btn>
+        @click="setTimeLimitation">NEXT</v-btn>
       <v-btn
         dark
         depressed
         color="#FF5252"
-        @click="cancel">{{ $t('CardRoomTime.cancel') }}</v-btn>
+        @click="cancel">CANCEL</v-btn>
     </v-card-actions>
   </v-card>
 </template>
 
 <script lang="ts">
-  import Vue from 'vue'
+import { defineComponent, reactive, } from '@vue/composition-api'
 
-  import { TranslateResult } from 'vue-i18n'
+declare interface timeLimitationItem {
+  text: string;
+  value: number;
+}
 
-  declare interface timeLimitationItem {
-    text: string | TranslateResult,
-    value: number,
-  }
+export default defineComponent({
+  
+  setup(props, context) {
 
-  export type DataType = {
-    timeLimitation: number,
-    timeLimitationItems: timeLimitationItem[],
-  }
-
-  export default Vue.extend({
-    name: 'CardRoomTime',
-
-    data(): DataType {
-      return {
-        timeLimitation: 0,
-        timeLimitationItems: [
+    const state = reactive<{
+      timeLimitation: number,
+      timeLimitationItems: timeLimitationItem[];
+    }>({
+      timeLimitation: 0,
+      timeLimitationItems: [
           {
-            text: this.$t('CardRoomTime.infinite'),
+            text: 'Infinite',
             value: 0,
           },
           {
@@ -103,26 +98,25 @@
             value: 10,
           },          
         ],
-      }
-    },
+    })
 
-    methods: {
-      setTimeLimitation() {
-        this.$emit('setTimeLimitation', this.timeLimitation)
-      },
-
-      cancel() {
-        this.$emit('cancel')
-      },    
+    function setTimeLimitation(): void {
+      context.emit('setTimeLimitation', state.timeLimitation)
     }
-  })
+
+    function cancel(): void {
+      context.emit('cancel')
+    }
+
+    return {
+      state,
+      setTimeLimitation,
+      cancel,
+    }
+  }
+})
 </script>
 
 <style scoped>
-  #card-title {
-    font-size: 16px;
-    font-weight: 500;
-    color: #FFFFFF;
-    opacity: 0.9;
-  } 
+
 </style>

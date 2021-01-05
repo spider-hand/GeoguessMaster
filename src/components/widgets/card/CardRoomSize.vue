@@ -1,16 +1,15 @@
 <template>
-  <v-card color="#061422">
+  <v-card color="#E1F5FE">
     <v-card-title>
-      <span id="card-title">{{ $t('CardRoomSize.title') }}</span>
+      <span>Input your room size.</span>
     </v-card-title>
     <v-card-text>
       <v-container>
         <v-row>
           <v-col cols="4">
             <v-select 
-              dark
-              v-model="roomSize"
-              :items="roomSizeItems"></v-select>
+              v-model="state.roomSize"
+              :items="state.roomSizeItems"></v-select>
           </v-col>        
         </v-row>
       </v-container>
@@ -21,73 +20,70 @@
         dark
         depressed
         color="#43B581"
-        @click="setRoomSize">{{ $t('CardRoomSize.next') }}</v-btn>
+        @click="setRoomSize">NEXT</v-btn>
       <v-btn
         dark
         depressed
         color="#FF5252"
-        @click="cancel">{{ $t('CardRoomSize.cancel') }}</v-btn>
+        @click="cancel">CANCEL</v-btn>
     </v-card-actions>
   </v-card>
 </template>
 
 <script lang="ts">
-  import Vue from 'vue'
+import { defineComponent, reactive, } from '@vue/composition-api'
 
-  declare interface RoomSizeItem {
-    text: string,
-    value: number,
-  }
+declare interface RoomSizeItem {
+  text: string;
+  value: number;
+}
 
-  export type DataType = {
-    roomSize: number,
-    roomSizeItems: RoomSizeItem[], 
-  }
+export default defineComponent({
+  
+  setup(props, context) {
 
-  export default Vue.extend({
-    name: 'CardRoomSize',
+    const state = reactive<{
+      roomSize: number;
+      roomSizeItems: RoomSizeItem[],
+    }>({
+      roomSize: 2,
+      roomSizeItems: [
+        {
+          text: '2',
+          value: 2,
+        },
+        {
+          text: '3',
+          value: 3,
+        },
+        {
+          text: '4',
+          value: 4,
+        },
+        {
+          text: '5',
+          value: 5,
+        },              
+      ]
+    })
 
-    data(): DataType {
-      return {
-        roomSize: 2,
-        roomSizeItems: [
-          {
-            text: '2',
-            value: 2,
-          },
-          {
-            text: '3',
-            value: 3,
-          },
-          {
-            text: '4',
-            value: 4,
-          },
-          {
-            text: '5',
-            value: 5,
-          },          
-        ],        
-      }
-    },
-
-    methods: {
-      setRoomSize(): void {
-        this.$emit('setRoomSize', this.roomSize)
-      },
-
-      cancel(): void {
-        this.$emit('cancel')
-      }
+    function setRoomSize(): void {
+      context.emit('setRoomSize', state.roomSize)
     }
-  })
+
+    function cancel(): void {
+      context.emit('cancel')
+    }
+
+    return {
+      state,
+      setRoomSize,
+      cancel,
+    }
+  }
+})
 </script>
 
 <style scoped>
-  #card-title {
-    font-size: 16px;
-    font-weight: 500;
-    color: #FFFFFF;
-    opacity: 0.9;
-  } 
+
 </style>

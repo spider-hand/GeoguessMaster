@@ -5,12 +5,7 @@
 https://geoguessmaster.com/
 
 ### About
-Free and lazy geoguess game with no ads. 
-Players compete how close the player can guess random locations in five rounds. 
-You can share the score with other people via social media like Facebook or Twitter. 
-You can play multiplayer game with your friends up to five friends. 
-The first player creates a room and decide the room size. 
-Other players type the same room name as the first player created and the game will start. 
+Geoguess Master is a free geoguess game. Players compete how close each player can guess a random locations in five rounds. You can play multiplayer game with your friends up to five friends. The first player creates a room and decide a room size, and then other players type the same room name name as the first player decided and the game will start.
 
 ### Build Setup
 You need to configure Google Maps Platform and Firebase to make game work. 
@@ -54,12 +49,38 @@ npm run serve
 npm run build
 ```
 
-You need to host this project as a static website to play multiplayer game with your friends. I recommend using [Netlify](https://www.netlify.com/). You can just fork this project and deploy it from Netlify. Also you can manage environment variables on the Netlify console.
+### How to build your own game server (Step by step)
+
+#### Prerequisite
+- Google account
+- [Github](https://github.com/) account
+- [Netlify](https://www.netlify.com/) account
+
+#### 1. Fork this project
+First, create your [Github](https://github.com/) account if you don't have and fork this project (Click **Fork** button at the top right coner of the this project page).
+There should be a copy of this project on your list of repository now.
+
+#### 2. Connect your Netlify account to your Github
+You could use other hosting service but here I use [Netlify](https://www.netlify.com/). Create your Netlify account if you don't have. You can connect your Netlify account when you sign up or on user settings (Click the avatar icon at the top right corner and there is **Connected accounts** section there).
+
+#### 3. Create database for your game server on Firebase
+Create a Firebase project from [Firebase console](https://console.firebase.google.com/). (Make sure to turn on **Enable Google Analytics for this project**.) After you created a project, you need to add your website to the Firebase project. Cick the **Web** icon and enter your app's nickname and then click **Register app**. Some variables will be generated for your website. These variables will be used at step 5. Go back to project overview page, and select **Realtime Database** from the left sidebar. Click **Create Database** button.
+
+![firebase_config](../master/screenshots/firebase_config.png)
+
+#### 4. Get Google API key
+Go to [Google Cloud Console](https://console.cloud.google.com/projectselector2/home/dashboard), and create a Google Cloud project. After creating a project, go to project top page and select **APIs & Services > Credentials** from the left sidebar. On the Credentials page, click **Create credentials > API key**. The new API key is listed on the **Credentials** page under **API keys**. This Google API key will be used at step 5.
+
+#### 5. Host your own website
+Click **New site from Git** button from your Netlify top page. Click Github icon and choose your project repository you forked. Build options will look like below. Also you need to connect your project to your database in your Firebase project. Click **Show advanced** button and **New variable** button will appear. Click **New variable** button and you can set API key and variables that have been generated at step 3 and step 4. Set variables like below. (Replace the values with yours. The last two key names are `VUE_APP_FIREBASE_MESSAGING_SENDER_ID` and `VUE_APP_FIREBASE_MEASUREMENT_ID`.) Click **Deploy site**. 
+
+![deploy_netlify](../master/screenshots/deploy_netlify.png) 
+
+That's it! Your site domain will appear on the project page after the project has been deployed. Now you can play games as much as you want! Feel free to ask questions on Discord if you have troubles.
 
 ### Features
 - Free game with no ads
-- Multiplayer game
-- PWA and responsive design
+- Multiplayer game using realtime database
 
 ### Contributors
 [Paulo Gomes](http://www.pauloxgomes.com/), UI design  
