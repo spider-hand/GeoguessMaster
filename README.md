@@ -66,7 +66,7 @@ You could use other hosting service but here I use [Netlify](https://www.netlify
 #### 3. Create database for your game server on Firebase
 Create a Firebase project from [Firebase console](https://console.firebase.google.com/). (Make sure to turn on **Enable Google Analytics for this project**.) After you created a project, you need to add your website to the Firebase project. Cick the **Web** icon and enter your app's nickname and then click **Register app**. Some variables will be generated for your website. These variables will be used at step 5. Go back to project overview page, and select **Realtime Database** from the left sidebar. Click **Create Database** button.
 
-![firebase_config](../master/screenshots/firebase_config.png)
+<img src="../master/screenshots/firebase_config.png" width="450" />
 
 #### 4. Get Google API key
 Go to [Google Cloud Console](https://console.cloud.google.com/projectselector2/home/dashboard), and create a Google Cloud project. After creating a project, go to project top page and select **APIs & Services > Credentials** from the left sidebar. On the Credentials page, click **Create credentials > API key**. The new API key is listed on the **Credentials** page under **API keys**. This Google API key will be used at step 5.
@@ -74,7 +74,7 @@ Go to [Google Cloud Console](https://console.cloud.google.com/projectselector2/h
 #### 5. Host your own website
 Click **New site from Git** button from your Netlify top page. Click Github icon and choose your project repository you forked. Build options will look like below. Also you need to connect your project to your database in your Firebase project. Click **Show advanced** button and **New variable** button will appear. Click **New variable** button and you can set API key and variables that have been generated at step 3 and step 4. Set variables like below. (Replace the values with yours. The last two key names are `VUE_APP_FIREBASE_MESSAGING_SENDER_ID` and `VUE_APP_FIREBASE_MEASUREMENT_ID`.) Click **Deploy site**. 
 
-![deploy_netlify](../master/screenshots/deploy_netlify.png) 
+<img src="../master/screenshots/deploy_netlify.png" width="450" />
 
 That's it! Your site domain will appear on the project page after the project has been deployed. Now you can play games as much as you want! Feel free to ask questions on Discord if you have troubles.
 
