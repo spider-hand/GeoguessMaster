@@ -43,14 +43,6 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, } from '@vue/composition-api'
-
-export default defineComponent({
-
-})
-</script>
-
 <style scoped>
 span {
   color: #FFFFFF;
@@ -59,10 +51,10 @@ span {
 .footer {
   position: absolute;
   left: 0;
-  top: 1500px;
+  top: 1200px;
   bottom: 0;
   padding: 12px;
-  height: 210px;
+  height: 150px;
   width: 100%;
   background-color: #061422;
 }

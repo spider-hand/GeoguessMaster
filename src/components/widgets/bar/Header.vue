@@ -1,12 +1,15 @@
 <template>
   <v-app-bar
-    color="transparent"
+    color="#061422"
     flat>
     <img 
       src="@/assets/logo.png"
       width="45"
     />
-    <span class="title">Geoguess Master</span>
+    <img 
+      src="@/assets/title.png"
+      height="32"
+    />
     <div class="flex-grow-1"></div>
     <v-btn 
       text
@@ -29,20 +32,8 @@
   </v-app-bar>
 </template>
 
-<script lang="ts">
-import { defineComponent, } from '@vue/composition-api'
-
-export default defineComponent({
-
-})
-</script>
-
 <style scoped>
 span {
   color: #FFFFFF;
-}
-
-.title {
-  font-weight: 700;
 }
 </style>
