@@ -52,7 +52,7 @@
     <div id="section-limitation">
       <v-container>
         <v-row>
-          <v-col cols="6">
+          <v-col :cols="viewport.width > 450 ? 6 : 12">
             <v-row justify="center">
               <div class="section-header">
                 <strong>LIMITATION</strong>
@@ -65,9 +65,9 @@
               </div>
             </v-row>
           </v-col>
-          <v-col cols="6">
+          <v-col :cols="viewport.width > 450 ? 6 : 12">
             <v-row justify="center">
-              <div style="position: absolute; top: 50px;">
+              <div class="inverted-color-map-image-wrapper">
                 <img 
                   src="@/assets/inverted_color_map.png"
                   width="300"
@@ -129,7 +129,7 @@ export default defineComponent({
 
 <style scoped>
 button {
-  width: 320px;
+  width: 280px;
   height: 44px;
   border: none;
   border-radius: 40px;
@@ -226,10 +226,26 @@ button {
   color: #FF5D5D;
 }
 
+.inverted-color-map-image-wrapper {
+  position: absolute;
+  top: 50px;
+}
+
 #record {
   font-size: 26px;
   font-weight: 700;
   color: #FFFFFF;
+}
+
+@media (max-width: 800px) {
+  #section-limitation {
+    position: absolute;
+    width: 100%;
+    height: 400px;
+    left: 0px;
+    top: 900px;
+    background: #F4F4F4;
+  }
 }
 
 @media (max-width: 450px) {
@@ -256,21 +272,26 @@ button {
 
   #section-about {
     top: 480px;
-    height: 480px;
+    height: 360px;
   }
 
   #section-limitation {
-    top: 960px;
-    height: 480px;
+    top: 840px;
+    height: 600px;
   }
 
   .section-header {
     top: 24px;
   }
 
-  .description-wrapper {
+  .description-wrapper, .description-wrapper-2 {
     top: 60px;
     padding: 0 12%;
   }
-} 
+
+  .inverted-color-map-image-wrapper {
+    position: absolute;
+    top: 380px;
+  }
+}
 </style>

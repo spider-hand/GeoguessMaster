@@ -68,10 +68,16 @@ span {
   color: #7D7D7D;
 }
 
+@media (max-width: 800px) {
+  .footer {
+    top: 1300px;
+  }
+}
+
 @media (max-width: 450px) {
   .footer {
     top: 1440px;
-    height: 300px;
+    height: 150px;
   }
 }
 </style>

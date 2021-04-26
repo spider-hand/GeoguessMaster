@@ -1,7 +1,15 @@
 <template>
   <v-app-bar
-    color="transparent"
+    color="#061422"
     flat>
+    <img 
+      src="@/assets/logo.png"
+      width="36"
+    />
+    <img 
+      src="@/assets/title.png"
+      height="30"
+    />
     <div class="flex-grow-1"></div>
     <v-menu>
       <template v-slot:activator="{ on }">
