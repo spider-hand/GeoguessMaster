@@ -1,7 +1,7 @@
 <template>
-  <v-card color="#E1F5FE">
+  <v-card color="#FAFAFA">
     <v-card-title>
-      <span>Input your room size.</span>
+      <span>Select a room size.</span>
     </v-card-title>
     <v-card-text>
       <v-container>

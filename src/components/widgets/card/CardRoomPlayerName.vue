@@ -1,5 +1,5 @@
 <template>
-  <v-card color="#E1F5FE">
+  <v-card color="#FAFAFA">
     <v-card-title>
       <span>Input your name.</span>
     </v-card-title>
@@ -24,7 +24,7 @@
       <v-btn
         dark
         depressed
-        color="#FF5252"
+        color="#FF5D5D"
         @click="cancel">CANCEL</v-btn>
     </v-card-actions>
   </v-card>

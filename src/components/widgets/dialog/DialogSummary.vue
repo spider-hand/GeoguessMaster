@@ -3,19 +3,27 @@
     v-model="dialogSummary"
     max-width="640"
     persistent>
-    <v-card color="#E1F5FE">
+    <v-card color="#FAFAFA">
       <v-card-text id="card-text-wrapper">
         <v-row justify="center">
+          <img 
+            src="@/assets/illustration_2.png"
+            width="108" 
+          />
+        </v-row>
+        <v-row 
+          class="mt-8"
+          justify="center">
           <span id="summary-text">You are <strong>{{ score }}</strong> km away!</span>
         </v-row>
         <v-row
-          class="mt-8"
+          class="mt-10"
           justify="center">
           <v-btn
             id="play-again-button"
             class="ml-4 mr-4"
             dark
-            color="#FF5252"
+            color="#FF5D5D"
             @click="$router.push('/')">EXIT</v-btn>
           <v-btn 
             id="exit-button"
@@ -24,25 +32,6 @@
             color="#43B581"
             @click="playAgain">PLAY AGAIN</v-btn>
         </v-row>
-      </v-card-text>
-      <v-card-text class="text-right">
-        <v-btn
-          target="_blank"
-          :href="`http://www.facebook.com/sharer.php?u=https://geoguessmaster.com/&amp;t=I am ${score} km away! How close can you guess?`" 
-          rel="nofollow"
-          icon
-          color="#061422"
-        >
-          <v-icon size="32">mdi-facebook-box</v-icon>
-        </v-btn>
-        <v-btn
-          target="_blank"
-          :href="`http://twitter.com/share?url=https://geoguessmaster.com/&amp;text=I am${score}km away! How close can you guess?`" 
-          icon
-          color="#061422"
-        >
-          <v-icon size="32">mdi-twitter-box</v-icon>
-        </v-btn>
       </v-card-text>
     </v-card>    
   </v-dialog>
@@ -95,7 +84,7 @@ export default defineComponent({
 
 <style scoped>
 #card-text-wrapper {
-  padding: 80px 10% 80px 10%;
+  padding: 30px 10% 40px 10%;
 }
 
 #summary-text {

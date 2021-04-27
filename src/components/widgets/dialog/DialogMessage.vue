@@ -4,7 +4,7 @@
     max-width="600"
     persistent
   >
-    <v-card color="#E1F5FE">
+    <v-card color="#FAFAFA">
       <v-card-title>
         <span>{{ title }}</span>
       </v-card-title>

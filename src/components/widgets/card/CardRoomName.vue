@@ -1,10 +1,18 @@
 <template>
-  <v-card color="#E1F5FE">
-    <v-card-title>
-      <span>Input your room name.</span>
-    </v-card-title>
-    <v-card-text>
+  <v-card color="#FAFAFA">
+    <v-card-text id="card-text-wrapper">
       <v-container>
+        <v-row justify="center">
+          <img 
+            src="@/assets/illustration_1.png"
+            width="108" 
+          />
+        </v-row>
+        <v-row 
+          class="mt-8"
+          justify="center">
+          <span>Input your room name.</span>
+        </v-row>
         <v-row>
           <v-col cols="12">
             <v-text-field
@@ -29,7 +37,7 @@
       <v-btn
         dark
         depressed
-        color="#FF5252"
+        color="#FF5D5D"
         @click="cancel">
         CANCEL
       </v-btn>
@@ -74,5 +82,13 @@ export default defineComponent({
 </script>
 
 <style scoped>
+span {
+  color: rgba(0, 0, 0, .87);
+  font-size: 20px;
+  font-weight: 500;
+}
 
+#card-text-wrapper {
+  padding: 15px 10% 40px 10%;
+}
 </style>

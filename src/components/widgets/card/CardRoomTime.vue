@@ -1,5 +1,5 @@
 <template>
-  <v-card color="#E1F5FE">
+  <v-card color="#FAFAFA">
     <v-card-title>
       <span>Set a time limitation.</span>
     </v-card-title>
