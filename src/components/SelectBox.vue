@@ -16,8 +16,9 @@
       <span class="selected-option">{{ selectedOption.text }}</span>
     </div>
     <SelectboxDialog
-      :dialogTitle="dialogTitle"
       :isShowingDialog="state.isShowingDialog"
+      :options="options"
+      @onChangeOption="onChangeOption"
     />
   </div>
 </template>
@@ -35,21 +36,21 @@ export default defineComponent({
       type: String,
       required: true,
     },
-    dialogTitle: {
-      type: String,
-      required: true,
-    },
     selectedOption: {
       type: Object as PropType<SelectboxOption>,
       required: true,
     },
+    options: {
+      type: Array,
+      required: true
+    }
   },
 
   components: {
     SelectboxDialog,
   },
 
-  setup() {
+  setup(props, context) {
     const selectboxRef = ref(null);
     onClickOutside(selectboxRef, (event) => {
       let isSelectboxDialogClicked = false;
@@ -85,12 +86,17 @@ export default defineComponent({
       state.isShowingDialog = true;
     };
 
+    const onChangeOption = (option: SelectboxOption): void => {
+      context.emit('onChangeOption', option);
+    };
+
     return {
       state,
       selectboxRef,
       onMouseOver,
       onMouseLeave,
       onClickSelectbox,
+      onChangeOption
     };
   },
 });

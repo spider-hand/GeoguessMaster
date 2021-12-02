@@ -18,16 +18,18 @@
         <div class="game-create-box">
           <SelectBox
             title="Map"
-            dialogTitle="Select map"
-            :selectedOption="state.selectedMap"
+            :selectedOption="MAP_OPTIONS[MAP_OPTIONS.findIndex((option) => option.value === store.state.selectedMap)]"
+            :options="MAP_OPTIONS"
+            @onChangeOption="onChangeSelectedMap"
           />
           <SelectBox
             title="Mode"
-            dialogTitle="Select mode"
-            :selectedOption="state.selectedMode"
+            :selectedOption="MODE_OPTIONS[MODE_OPTIONS.findIndex((option) => option.value === store.state.selectedMode)]"
+            :options="MODE_OPTIONS"
+            @onChangeOption="onChangeSelectedMode"
           />
           <div class="start-game-button">
-            <span class="create-button-text">START</span>
+            <span class="create-button-text">{{ store.getters.buttonText }}</span>
           </div>
         </div>
       </div>
@@ -47,12 +49,15 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive } from "vue";
+import { defineComponent } from "vue";
 
+import { useStore } from "vuex";
 import GithubIcon from "vue-material-design-icons/Github.vue";
 
 import SelectBox from "@/components/SelectBox.vue";
 import { SelectboxOption } from "@/types";
+import { key } from "@/store";
+import { MAP_OPTIONS, MODE_OPTIONS } from "@/constants";
 
 export default defineComponent({
   components: {
@@ -61,16 +66,26 @@ export default defineComponent({
   },
 
   setup() {
-    const state = reactive<{
-      selectedMap: SelectboxOption;
-      selectedMode: SelectboxOption;
-    }>({
-      selectedMap: { text: "Worlds", value: "worlds" },
-      selectedMode: { text: "Single Player", value: "single" },
-    });
+    const store = useStore(key);
+
+    const onChangeSelectedMap = (option: SelectboxOption): void => {
+      store.dispatch("changeSelectedMapAction", {
+        selectedMap: option.value,
+      });
+    };
+
+    const onChangeSelectedMode = (option: SelectboxOption): void => {
+      store.dispatch("changeSelectedModeAction", {
+        selectedMode: option.value,
+      });
+    };
 
     return {
-      state,
+      store,
+      MAP_OPTIONS,
+      MODE_OPTIONS,
+      onChangeSelectedMap,
+      onChangeSelectedMode,
     };
   },
 });
