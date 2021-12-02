@@ -1,14 +1,11 @@
 <template>
   <div class="screen">
     <div class="header">
-      <img 
-        src="@/assets/logo.png"
-        class="logo"
-      />
+      <img src="@/assets/logo.png" class="logo" />
       <span class="title">Geoguess Master</span>
       <div class="header-right">
         <a href="https://github.com/spider-hand/Geoguess-Master">
-          <GithubIcon 
+          <GithubIcon
             title="Github repository link here."
             fillColor="#ffffff"
             :size="32"
@@ -19,37 +16,30 @@
     <div class="container">
       <div class="game-create-box-container">
         <div class="game-create-box">
-          <div class="map-select-box-container">
-            <div>
-              <span class="select-box-title">Map</span>
-              <br>
-              <span class="selected-option">Worlds</span>
-            </div>
-          </div>
-          <div class="mode-select-box-container">
-            <div>
-              <span class="select-box-title">Mode</span>
-              <br>
-              <span class="selected-option">Single Player</span>
-            </div>
-          </div>
+          <SelectBox
+            title="Map"
+            dialogTitle="Select map"
+            :selectedOption="state.selectedMap"
+          />
+          <SelectBox
+            title="Mode"
+            dialogTitle="Select mode"
+            :selectedOption="state.selectedMode"
+          />
           <div class="start-game-button">
             <span class="create-button-text">START</span>
           </div>
         </div>
       </div>
       <div class="map-image-container">
-        <img 
-          src="@/assets/united_states.png"
-          class="map-image"
-          width="640"
-        />
+        <img src="@/assets/united_states.png" class="map-image" width="680" />
       </div>
     </div>
     <div class="footer">
       <div class="copyright-container">
         <span class="copyright-text">
-          All rights reserved. Copyright © {{ new Date().getFullYear() }} <strong>Spider Hand</strong>
+          All rights reserved. Copyright © {{ new Date().getFullYear() }}
+          <strong>Spider Hand</strong>
         </span>
       </div>
     </div>
@@ -57,16 +47,33 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, reactive } from "vue";
 
 import GithubIcon from "vue-material-design-icons/Github.vue";
 
-export default defineComponent({
+import SelectBox from "@/components/SelectBox.vue";
+import { SelectboxOption } from "@/types";
 
+export default defineComponent({
   components: {
-    GithubIcon
-  }
-})
+    GithubIcon,
+    SelectBox,
+  },
+
+  setup() {
+    const state = reactive<{
+      selectedMap: SelectboxOption;
+      selectedMode: SelectboxOption;
+    }>({
+      selectedMap: { text: "Worlds", value: "worlds" },
+      selectedMode: { text: "Single Player", value: "single" },
+    });
+
+    return {
+      state,
+    };
+  },
+});
 </script>
 
 <style scoped>
@@ -76,7 +83,7 @@ export default defineComponent({
   height: 100%;
   top: 0;
   left: 0;
-  background: linear-gradient(#0000AE, #000057);
+  background: linear-gradient(#0000ae, #000057);
   overflow-y: auto;
 }
 
@@ -116,7 +123,7 @@ export default defineComponent({
   position: absolute;
   width: 100%;
   top: 64px;
-  left:0;
+  left: 0;
 }
 
 .game-create-box-container {
@@ -134,31 +141,6 @@ export default defineComponent({
   border-radius: 64px;
   display: flex;
   align-items: center;
-}
-
-.map-select-box-container {
-  height: 48px;
-  width: 180px;
-  padding : 0 24px;
-  border-right: 1px solid #c3c3c3;
-}
-
-.mode-select-box-container {
-  height: 48px;
-  width: 180px;
-  padding : 0 24px;
-}
-
-.select-box-title {
-  font-family: "Roboto medium";
-  font-size: 12px;
-  color: #5f5f5f;
-}
-
-.selected-option {
-  font-family: "Roboto medium";
-  font-size: 16px;
-  color: #3c3c3c;
 }
 
 .start-game-button {
