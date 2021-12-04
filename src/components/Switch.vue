@@ -38,12 +38,12 @@ export default defineComponent({
 
     const onClickYes = (): void => {
       state.ans = true;
-      context.emit("onChangeValue");
+      context.emit("onChangeValue", true);
     };
 
     const onClickNo = (): void => {
       state.ans = false;
-      context.emit("onChangeValue");
+      context.emit("onChangeValue", false);
     };
 
     return {

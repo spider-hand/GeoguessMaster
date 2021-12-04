@@ -25,7 +25,15 @@ export const store = createStore({
     isOwner: true,
     roomNumber: "",
   },
-  getters: {},
+  getters: {
+    isReadyForMultiplayerGame(state) {
+      if (state.isOwner) {
+        return state.playerName !== "";
+      } else {
+        return state.playerName !== "" && state.roomNumber !== "";
+      }
+    },
+  },
   mutations: {
     changeSelectedMap(state, value) {
       state.selectedMap = value;
@@ -42,12 +50,12 @@ export const store = createStore({
     changePlayerName(state, value) {
       state.playerName = value;
     },
-    switchIsOwner(state) {
-      state.isOwner = !state.isOwner;
+    switchIsOwner(state, value) {
+      state.isOwner = value;
     },
     changeRoomNumber(state, value) {
       state.roomNumber = value;
-    }
+    },
   },
   actions: {
     changeSelectedMapAction({ commit }, payload) {
@@ -65,12 +73,12 @@ export const store = createStore({
     changePlayerNameAction({ commit }, payload) {
       commit("changePlayerName", payload.playerName);
     },
-    switchIsOwnerAction({ commit }) {
-      commit("switchIsOwner");
+    switchIsOwnerAction({ commit }, payload) {
+      commit("switchIsOwner", payload.isOwner);
     },
     changeRoomNumberAction({ commit }, payload) {
       commit("changeRoomNumber", payload.roomNumber);
-    }
+    },
   },
   modules: {},
 });

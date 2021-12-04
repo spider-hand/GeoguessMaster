@@ -49,6 +49,15 @@
         :disabled="store.state.isOwner"
       />
     </div>
+    <div class="button-container">
+      <button
+        class="start-game-button"
+        :style="{ opacity: store.getters.isReadyForMultiplayerGame ? 1 : 0.7  }"
+        :disabled="!store.getters.isReadyForMultiplayerGame"
+      >
+        <span class="button-text">START</span>
+      </button>
+    </div>
   </div>
 </template>
 
@@ -98,8 +107,10 @@ export default defineComponent({
       });
     };
 
-    const onChangeIsOwner = (): void => {
-      store.dispatch("switchIsOwnerAction");
+    const onChangeIsOwner = (newVal: boolean): void => {
+      store.dispatch("switchIsOwnerAction", {
+        isOwner: newVal
+      });
     };
 
     const onChangeRoomNumber = (newVal: string): void => {
@@ -123,10 +134,10 @@ export default defineComponent({
 <style scoped>
 .create-room-dialog {
   position: absolute;
-  bottom: -401px;
+  bottom: -393px;
   right: 0;
   width: 320px;
-  height: 385px;
+  height: 377px;
   padding: 0 32px;
   background: #ffffff;
   border-radius: 20px;
@@ -137,7 +148,7 @@ export default defineComponent({
 
 .form-container {
   width: 100%;
-  height: 60px;
+  height: 48px;
   padding: 8px 16px;
   flex-direction: row;
   display: flex;
@@ -155,5 +166,29 @@ export default defineComponent({
   font-family: "Roboto medium";
   font-size: 12px;
   color: #5f5f5f;
+}
+
+.button-container {
+  width: 100%;
+  height: 52px;
+  display: flex;
+  align-items: center;
+}
+
+.start-game-button {
+  width: 129px;
+  height: 36px;
+  background-color: #ff4343;
+  border: none;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.button-text {
+  font-family: "Roboto medium";
+  font-size: 14px;
+  color: #ffffff;
 }
 </style>
