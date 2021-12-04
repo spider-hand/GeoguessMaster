@@ -22,19 +22,28 @@
 import { defineComponent, reactive } from "vue";
 
 export default defineComponent({
-  setup() {
+  props: {
+    ans: {
+      type: Boolean,
+      required: true,
+    }
+  },
+
+  setup(props, context) {
     const state = reactive<{
       ans: boolean;
     }>({
-      ans: true,
+      ans: props.ans,
     });
 
     const onClickYes = (): void => {
       state.ans = true;
+      context.emit("onChangeValue");
     };
 
     const onClickNo = (): void => {
       state.ans = false;
+      context.emit("onChangeValue");
     };
 
     return {

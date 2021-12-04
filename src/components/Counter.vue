@@ -9,12 +9,13 @@
         border: disabledDecrement ? '1px solid #eeeeee' : '1px solid #dcdcdc',
       }"
     >
-      <span 
+      <span
         class="button-text"
         :style="{
-          color: disabledIncrement ? '1px solid #dcdcdc' : '1px solid #5f5f5f',
-        }"  
-      >-</span>
+          color: disabledDecrement ? '#dcdcdc' : '#5f5f5f',
+        }"
+        >-</span
+      >
     </button>
     <div class="text-wrapper">
       <span class="text">{{ state.count }}</span>
@@ -30,7 +31,7 @@
       <span
         class="button-text"
         :style="{
-          color: disabledIncrement ? '1px solid #dcdcdc' : '1px solid #5f5f5f',
+          color: disabledIncrement ? '#dcdcdc' : '#5f5f5f',
         }"
         >+</span
       >
@@ -51,13 +52,17 @@ export default defineComponent({
       type: Number,
       required: true,
     },
+    count: {
+      type: Number,
+      required: true,
+    },
   },
 
-  setup(props) {
+  setup(props, context) {
     const state = reactive<{
       count: number;
     }>({
-      count: props.min,
+      count: props.count,
     });
 
     const disabledIncrement = computed<boolean>(() => props.max <= state.count);
@@ -65,10 +70,12 @@ export default defineComponent({
 
     const increment = (): void => {
       state.count++;
+      context.emit("onChangeValue", state.count);
     };
 
     const decrement = (): void => {
       state.count--;
+      context.emit("onChangeValue", state.count);
     };
 
     return {
