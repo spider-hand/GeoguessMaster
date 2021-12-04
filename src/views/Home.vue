@@ -18,19 +18,46 @@
         <div class="game-create-box">
           <SelectBox
             title="Map"
-            :selectedOption="MAP_OPTIONS[MAP_OPTIONS.findIndex((option) => option.value === store.state.selectedMap)]"
+            :selectedOption="
+              MAP_OPTIONS[
+                MAP_OPTIONS.findIndex(
+                  (option) => option.value === store.state.selectedMap
+                )
+              ]
+            "
             :options="MAP_OPTIONS"
             @onChangeOption="onChangeSelectedMap"
           />
           <SelectBox
             title="Mode"
-            :selectedOption="MODE_OPTIONS[MODE_OPTIONS.findIndex((option) => option.value === store.state.selectedMode)]"
+            :selectedOption="
+              MODE_OPTIONS[
+                MODE_OPTIONS.findIndex(
+                  (option) => option.value === store.state.selectedMode
+                )
+              ]
+            "
             :options="MODE_OPTIONS"
             @onChangeOption="onChangeSelectedMode"
           />
-          <div class="start-game-button">
-            <span class="create-button-text">{{ store.getters.buttonText }}</span>
+          <div
+            class="start-game-button"
+            v-if="store.state.selectedMode === 'single'"
+            @click="startGame"
+          >
+            <span class="create-button-text">START</span>
           </div>
+          <div
+            class="start-game-button"
+            ref="createRoomButtonRef"
+            v-if="store.state.selectedMode === 'multiplayer'"
+            @click="openCreateRoomDialog"
+          >
+            <span class="create-button-text">CREATE ROOM</span>
+          </div>
+          <CreateRoomDialog
+            :isShowingDialog="state.isShowingRoomCreateDialog"
+          />
         </div>
       </div>
       <div class="map-image-container">
@@ -49,24 +76,48 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, reactive, ref } from "vue";
 
 import { useStore } from "vuex";
 import GithubIcon from "vue-material-design-icons/Github.vue";
 
 import SelectBox from "@/components/SelectBox.vue";
+import CreateRoomDialog from "@/components/CreateRoomDialog.vue";
 import { SelectboxOption } from "@/types";
 import { key } from "@/store";
 import { MAP_OPTIONS, MODE_OPTIONS } from "@/constants";
+import { onClickOutside } from "@vueuse/core";
 
 export default defineComponent({
   components: {
     GithubIcon,
     SelectBox,
+    CreateRoomDialog,
   },
 
   setup() {
+    const createRoomButtonRef = ref(null);
+    onClickOutside(createRoomButtonRef, (event) => {
+      let isRoomCreateDialogClicked = false;
+      const path = event.composedPath();
+      path.forEach((el) => {
+        if ((el as Element).className === "create-room-dialog") {
+          isRoomCreateDialogClicked = true;
+          return;
+        }
+      });
+      if (!isRoomCreateDialogClicked) {
+        state.isShowingRoomCreateDialog = false;
+      }
+    });
+
     const store = useStore(key);
+
+    const state = reactive<{
+      isShowingRoomCreateDialog: boolean;
+    }>({
+      isShowingRoomCreateDialog: false,
+    });
 
     const onChangeSelectedMap = (option: SelectboxOption): void => {
       store.dispatch("changeSelectedMapAction", {
@@ -80,12 +131,24 @@ export default defineComponent({
       });
     };
 
+    const openCreateRoomDialog = (): void => {
+      state.isShowingRoomCreateDialog = true;
+    };
+
+    const startGame = (): void => {
+      console.log("startGame");
+    };
+
     return {
       store,
+      createRoomButtonRef,
+      state,
       MAP_OPTIONS,
       MODE_OPTIONS,
       onChangeSelectedMap,
       onChangeSelectedMode,
+      openCreateRoomDialog,
+      startGame,
     };
   },
 });
@@ -150,6 +213,7 @@ export default defineComponent({
 }
 
 .game-create-box {
+  position: relative;
   width: 640px;
   height: 64px;
   background-color: #ffffff;

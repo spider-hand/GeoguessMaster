@@ -15,11 +15,7 @@ export const store = createStore({
     selectedMap: MAP_OPTIONS[0].value,
     selectedMode: MODE_OPTIONS[0].value,
   },
-  getters: {
-    buttonText(state) {
-      return state.selectedMode === "single" ? "START" : "CREATE ROOM";
-    },
-  },
+  getters: {},
   mutations: {
     changeSelectedMap(state, value) {
       state.selectedMap = value;
