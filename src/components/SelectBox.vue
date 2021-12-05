@@ -116,6 +116,7 @@ export default defineComponent({
   width: 180px;
   height: 48px;
   padding: 0 24px;
+  cursor: pointer;
 }
 
 .select-box-title {

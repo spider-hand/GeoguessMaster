@@ -52,7 +52,10 @@
     <div class="button-container">
       <button
         class="start-game-button"
-        :style="{ opacity: store.getters.isReadyForMultiplayerGame ? 1 : 0.7  }"
+        :class="[
+          !store.getters.isReadyForMultiplayerGame ? 'cursor-not-allowed' : '',
+        ]"
+        :style="{ opacity: store.getters.isReadyForMultiplayerGame ? 1 : 0.7 }"
         :disabled="!store.getters.isReadyForMultiplayerGame"
       >
         <span class="button-text">START</span>
@@ -109,7 +112,7 @@ export default defineComponent({
 
     const onChangeIsOwner = (newVal: boolean): void => {
       store.dispatch("switchIsOwnerAction", {
-        isOwner: newVal
+        isOwner: newVal,
       });
     };
 
@@ -184,11 +187,16 @@ export default defineComponent({
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
 }
 
 .button-text {
   font-family: "Roboto medium";
   font-size: 14px;
   color: #ffffff;
+}
+
+.cursor-not-allowed {
+  cursor: not-allowed;
 }
 </style>

@@ -15,6 +15,7 @@
       class="text-input"
       :style="{
         borderBottom: disabled ? '1px solid #eeeeee' : '1px solid #dcdcdc',
+        color: disabled ? '#dcdcdc' : '#3c3c3c',
         '--placeholder-color': disabled ? '#dcdcdc' : '#5f5f5f',
       }"
       :placeholder="placeholder"

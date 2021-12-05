@@ -63,6 +63,7 @@ export default defineComponent({
   padding: 4px 48px;
   display: flex;
   align-items: center;
+  cursor: pointer;
 }
 
 .option-text {

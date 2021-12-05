@@ -3,6 +3,7 @@
     <div style="flex-grow: 1"></div>
     <button
       class="button"
+      :class="[disabledDecrement ? 'cursor-not-allowed' : '']"
       @click="decrement"
       :disabled="disabledDecrement"
       :style="{
@@ -23,6 +24,7 @@
     <button
       class="button"
       @click="increment"
+      :class="[disabledIncrement ? 'cursor-not-allowed' : '']"
       :disabled="disabledIncrement"
       :style="{
         border: disabledIncrement ? '1px solid #eeeeee' : '1px solid #dcdcdc',
@@ -103,6 +105,11 @@ export default defineComponent({
   height: 36px;
   border-radius: 18px;
   background-color: #ffffff;
+  cursor: pointer;
+}
+
+.cursor-not-allowed {
+  cursor: not-allowed;
 }
 
 .text-wrapper {
