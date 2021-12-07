@@ -3,6 +3,7 @@
     <div style="flex-grow: 1"></div>
     <button
       class="button"
+      id="decrement-button"
       :class="[disabledDecrement ? 'cursor-not-allowed' : '']"
       @click="decrement"
       :disabled="disabledDecrement"
@@ -23,6 +24,7 @@
     </div>
     <button
       class="button"
+      id="increment-button"
       @click="increment"
       :class="[disabledIncrement ? 'cursor-not-allowed' : '']"
       :disabled="disabledIncrement"

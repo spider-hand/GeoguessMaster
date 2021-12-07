@@ -2,6 +2,7 @@
   <div class="switch-container">
     <button
       class="option"
+      id="option-yes"
       @click="onClickYes"
       :style="{ backgroundColor: state.ans ? '#ffffff' : '#eeeeee' }"
     >
@@ -10,6 +11,7 @@
     <div style="flex-grow: 1"></div>
     <button
       class="option"
+      id="option-no"
       @click="onClickNo"
       :style="{ backgroundColor: state.ans ? '#eeeeee' : '#ffffff' }"
     >
