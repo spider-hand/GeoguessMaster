@@ -4,7 +4,7 @@
       class="option"
       id="option-yes"
       @click="onClickYes"
-      :style="{ backgroundColor: state.ans ? '#ffffff' : '#eeeeee' }"
+      :style="{ backgroundColor: ans ? '#ffffff' : '#eeeeee' }"
     >
       <span class="option-text">YES</span>
     </button>
@@ -13,7 +13,7 @@
       class="option"
       id="option-no"
       @click="onClickNo"
-      :style="{ backgroundColor: state.ans ? '#eeeeee' : '#ffffff' }"
+      :style="{ backgroundColor: ans ? '#eeeeee' : '#ffffff' }"
     >
       <span class="option-text">NO</span>
     </button>
@@ -21,35 +21,26 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive } from "vue";
+import { defineComponent } from "vue";
 
 export default defineComponent({
   props: {
     ans: {
       type: Boolean,
       required: true,
-    }
+    },
   },
 
   setup(props, context) {
-    const state = reactive<{
-      ans: boolean;
-    }>({
-      ans: props.ans,
-    });
-
     const onClickYes = (): void => {
-      state.ans = true;
       context.emit("onChangeValue", true);
     };
 
     const onClickNo = (): void => {
-      state.ans = false;
       context.emit("onChangeValue", false);
     };
 
     return {
-      state,
       onClickYes,
       onClickNo,
     };

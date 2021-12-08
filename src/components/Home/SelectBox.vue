@@ -28,7 +28,7 @@ import { defineComponent, PropType, reactive, ref } from "vue";
 import { onClickOutside } from "@vueuse/core";
 
 import { SelectboxOption } from "@/types";
-import SelectboxDialog from "@/components/SelectBoxDialog.vue";
+import SelectboxDialog from "@/components/Home/SelectBoxDialog.vue";
 
 export default defineComponent({
   props: {
@@ -42,8 +42,8 @@ export default defineComponent({
     },
     options: {
       type: Array,
-      required: true
-    }
+      required: true,
+    },
   },
 
   components: {
@@ -87,7 +87,7 @@ export default defineComponent({
     };
 
     const onChangeOption = (option: SelectboxOption): void => {
-      context.emit('onChangeOption', option);
+      context.emit("onChangeOption", option);
     };
 
     return {
@@ -96,7 +96,7 @@ export default defineComponent({
       onMouseOver,
       onMouseLeave,
       onClickSelectbox,
-      onChangeOption
+      onChangeOption,
     };
   },
 });

@@ -20,7 +20,7 @@
       >
     </button>
     <div class="text-wrapper">
-      <span class="text">{{ state.count }}</span>
+      <span class="text">{{ count }}</span>
     </div>
     <button
       class="button"
@@ -44,7 +44,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, reactive } from "vue";
+import { computed, defineComponent } from "vue";
 
 export default defineComponent({
   props: {
@@ -63,27 +63,20 @@ export default defineComponent({
   },
 
   setup(props, context) {
-    const state = reactive<{
-      count: number;
-    }>({
-      count: props.count,
-    });
-
-    const disabledIncrement = computed<boolean>(() => props.max <= state.count);
-    const disabledDecrement = computed<boolean>(() => props.min >= state.count);
+    const disabledIncrement = computed<boolean>(() => props.max <= props.count);
+    const disabledDecrement = computed<boolean>(() => props.min >= props.count);
 
     const increment = (): void => {
-      state.count++;
-      context.emit("onChangeValue", state.count);
+      const updated = props.count + 1;
+      context.emit("onChangeValue", updated);
     };
 
     const decrement = (): void => {
-      state.count--;
-      context.emit("onChangeValue", state.count);
+      const updated = props.count - 1;
+      context.emit("onChangeValue", updated);
     };
 
     return {
-      state,
       disabledIncrement,
       disabledDecrement,
       increment,

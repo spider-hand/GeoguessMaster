@@ -1,6 +1,6 @@
 import { mount, VueWrapper } from "@vue/test-utils";
 
-import SelectBox from "@/components/SelectBox.vue";
+import SelectBox from "@/components/Home/SelectBox.vue";
 import { MAP_OPTIONS } from "@/constants";
 
 describe("Test SelectBox component", () => {

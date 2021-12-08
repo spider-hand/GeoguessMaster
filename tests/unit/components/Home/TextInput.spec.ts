@@ -1,6 +1,6 @@
 import { shallowMount, VueWrapper } from "@vue/test-utils";
 
-import TextInput from "@/components/TextInput.vue";
+import TextInput from "@/components/Home/TextInput.vue";
 
 describe("Test TextInput component", () => {
   let wrapper: VueWrapper<any> | null = null;

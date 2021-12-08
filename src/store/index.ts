@@ -1,6 +1,7 @@
 import { InjectionKey } from "vue";
 import { createStore, Store } from "vuex";
 
+import { inGameStore, InGameState } from "./modules/inGameStore";
 import { MAP_OPTIONS, MODE_OPTIONS } from "@/constants";
 
 export interface MyState {
@@ -11,6 +12,7 @@ export interface MyState {
   playerName: string;
   isOwner: boolean;
   roomNumber: string;
+  inGame: InGameState;
 }
 
 export const key: InjectionKey<Store<MyState>> = Symbol();
@@ -26,6 +28,12 @@ export const store = createStore({
     roomNumber: "",
   },
   getters: {
+    selectedMapText(state) {
+      const idx = MAP_OPTIONS.findIndex(
+        (option) => option.value === state.selectedMap
+      );
+      return idx >= 0 ? MAP_OPTIONS[idx].text : "";
+    },
     isReadyForMultiplayerGame(state) {
       if (state.isOwner) {
         return state.playerName !== "";
@@ -80,5 +88,7 @@ export const store = createStore({
       commit("changeRoomNumber", payload.roomNumber);
     },
   },
-  modules: {},
+  modules: {
+    inGame: inGameStore,
+  },
 });

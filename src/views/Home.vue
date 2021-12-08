@@ -43,7 +43,7 @@
           <div
             class="start-game-button"
             v-if="store.state.selectedMode === 'single'"
-            @click="startGame"
+            @click="startSinglePlayerGame"
           >
             <span class="create-button-text">START</span>
           </div>
@@ -79,10 +79,11 @@
 import { defineComponent, reactive, ref } from "vue";
 
 import { useStore } from "vuex";
+import { useRouter } from "vue-router";
 import GithubIcon from "vue-material-design-icons/Github.vue";
 
-import SelectBox from "@/components/SelectBox.vue";
-import CreateRoomDialog from "@/components/CreateRoomDialog.vue";
+import SelectBox from "@/components/Home/SelectBox.vue";
+import CreateRoomDialog from "@/components/Home/CreateRoomDialog.vue";
 import { SelectboxOption } from "@/types";
 import { key } from "@/store";
 import { MAP_OPTIONS, MODE_OPTIONS } from "@/constants";
@@ -96,6 +97,8 @@ export default defineComponent({
   },
 
   setup() {
+    const router = useRouter();
+
     const createRoomButtonRef = ref(null);
     onClickOutside(createRoomButtonRef, (event) => {
       let isRoomCreateDialogClicked = false;
@@ -135,8 +138,8 @@ export default defineComponent({
       state.isShowingRoomCreateDialog = true;
     };
 
-    const startGame = (): void => {
-      console.log("startGame");
+    const startSinglePlayerGame = (): void => {
+      router.push("game");
     };
 
     return {
@@ -148,7 +151,7 @@ export default defineComponent({
       onChangeSelectedMap,
       onChangeSelectedMode,
       openCreateRoomDialog,
-      startGame,
+      startSinglePlayerGame,
     };
   },
 });

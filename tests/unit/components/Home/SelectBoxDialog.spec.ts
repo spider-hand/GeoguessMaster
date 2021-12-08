@@ -1,6 +1,6 @@
 import { shallowMount, VueWrapper } from "@vue/test-utils";
 
-import SelectBoxDialog from "@/components/SelectBoxDialog.vue";
+import SelectBoxDialog from "@/components/Home/SelectBoxDialog.vue";
 
 describe("Test SelectBoxDialog component", () => {
   let wrapper: VueWrapper<any> | null = null;

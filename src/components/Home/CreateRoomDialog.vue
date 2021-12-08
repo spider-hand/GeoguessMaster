@@ -70,9 +70,9 @@ import { defineComponent } from "vue";
 import { useStore } from "vuex";
 
 import { key } from "@/store";
-import Counter from "@/components/Counter.vue";
-import Switch from "@/components/Switch.vue";
-import TextInput from "@/components/TextInput.vue";
+import Counter from "@/components/Home/Counter.vue";
+import Switch from "@/components/Home/Switch.vue";
+import TextInput from "@/components/Home/TextInput.vue";
 
 export default defineComponent({
   props: {
