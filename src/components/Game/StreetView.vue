@@ -4,15 +4,31 @@
 
 <script lang="ts">
 /*global google*/
-import { defineComponent, reactive, onMounted } from "vue";
+import { defineComponent, reactive, onMounted, watch } from "vue";
 
 export default defineComponent({
+  props: {
+    round: {
+      type: Number,
+      required: true,
+    },
+  },
+
   setup(props, context) {
     const state = reactive<{
       panorama: google.maps.StreetViewPanorama | null;
     }>({
       panorama: null,
     });
+
+    watch(
+      () => props.round,
+      (newVal: number, oldVal: number) => {
+        if (oldVal + 1 === newVal || (oldVal === 5 && newVal === 1)) {
+          loadStreetView();
+        }
+      }
+    );
 
     const loadStreetView = (): void => {
       // TODO: Filter locations by the selected map

@@ -21,7 +21,8 @@
             :selectedOption="
               MAP_OPTIONS[
                 MAP_OPTIONS.findIndex(
-                  (option) => option.value === store.state.selectedMap
+                  (option) =>
+                    option.value === store.state.gameSettings.selectedMap
                 )
               ]
             "
@@ -33,7 +34,8 @@
             :selectedOption="
               MODE_OPTIONS[
                 MODE_OPTIONS.findIndex(
-                  (option) => option.value === store.state.selectedMode
+                  (option) =>
+                    option.value === store.state.gameSettings.selectedMode
                 )
               ]
             "
@@ -42,7 +44,7 @@
           />
           <div
             class="start-game-button"
-            v-if="store.state.selectedMode === 'single'"
+            v-if="store.state.gameSettings.selectedMode === 'single'"
             @click="startSinglePlayerGame"
           >
             <span class="create-button-text">START</span>
@@ -50,7 +52,7 @@
           <div
             class="start-game-button"
             ref="createRoomButtonRef"
-            v-if="store.state.selectedMode === 'multiplayer'"
+            v-if="store.state.gameSettings.selectedMode === 'multiplayer'"
             @click="openCreateRoomDialog"
           >
             <span class="create-button-text">CREATE ROOM</span>
@@ -76,7 +78,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref } from "vue";
+import { defineComponent, onMounted, reactive, ref } from "vue";
 
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
@@ -141,6 +143,11 @@ export default defineComponent({
     const startSinglePlayerGame = (): void => {
       router.push("game");
     };
+
+    onMounted(() => {
+      store.dispatch("resetGameSettingsStateAction");
+      store.dispatch("resetInGameStateAction");
+    });
 
     return {
       store,

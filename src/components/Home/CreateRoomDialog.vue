@@ -9,7 +9,7 @@
       <Counter
         :min="2"
         :max="5"
-        :count="store.state.selectedSize"
+        :count="store.state.gameSettings.selectedSize"
         @onChangeValue="onChangeSize"
       />
     </div>
@@ -22,7 +22,7 @@
       <Counter
         :min="1"
         :max="10"
-        :count="store.state.selectedTime"
+        :count="store.state.gameSettings.selectedTime"
         @onChangeValue="onChangeTime"
       />
     </div>
@@ -31,22 +31,25 @@
         label="Player Name"
         name="player-name"
         placeholder="Your Player Name"
-        :inputValue="store.state.playerName"
+        :inputValue="store.state.gameSettings.playerName"
         @onChangeValue="onChangePlayerName"
       />
     </div>
     <div class="form-container">
       <span class="form-title">Are you an owner?</span>
-      <Switch :ans="store.state.isOwner" @onChangeValue="onChangeIsOwner" />
+      <Switch
+        :ans="store.state.gameSettings.isOwner"
+        @onChangeValue="onChangeIsOwner"
+      />
     </div>
     <div class="form-container">
       <TextInput
         label="Room Number"
         name="room-number"
         placeholder="Room Number"
-        :inputValue="store.state.roomNumber"
+        :inputValue="store.state.gameSettings.roomNumber"
         @onChangeValue="onChangeRoomNumber"
-        :disabled="store.state.isOwner"
+        :disabled="store.state.gameSettings.isOwner"
       />
     </div>
     <div class="button-container">

@@ -17,6 +17,10 @@ export default defineComponent({
       default: null,
       required: false,
     },
+    round: {
+      type: Number,
+      required: true,
+    },
   },
 
   setup(props, context) {
@@ -27,6 +31,15 @@ export default defineComponent({
     });
 
     const markers: google.maps.Marker[] = [];
+
+    watch(
+      () => props.round,
+      (newVal: number, oldVal: number) => {
+        if (oldVal + 1 === newVal || (oldVal === 5 && newVal === 1)) {
+          removeMarkers();
+        }
+      }
+    );
 
     const onMouseOverMap = (): void => {
       const mapEl = document.getElementById("map-container");
@@ -101,7 +114,7 @@ export default defineComponent({
   position: absolute;
   bottom: 54px;
   left: 12px;
-  z-index: 3;
+  z-index: 1;
   opacity: 0.7;
   width: 320px;
   height: 240px;

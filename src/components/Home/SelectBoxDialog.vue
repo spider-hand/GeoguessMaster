@@ -38,7 +38,7 @@ export default defineComponent({
 
   setup(props, context) {
     const onChangeOption = (option: SelectboxOption): void => {
-      context.emit('onChangeOption', option);
+      context.emit("onChangeOption", option);
     };
 
     return {

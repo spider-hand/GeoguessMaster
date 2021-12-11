@@ -3,17 +3,17 @@
     <div class="content-wrapper">
       <span class="sub-text">Map</span>
       <br />
-      <span class="main-text">{{ selectedMap }}</span>
+      <span id="selected-map" class="main-text">{{ selectedMap }}</span>
     </div>
     <div class="content-wrapper">
       <span class="sub-text">Round</span>
       <br />
-      <span class="main-text">{{ round }} / 5</span>
+      <span id="round" class="main-text">{{ round }} / 5</span>
     </div>
     <div class="content-wrapper">
       <span class="sub-text">Score</span>
       <br />
-      <span class="main-text">{{ score }}</span>
+      <span id="score" class="main-text">{{ score }}</span>
     </div>
   </div>
 </template>
@@ -49,7 +49,7 @@ export default defineComponent({
   padding: 0 16px;
   border-radius: 5px;
   background-color: #0000ae;
-  z-index: 3;
+  z-index: 1;
   display: flex;
   align-items: center;
   flex-direction: row;
