@@ -1,4 +1,4 @@
-import { SelectboxOption, GameHistory } from "@/types";
+import { GameHistory } from "@/types";
 
 export interface InGameState {
   randomLatLng: google.maps.LatLng | null;

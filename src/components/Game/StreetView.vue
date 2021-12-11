@@ -6,8 +6,21 @@
 /*global google*/
 import { defineComponent, reactive, onMounted, watch } from "vue";
 
+import { Feature, feature, MultiPolygon } from "@turf/helpers";
+import { randomPosition } from "@turf/random";
+import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
+import bbox from "@turf/bbox";
+
 export default defineComponent({
   props: {
+    selectedMap: {
+      type: String,
+      requred: true,
+    },
+    geoJSON: {
+      type: Object,
+      required: false,
+    },
     round: {
       type: Number,
       required: true,
@@ -31,11 +44,13 @@ export default defineComponent({
     );
 
     const loadStreetView = (): void => {
-      // TODO: Filter locations by the selected map
       const service = new google.maps.StreetViewService();
       service.getPanorama(
         {
-          location: getRandomLatLng(),
+          location:
+            props.geoJSON !== null
+              ? getRandomLatLngInsideCountry()
+              : getRandomLatLng(),
           preference: google.maps.StreetViewPreference.NEAREST,
           radius: 100000,
           source: google.maps.StreetViewSource.OUTDOOR,
@@ -48,6 +63,16 @@ export default defineComponent({
       const lat = Math.random() * 170 - 85;
       const lng = Math.random() * 360 - 180;
       return new google.maps.LatLng(lat, lng);
+    };
+
+    const getRandomLatLngInsideCountry = (): google.maps.LatLng => {
+      const featureObj = feature(props.geoJSON);
+
+      let pos;
+      do {
+        pos = randomPosition(bbox(props.geoJSON));
+      } while (booleanPointInPolygon(pos, featureObj as Feature<MultiPolygon>));
+      return new google.maps.LatLng(pos[1], pos[0]);
     };
 
     const checkStreetView = (
@@ -84,7 +109,11 @@ export default defineComponent({
     };
 
     onMounted(() => {
-      loadStreetView();
+      if (props.selectedMap === "WORLD" || props.geoJSON !== null) {
+        loadStreetView();
+      } else {
+        context.emit("fetchGeoJSON", loadStreetView);
+      }
     });
 
     return {

@@ -16,8 +16,11 @@
       @onClickExitButton="onClickExitButton"
     />
     <StreetView
+      :selectedMap="store.state.gameSettings.selectedMap"
+      :geoJSON="store.state.gameSettings.geoJSON"
       :round="store.state.inGame.round"
       @updateRandomLatLng="updateRandomLatLng"
+      @fetchGeoJSON="fetchGeoJSON"
     />
     <ScoreBoard
       :selectedMap="store.getters.selectedMapText"
@@ -77,6 +80,13 @@ export default defineComponent({
         store.state.inGame.selectedLatLng === null || state.isGuessButtonClicked
     );
 
+    const fetchGeoJSON = async (callback: () => void): Promise<void> => {
+      await store.dispatch("fetchGeoJSONAction", {
+        countryCode: store.state.gameSettings.selectedMap,
+      });
+      callback();
+    };
+
     const updateRandomLatLng = (latLng: google.maps.LatLng): void => {
       store.dispatch("saveRandomLatLngAction", {
         randomLatLng: latLng,
@@ -127,6 +137,7 @@ export default defineComponent({
       store,
       state,
       isGuessButtonDisabled,
+      fetchGeoJSON,
       updateRandomLatLng,
       updateSelectedLatLng,
       onClickGuessButton,
