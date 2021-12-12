@@ -63,7 +63,11 @@
         </div>
       </div>
       <div class="map-image-container">
-        <img src="@/assets/united_states.png" class="map-image" width="680" />
+        <img
+          :src="require(`@/assets/${store.state.gameSettings.selectedMap}.png`)"
+          class="map-image"
+          width="680"
+        />
       </div>
     </div>
     <div class="footer">
