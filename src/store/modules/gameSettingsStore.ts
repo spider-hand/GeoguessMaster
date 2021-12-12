@@ -9,7 +9,7 @@ export interface GameSettingsState {
   selectedTime: number | null;
   playerName: string;
   isOwner: boolean;
-  roomNumber: string;
+  roomNumber: number;
   geoJSON: any;
 }
 
@@ -20,7 +20,7 @@ const getDefaultState = (): GameSettingsState => ({
   selectedTime: 1,
   playerName: "",
   isOwner: true,
-  roomNumber: "",
+  roomNumber: -1,
   geoJSON: null,
 });
 
@@ -37,7 +37,7 @@ export const gameSettingsStore = {
       if (state.isOwner) {
         return state.playerName !== "";
       } else {
-        return state.playerName !== "" && state.roomNumber !== "";
+        return state.playerName !== "" && state.roomNumber < 0;
       }
     },
   },
@@ -63,7 +63,7 @@ export const gameSettingsStore = {
     switchIsOwner(state: GameSettingsState, value: boolean) {
       state.isOwner = value;
     },
-    changeRoomNumber(state: GameSettingsState, value: string) {
+    changeRoomNumber(state: GameSettingsState, value: number) {
       state.roomNumber = value;
     },
     fetchGeoJSON(state: GameSettingsState, value: any) {

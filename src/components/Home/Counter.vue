@@ -4,38 +4,46 @@
     <button
       class="button"
       id="decrement-button"
-      :class="[disabledDecrement ? 'cursor-not-allowed' : '']"
+      :class="[disabledDecrement || disabled ? 'cursor-not-allowed' : '']"
       @click="decrement"
-      :disabled="disabledDecrement"
+      :disabled="disabledDecrement || disabled"
       :style="{
-        border: disabledDecrement ? '1px solid #eeeeee' : '1px solid #dcdcdc',
+        border:
+          disabledDecrement || disabled
+            ? '1px solid #eeeeee'
+            : '1px solid #dcdcdc',
       }"
     >
       <span
         class="button-text"
         :style="{
-          color: disabledDecrement ? '#dcdcdc' : '#5f5f5f',
+          color: disabledDecrement || disabled ? '#dcdcdc' : '#5f5f5f',
         }"
         >-</span
       >
     </button>
     <div class="text-wrapper">
-      <span class="text">{{ count }}</span>
+      <span class="text" :class="[disabled ? 'disabled-text' : '']">
+        {{ count }}
+      </span>
     </div>
     <button
       class="button"
       id="increment-button"
       @click="increment"
-      :class="[disabledIncrement ? 'cursor-not-allowed' : '']"
-      :disabled="disabledIncrement"
+      :class="[disabledIncrement || disabled ? 'cursor-not-allowed' : '']"
+      :disabled="disabledIncrement || disabled"
       :style="{
-        border: disabledIncrement ? '1px solid #eeeeee' : '1px solid #dcdcdc',
+        border:
+          disabledIncrement || disabled
+            ? '1px solid #eeeeee'
+            : '1px solid #dcdcdc',
       }"
     >
       <span
         class="button-text"
         :style="{
-          color: disabledIncrement ? '#dcdcdc' : '#5f5f5f',
+          color: disabledIncrement || disabled ? '#dcdcdc' : '#5f5f5f',
         }"
         >+</span
       >
@@ -58,6 +66,10 @@ export default defineComponent({
     },
     count: {
       type: Number,
+      required: true,
+    },
+    disabled: {
+      type: Boolean,
       required: true,
     },
   },
@@ -118,6 +130,10 @@ export default defineComponent({
   font-family: "Roboto medium";
   font-size: 16px;
   color: #3c3c3c;
+}
+
+.disabled-text {
+  color: #dcdcdc;
 }
 
 .button-text {

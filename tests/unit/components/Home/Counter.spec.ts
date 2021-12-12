@@ -16,6 +16,7 @@ describe("Test Counter component", () => {
           min: 2,
           max: 5,
           count: 3,
+          disabled: false,
         },
       });
     });
@@ -44,6 +45,7 @@ describe("Test Counter component", () => {
           min: 2,
           max: 5,
           count: 5,
+          disabled: false,
         },
       });
     });
@@ -69,6 +71,7 @@ describe("Test Counter component", () => {
           min: 2,
           max: 5,
           count: 2,
+          disabled: false,
         },
       });
     });
@@ -85,6 +88,31 @@ describe("Test Counter component", () => {
       await wrapper!.find("#decrement-button").trigger("click");
   
       expect(wrapper!.emitted().onChangeValue).toBeUndefined();
+    });
+  });
+
+  describe("Test when disabled prop is true", () => {
+    beforeEach(() => {
+      wrapper = shallowMount(Counter, {
+        props: {
+          min: 2,
+          max: 5,
+          count: 3,
+          disabled: true,
+        },
+      });
+    });
+
+    it("increment button is disabled", () => {
+      const incrementButton = wrapper!.find("#increment-button");
+
+      expect(incrementButton.attributes("disabled")).toBeDefined();
+    });
+
+    it("decrement button is disabled", () => {
+      const decrementButton = wrapper!.find("#decrement-button");
+
+      expect(decrementButton.attributes("disabled")).toBeDefined();
     });
   });
 });

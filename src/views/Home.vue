@@ -59,6 +59,18 @@
           </div>
           <CreateRoomDialog
             :isShowingDialog="state.isShowingRoomCreateDialog"
+            :selectedSize="store.state.gameSettings.selectedSize"
+            :selectedTime="store.state.gameSettings.selectedTime"
+            :playerName="store.state.gameSettings.playerName"
+            :isOwner="store.state.gameSettings.isOwner"
+            :roomNumber="store.state.gameSettings.roomNumber"
+            :isReadyForMultiplayerGame="store.getters.isReadyForMultiplayerGame"
+            @onChangeSize="onChangeSize"
+            @onChangeTime="onChangeTime"
+            @onChangePlayerName="onChangePlayerName"
+            @onChangeIsOwner="onChangeIsOwner"
+            @onChangeRoomNumber="onChangeRoomNumber"
+            @onClickStartMultiplayerGameButton="startMultiplayerGame"
           />
         </div>
       </div>
@@ -87,6 +99,14 @@ import { defineComponent, onMounted, reactive, ref } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import GithubIcon from "vue-material-design-icons/Github.vue";
+import {
+  get,
+  set,
+  ref as dbRef,
+  child,
+  DataSnapshot,
+  update,
+} from "firebase/database";
 
 import SelectBox from "@/components/Home/SelectBox.vue";
 import CreateRoomDialog from "@/components/Home/CreateRoomDialog.vue";
@@ -94,6 +114,7 @@ import { SelectboxOption } from "@/types";
 import { key } from "@/store";
 import { MAP_OPTIONS, MODE_OPTIONS } from "@/constants";
 import { onClickOutside } from "@vueuse/core";
+import { database } from "@/firebase";
 
 export default defineComponent({
   components: {
@@ -144,8 +165,77 @@ export default defineComponent({
       state.isShowingRoomCreateDialog = true;
     };
 
+    const onChangeSize = (newVal: number): void => {
+      store.dispatch("changeSelectedSizeAction", {
+        selectedSize: newVal,
+      });
+    };
+
+    const onChangeTime = (newVal: number): void => {
+      store.dispatch("changeSelectedTimeAction", {
+        selectedTime: newVal,
+      });
+    };
+
+    const onChangePlayerName = (newVal: string): void => {
+      store.dispatch("changePlayerNameAction", {
+        playerName: newVal,
+      });
+    };
+
+    const onChangeIsOwner = (newVal: boolean): void => {
+      store.dispatch("switchIsOwnerAction", {
+        isOwner: newVal,
+      });
+    };
+
+    const onChangeRoomNumber = (newVal: string): void => {
+      store.dispatch("changeRoomNumberAction", {
+        roomNumber: newVal,
+      });
+    };
+
     const startSinglePlayerGame = (): void => {
       router.push("game");
+    };
+
+    const startMultiplayerGame = async (): Promise<void> => {
+      if (store.state.gameSettings.isOwner) {
+        let randomNumber: number;
+        let snapshot: DataSnapshot;
+        do {
+          randomNumber = 0;
+          snapshot = await get(child(dbRef(database), `${randomNumber}`));
+        } while (snapshot.exists());
+        store.dispatch("changeRoomNumberAction", {
+          roomNumber: randomNumber,
+        });
+        await set(dbRef(database, `${randomNumber}/playerName`), {
+          1: store.state.gameSettings.playerName,
+        });
+        await update(dbRef(database, `${randomNumber}`), {
+          size: store.state.gameSettings.selectedSize,
+          time: store.state.gameSettings.selectedTime,
+        });
+        router.push("game");
+      } else {
+        const snapshot = await get(
+          child(dbRef(database), `${store.state.gameSettings.roomNumber}`)
+        );
+        if (snapshot.exists()) {
+          const numberOfPlayers = snapshot.child("playerName").size + 1;
+          const updates: { [key: string]: string } = {};
+          updates[
+            `/${
+              store.state.gameSettings.roomNumber
+            }/playerName/${numberOfPlayers.toString()}`
+          ] = store.state.gameSettings.playerName;
+          await update(dbRef(database), updates);
+          router.push("game");
+        } else {
+          console.log("The room doesn't exist.");
+        }
+      }
     };
 
     onMounted(() => {
@@ -162,7 +252,13 @@ export default defineComponent({
       onChangeSelectedMap,
       onChangeSelectedMode,
       openCreateRoomDialog,
+      onChangeSize,
+      onChangeTime,
+      onChangePlayerName,
+      onChangeIsOwner,
+      onChangeRoomNumber,
       startSinglePlayerGame,
+      startMultiplayerGame,
     };
   },
 });

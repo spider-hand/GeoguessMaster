@@ -2,27 +2,47 @@
   <div class="create-room-dialog" v-if="isShowingDialog">
     <div class="form-container">
       <div>
-        <span class="form-title">Size</span>
+        <span
+          class="form-title"
+          :class="[!isOwner ? 'disabled-form-title' : '']"
+          >Size
+        </span>
         <br />
-        <span class="form-helper-text">2-5 people</span>
+        <span
+          class="form-helper-text"
+          :class="[!isOwner ? 'disabled-form-helper-text' : '']"
+          >2-5 people</span
+        >
       </div>
       <Counter
         :min="2"
         :max="5"
-        :count="store.state.gameSettings.selectedSize"
+        :count="selectedSize"
+        :disabled="!isOwner"
         @onChangeValue="onChangeSize"
       />
     </div>
     <div class="form-container">
       <div>
-        <span class="form-title">Time per round</span>
+        <span
+          class="form-title"
+          :class="[!isOwner ? 'disabled-form-title' : '']"
+        >
+          Time per round
+        </span>
         <br />
-        <span class="form-helper-text">1-10 minutes</span>
+        <span
+          class="form-helper-text"
+          :class="[!isOwner ? 'disabled-form-helper-text' : '']"
+        >
+          1-10 minutes
+        </span>
       </div>
       <Counter
         :min="1"
         :max="10"
-        :count="store.state.gameSettings.selectedTime"
+        :count="selectedTime"
+        :disabled="!isOwner"
         @onChangeValue="onChangeTime"
       />
     </div>
@@ -31,35 +51,31 @@
         label="Player Name"
         name="player-name"
         placeholder="Your Player Name"
-        :inputValue="store.state.gameSettings.playerName"
+        :inputValue="playerName"
         @onChangeValue="onChangePlayerName"
       />
     </div>
     <div class="form-container">
       <span class="form-title">Are you an owner?</span>
-      <Switch
-        :ans="store.state.gameSettings.isOwner"
-        @onChangeValue="onChangeIsOwner"
-      />
+      <Switch :ans="isOwner" @onChangeValue="onChangeIsOwner" />
     </div>
     <div class="form-container">
       <TextInput
         label="Room Number"
         name="room-number"
         placeholder="Room Number"
-        :inputValue="store.state.gameSettings.roomNumber"
+        :inputValue="roomNumber"
         @onChangeValue="onChangeRoomNumber"
-        :disabled="store.state.gameSettings.isOwner"
+        :disabled="isOwner"
       />
     </div>
     <div class="button-container">
       <button
         class="start-game-button"
-        :class="[
-          !store.getters.isReadyForMultiplayerGame ? 'cursor-not-allowed' : '',
-        ]"
-        :style="{ opacity: store.getters.isReadyForMultiplayerGame ? 1 : 0.7 }"
-        :disabled="!store.getters.isReadyForMultiplayerGame"
+        :class="[!isReadyForMultiplayerGame ? 'cursor-not-allowed' : '']"
+        :style="{ opacity: isReadyForMultiplayerGame ? 1 : 0.7 }"
+        :disabled="!isReadyForMultiplayerGame"
+        @click="onClickStartMultiplayerGameButton"
       >
         <span class="button-text">START</span>
       </button>
@@ -70,9 +86,6 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 
-import { useStore } from "vuex";
-
-import { key } from "@/store";
 import Counter from "@/components/Home/Counter.vue";
 import Switch from "@/components/Home/Switch.vue";
 import TextInput from "@/components/Home/TextInput.vue";
@@ -81,7 +94,30 @@ export default defineComponent({
   props: {
     isShowingDialog: {
       type: Boolean,
-      default: false,
+      required: true,
+    },
+    selectedSize: {
+      type: Number,
+      required: true,
+    },
+    selectedTime: {
+      type: Number,
+      required: true,
+    },
+    playerName: {
+      type: String,
+      required: true,
+    },
+    isOwner: {
+      type: Boolean,
+      required: true,
+    },
+    roomNumber: {
+      type: Number,
+      required: false,
+    },
+    isReadyForMultiplayerGame: {
+      type: Boolean,
       required: true,
     },
   },
@@ -92,46 +128,38 @@ export default defineComponent({
     TextInput,
   },
 
-  setup() {
-    const store = useStore(key);
-
+  setup(props, context) {
     const onChangeSize = (newVal: number): void => {
-      store.dispatch("changeSelectedSizeAction", {
-        selectedSize: newVal,
-      });
+      context.emit("onChangeSize", newVal);
     };
 
     const onChangeTime = (newVal: number): void => {
-      store.dispatch("changeSelectedTimeAction", {
-        selectedTime: newVal,
-      });
+      context.emit("onChangeSize", newVal);
     };
 
     const onChangePlayerName = (newVal: string): void => {
-      store.dispatch("changePlayerNameAction", {
-        playerName: newVal,
-      });
+      context.emit("onChangePlayerName", newVal);
     };
 
     const onChangeIsOwner = (newVal: boolean): void => {
-      store.dispatch("switchIsOwnerAction", {
-        isOwner: newVal,
-      });
+      context.emit("onChangeIsOwner", newVal);
     };
 
     const onChangeRoomNumber = (newVal: string): void => {
-      store.dispatch("changeRoomNumberAction", {
-        roomNumber: newVal,
-      });
+      context.emit("onChangeRoomNumber", newVal);
+    };
+
+    const onClickStartMultiplayerGameButton = (): void => {
+      context.emit("onClickStartMultiplayerGameButton");
     };
 
     return {
-      store,
       onChangeSize,
       onChangeTime,
       onChangePlayerName,
       onChangeIsOwner,
       onChangeRoomNumber,
+      onClickStartMultiplayerGameButton,
     };
   },
 });
@@ -172,6 +200,11 @@ export default defineComponent({
   font-family: "Roboto medium";
   font-size: 12px;
   color: #5f5f5f;
+}
+
+.disabled-form-title,
+.disabled-form-helper-text {
+  color: #dcdcdc;
 }
 
 .button-container {
