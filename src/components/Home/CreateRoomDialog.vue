@@ -3,12 +3,14 @@
     <div class="form-container">
       <div>
         <span
+          id="size-form-title"
           class="form-title"
           :class="[!isOwner ? 'disabled-form-title' : '']"
           >Size
         </span>
         <br />
         <span
+          id="size-form-helper-text"
           class="form-helper-text"
           :class="[!isOwner ? 'disabled-form-helper-text' : '']"
           >2-5 people</span
@@ -25,6 +27,7 @@
     <div class="form-container">
       <div>
         <span
+          id="time-form-title"
           class="form-title"
           :class="[!isOwner ? 'disabled-form-title' : '']"
         >
@@ -32,6 +35,7 @@
         </span>
         <br />
         <span
+          id="time-form-helper-text"
           class="form-helper-text"
           :class="[!isOwner ? 'disabled-form-helper-text' : '']"
         >
@@ -73,7 +77,6 @@
       <button
         class="start-game-button"
         :class="[!isReadyForMultiplayerGame ? 'cursor-not-allowed' : '']"
-        :style="{ opacity: isReadyForMultiplayerGame ? 1 : 0.7 }"
         :disabled="!isReadyForMultiplayerGame"
         @click="onClickStartMultiplayerGameButton"
       >
@@ -134,7 +137,7 @@ export default defineComponent({
     };
 
     const onChangeTime = (newVal: number): void => {
-      context.emit("onChangeSize", newVal);
+      context.emit("onChangeTime", newVal);
     };
 
     const onChangePlayerName = (newVal: string): void => {
@@ -234,5 +237,6 @@ export default defineComponent({
 
 .cursor-not-allowed {
   cursor: not-allowed;
+  opacity: 0.7;
 }
 </style>
