@@ -1,15 +1,15 @@
 <template>
   <div
     class="select-box-highligted-container"
-    :style="{ backgroundColor: state.isHovering ? '#eeeeee' : '#ffffff' }"
+    :class="[state.isHovering ? 'on-hover' : '']"
   >
     <div
       class="select-box-container"
+      :class="[state.isHovering ? 'on-hover-select-box-container' : '']"
       ref="selectboxRef"
       @mouseover="onMouseOver"
       @mouseleave="onMouseLeave"
       @click="onClickSelectbox"
-      :style="{ borderRight: !state.isHovering ? '1px solid #dcdcdc' : null }"
     >
       <span class="select-box-title">{{ title }}</span>
       <br />
@@ -107,9 +107,14 @@ export default defineComponent({
   position: relative;
   height: 100%;
   width: 228px;
+  background-color: #ffffff;
   border-radius: 32px;
   display: flex;
   align-items: center;
+}
+
+.on-hover {
+  background-color: #eeeeee;
 }
 
 .select-box-container {
@@ -117,6 +122,11 @@ export default defineComponent({
   height: 48px;
   padding: 0 24px;
   cursor: pointer;
+  border-right: 1px solid #dcdcdc;
+}
+
+.on-hover-select-box-container {
+  border-right: none;
 }
 
 .select-box-title {

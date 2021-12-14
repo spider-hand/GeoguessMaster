@@ -4,21 +4,13 @@
     <button
       class="button"
       id="decrement-button"
-      :class="[disabledDecrement || disabled ? 'cursor-not-allowed' : '']"
+      :class="[disabledDecrement || disabled ? 'disabled-button' : '']"
       @click="decrement"
       :disabled="disabledDecrement || disabled"
-      :style="{
-        border:
-          disabledDecrement || disabled
-            ? '1px solid #eeeeee'
-            : '1px solid #dcdcdc',
-      }"
     >
       <span
         class="button-text"
-        :style="{
-          color: disabledDecrement || disabled ? '#dcdcdc' : '#5f5f5f',
-        }"
+        :class="[disabledDecrement || disabled ? 'disabled-text' : '']"
         >-</span
       >
     </button>
@@ -31,20 +23,12 @@
       class="button"
       id="increment-button"
       @click="increment"
-      :class="[disabledIncrement || disabled ? 'cursor-not-allowed' : '']"
+      :class="[disabledIncrement || disabled ? 'disabled-button' : '']"
       :disabled="disabledIncrement || disabled"
-      :style="{
-        border:
-          disabledIncrement || disabled
-            ? '1px solid #eeeeee'
-            : '1px solid #dcdcdc',
-      }"
     >
       <span
         class="button-text"
-        :style="{
-          color: disabledIncrement || disabled ? '#dcdcdc' : '#5f5f5f',
-        }"
+        :class="[disabledIncrement || disabled ? 'disabled-text' : '']"
         >+</span
       >
     </button>
@@ -110,12 +94,14 @@ export default defineComponent({
 .button {
   width: 36px;
   height: 36px;
+  border: 1px solid #dcdcdc;
   border-radius: 18px;
   background-color: #ffffff;
   cursor: pointer;
 }
 
-.cursor-not-allowed {
+.disabled-button {
+  border: 1px solid #eeeeee;
   cursor: not-allowed;
 }
 
@@ -132,12 +118,13 @@ export default defineComponent({
   color: #3c3c3c;
 }
 
-.disabled-text {
-  color: #dcdcdc;
-}
-
 .button-text {
+  color: #5f5f5f;
   font-family: "Roboto medium";
   font-size: 20px;
+}
+
+.disabled-text {
+  color: #dcdcdc;
 }
 </style>

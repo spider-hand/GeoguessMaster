@@ -4,7 +4,7 @@
 
 <script lang="ts">
 /*global google*/
-import { defineComponent, reactive, onMounted, watch } from "vue";
+import { defineComponent, onMounted, watch } from "vue";
 
 import { Feature, feature, MultiPolygon } from "@turf/helpers";
 import { randomPosition } from "@turf/random";
@@ -17,8 +17,21 @@ export default defineComponent({
       type: String,
       requred: true,
     },
+    selectedMode: {
+      type: String,
+      required: true,
+    },
+    isOwner: {
+      type: Boolean,
+      required: true,
+    },
     geoJSON: {
       type: Object,
+      required: false,
+    },
+    randomLatLng: {
+      type: google.maps.LatLng,
+      default: null,
       required: false,
     },
     round: {
@@ -28,27 +41,47 @@ export default defineComponent({
   },
 
   setup(props, context) {
-    const state = reactive<{
-      panorama: google.maps.StreetViewPanorama | null;
-    }>({
-      panorama: null,
-    });
+    let panorama: google.maps.StreetViewPanorama;
 
     watch(
       () => props.round,
       (newVal: number, oldVal: number) => {
         if (oldVal + 1 === newVal || (oldVal === 5 && newVal === 1)) {
-          loadStreetView();
+          if (
+            props.selectedMode !== "multiplayer" ||
+            (props.selectedMode === "multiplayer" && props.isOwner)
+          ) {
+            loadStreetView();
+          }
         }
       }
     );
 
-    const loadStreetView = (): void => {
+    watch(
+      () => props.randomLatLng,
+      (newVal: google.maps.LatLng, oldVal: google.maps.LatLng | null) => {
+        if (
+          oldVal === null &&
+          newVal &&
+          props.selectedMode === "multiplayer" &&
+          !props.isOwner
+        ) {
+          // Load a decided street view the owner loaded earlier in multiplayer game
+          loadStreetView(newVal);
+        }
+      }
+    );
+
+    const loadStreetView = (
+      decidedLatLng: google.maps.LatLng | null = null
+    ): void => {
       const service = new google.maps.StreetViewService();
       service.getPanorama(
         {
           location:
-            props.geoJSON !== null
+            decidedLatLng !== null
+              ? decidedLatLng
+              : props.geoJSON !== null
               ? getRandomLatLngInsideCountry()
               : getRandomLatLng(),
           preference: google.maps.StreetViewPreference.NEAREST,
@@ -85,10 +118,10 @@ export default defineComponent({
         data.location !== undefined
       ) {
         if (document.getElementById("street-view-container") !== null) {
-          state.panorama = new google.maps.StreetViewPanorama(
+          panorama = new google.maps.StreetViewPanorama(
             document.getElementById("street-view-container") as HTMLElement
           );
-          state.panorama.setOptions({
+          panorama.setOptions({
             zoomControl: false,
             addressControl: false,
             fullscreenControl: false,
@@ -96,12 +129,16 @@ export default defineComponent({
             motionTrackingControl: false,
             showRoadLabels: false,
           });
-          state.panorama.setPano(data.location.pano);
-          state.panorama.setPov({
+          panorama.setPano(data.location.pano);
+          panorama.setPov({
             heading: 270,
             pitch: 0,
           });
           context.emit("updateRandomLatLng", data.location.latLng);
+
+          if (props.selectedMode === "multiplayer" && props.isOwner) {
+            context.emit("saveStreetView", data.location.latLng);
+          }
         }
       } else {
         loadStreetView();
@@ -109,16 +146,23 @@ export default defineComponent({
     };
 
     onMounted(() => {
-      if (props.selectedMap === "WORLD" || props.geoJSON !== null) {
-        loadStreetView();
+      if (props.selectedMode !== "multiplayer") {
+        if (props.selectedMap === "WORLD" || props.geoJSON !== null) {
+          loadStreetView();
+        } else {
+          context.emit("fetchGeoJSON", loadStreetView);
+        }
       } else {
-        context.emit("fetchGeoJSON", loadStreetView);
+        // Multiplayer mode
+        if (props.isOwner) {
+          if (props.selectedMap === "WORLD" || props.geoJSON !== null) {
+            loadStreetView();
+          } else {
+            context.emit("fetchGeoJSON", loadStreetView());
+          }
+        }
       }
     });
-
-    return {
-      state,
-    };
   },
 });
 </script>

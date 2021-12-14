@@ -63,7 +63,7 @@
             :selectedTime="store.state.gameSettings.selectedTime"
             :playerName="store.state.gameSettings.playerName"
             :isOwner="store.state.gameSettings.isOwner"
-            :roomNumber="store.state.gameSettings.roomNumber"
+            :roomNumber="store.state.gameSettings.roomNumber.toString()"
             :isReadyForMultiplayerGame="store.getters.isReadyForMultiplayerGame"
             @onChangeSize="onChangeSize"
             @onChangeTime="onChangeTime"
@@ -101,7 +101,7 @@ import { useRouter } from "vue-router";
 import GithubIcon from "vue-material-design-icons/Github.vue";
 import {
   get,
-  set,
+  push,
   ref as dbRef,
   child,
   DataSnapshot,
@@ -204,33 +204,36 @@ export default defineComponent({
         let randomNumber: number;
         let snapshot: DataSnapshot;
         do {
-          randomNumber = 0;
+          randomNumber = Math.floor(Math.random() * 9999);
           snapshot = await get(child(dbRef(database), `${randomNumber}`));
         } while (snapshot.exists());
         store.dispatch("changeRoomNumberAction", {
           roomNumber: randomNumber,
         });
-        await set(dbRef(database, `${randomNumber}/playerName`), {
-          1: store.state.gameSettings.playerName,
+        const playerNameRef = await push(
+          dbRef(database, `${randomNumber}/playerName`),
+          store.state.gameSettings.playerName
+        );
+        store.dispatch("savePlayerIdAction", {
+          playerId: playerNameRef.key,
         });
         await update(dbRef(database, `${randomNumber}`), {
+          active: true,
           size: store.state.gameSettings.selectedSize,
           time: store.state.gameSettings.selectedTime,
         });
         router.push("game");
       } else {
-        const snapshot = await get(
-          child(dbRef(database), `${store.state.gameSettings.roomNumber}`)
-        );
+        const roomNumber = store.state.gameSettings.roomNumber;
+        const snapshot = await get(child(dbRef(database), `${roomNumber}`));
         if (snapshot.exists()) {
-          const numberOfPlayers = snapshot.child("playerName").size + 1;
-          const updates: { [key: string]: string } = {};
-          updates[
-            `/${
-              store.state.gameSettings.roomNumber
-            }/playerName/${numberOfPlayers.toString()}`
-          ] = store.state.gameSettings.playerName;
-          await update(dbRef(database), updates);
+          const playerNameRef = await push(
+            dbRef(database, `${roomNumber}/playerName`),
+            store.state.gameSettings.playerName
+          );
+          store.dispatch("savePlayerIdAction", {
+            playerId: playerNameRef.key,
+          });
           router.push("game");
         } else {
           console.log("The room doesn't exist.");

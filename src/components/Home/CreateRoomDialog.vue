@@ -113,7 +113,7 @@ export default defineComponent({
       required: true,
     },
     roomNumber: {
-      type: Number,
+      type: String,
       required: false,
     },
     isReadyForMultiplayerGame: {

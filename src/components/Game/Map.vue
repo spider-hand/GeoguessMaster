@@ -8,10 +8,14 @@
 
 <script lang="ts">
 /*global google*/
-import { defineComponent, onMounted, reactive, watch } from "vue";
+import { defineComponent, onMounted, watch } from "vue";
 
 export default defineComponent({
   props: {
+    selectedMode: {
+      type: String,
+      required: true,
+    },
     randomLatLng: {
       type: google.maps.LatLng,
       default: null,
@@ -24,12 +28,7 @@ export default defineComponent({
   },
 
   setup(props, context) {
-    const state = reactive<{
-      map: google.maps.Map | null;
-    }>({
-      map: null,
-    });
-
+    let map: google.maps.Map;
     const markers: google.maps.Marker[] = [];
 
     watch(
@@ -67,7 +66,7 @@ export default defineComponent({
     const putMarker = (position: google.maps.LatLng): void => {
       const marker = new google.maps.Marker({
         position: position,
-        map: state.map,
+        map: map,
       });
       markers.push(marker);
     };
@@ -76,7 +75,7 @@ export default defineComponent({
       () => props.randomLatLng,
       (newVal: google.maps.LatLng | null) => {
         if (newVal !== null) {
-          state.map?.addListener("click", (e: any) => {
+          map.addListener("click", (e: any) => {
             removeMarkers();
             putMarker(e.latLng);
             context.emit("updateSelectedLatLng", e.latLng);
@@ -87,7 +86,7 @@ export default defineComponent({
 
     onMounted(() => {
       if (document.getElementById("map-container") !== null) {
-        state.map = new google.maps.Map(
+        map = new google.maps.Map(
           document.getElementById("map-container") as HTMLElement,
           {
             center: { lat: 37.86926, lng: -122.254811 },
@@ -101,7 +100,6 @@ export default defineComponent({
     });
 
     return {
-      state,
       onMouseOverMap,
       onMouseLeaveMap,
     };

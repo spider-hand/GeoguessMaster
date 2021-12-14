@@ -3,9 +3,7 @@
     <label
       :for="name"
       class="input-label"
-      :style="{
-        color: disabled ? '#dcdcdc' : '#5f5f5f',
-      }"
+      :classs="[disabled ? 'disabled-input-label' : '']"
     >
       {{ label }}
     </label>
@@ -13,11 +11,7 @@
       type="text"
       :name="name"
       class="text-input"
-      :style="{
-        borderBottom: disabled ? '1px solid #eeeeee' : '1px solid #dcdcdc',
-        color: disabled ? '#dcdcdc' : '#3c3c3c',
-        '--placeholder-color': disabled ? '#dcdcdc' : '#5f5f5f',
-      }"
+      :class="[disabled ? 'disabled-input' : '']"
       :placeholder="placeholder"
       v-model="state.inputValue"
       @input="onChangeValue"
@@ -84,12 +78,23 @@ export default defineComponent({
   margin-bottom: 4px;
   font-family: "Roboto medium";
   font-size: 10px;
+  color: #5f5f5f;
+}
+
+.disabled-input-label {
+  color: #dcdcdc;
 }
 
 .text-input {
   border: none;
   font-family: "Roboto";
   font-size: 16px;
+  border-bottom: 1px solid #dcdcdc;
+  color: #3c3c3c;
+}
+
+.text-input ::placeholder {
+  color: #5f5f5f;
 }
 
 .text-input::placeholder {
@@ -99,5 +104,14 @@ export default defineComponent({
 .text-input:focus-visible {
   box-shadow: none;
   outline: 0;
+}
+
+.disabled-input {
+  border-bottom: 1px solid #eeeeee;
+  color: #dcdcdc;
+}
+
+.disabled-input ::placeholder {
+  color: #dcdcdc;
 }
 </style>

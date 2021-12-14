@@ -2,7 +2,10 @@
   <div class="result-modal">
     <div id="result-map"></div>
     <div class="modal-footer">
-      <div class="result-wrapper" v-if="!isShowingSummary">
+      <div
+        class="result-wrapper"
+        v-if="!isShowingSummary && selectedMode === 'single'"
+      >
         <span id="distance" class="text" v-if="distance !== null"
           >You are {{ distance }}km away.</span
         >
@@ -23,7 +26,45 @@
           <span class="text">VIEW SUMMARY</span>
         </button>
       </div>
-      <div class="result-wrapper" v-else>
+      <div
+        class="content-wrapper"
+        v-if="!isShowingSummary && selectedMode === 'multiplayer'"
+      >
+        <div class="result-wrapper">
+          <span
+            class="text"
+            style="margin: 4px"
+            v-for="(item, index) in distanceByPlayerArr"
+            :key="index"
+          >
+            {{ item.playerName }} is {{ item.distance }}km away!
+          </span>
+        </div>
+        <div class="button-container-multiplayer-game">
+          <button
+            id="next-round-button"
+            class="long-button"
+            :class="[!isOwner && !isNextRoundReady ? 'disabled-button' : null]"
+            v-if="round < 5"
+            :disabled="!isOwner && !isNextRoundReady"
+            @click="onClickNextRoundButton"
+          >
+            <span class="text">NEXT ROUND</span>
+          </button>
+          <button
+            id="view-summary-button"
+            class="long-button"
+            v-else
+            @click="onClickViewSummaryButton"
+          >
+            <span class="text">VIEW SUMMARY</span>
+          </button>
+        </div>
+      </div>
+      <div
+        class="result-wrapper"
+        v-if="isShowingSummary && selectedMode === 'single'"
+      >
         <span id="distance" class="text"
           >You are {{ score }}km away in total.</span
         >
@@ -44,6 +85,29 @@
           </button>
         </div>
       </div>
+      <div
+        class="content-wrapper"
+        v-if="isShowingSummary && selectedMode === 'multiplayer'"
+      >
+        <div class="result-wrapper">
+          <span
+            id="distance"
+            class="text"
+            v-for="(item, index) in multiplayerGameSummary"
+            :key="index"
+            >{{ item.playerName }} is {{ item.score }}km away in total.</span
+          >
+        </div>
+        <div class="button-container-multiplayer-game">
+          <button
+            id="exit-button"
+            class="long-button"
+            @click="endMultiplayerGame"
+          >
+            <span class="text">EXIT</span>
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -51,10 +115,18 @@
 <script lang="ts">
 /*global google*/
 import { GameHistory } from "@/types";
-import { defineComponent, reactive, watch, onMounted } from "vue";
+import { defineComponent, watch, onMounted } from "vue";
 
 export default defineComponent({
   props: {
+    selectedMode: {
+      type: String,
+      required: true,
+    },
+    isOwner: {
+      type: Boolean,
+      required: true,
+    },
     isShowingResult: {
       type: Boolean,
       requreid: true,
@@ -63,15 +135,22 @@ export default defineComponent({
       type: Boolean,
       required: true,
     },
+    isNextRoundReady: {
+      type: Boolean,
+      required: true,
+    },
     randomLatLng: {
       type: google.maps.LatLng,
       default: null,
-      required: false,
     },
     selectedLatLng: {
       type: google.maps.LatLng,
       default: null,
       required: false,
+    },
+    selectedLatLngArr: {
+      type: Array,
+      required: true,
     },
     gameHistory: {
       type: Array,
@@ -81,6 +160,10 @@ export default defineComponent({
       type: Number,
       default: null,
     },
+    distanceByPlayerArr: {
+      type: Array,
+      required: true,
+    },
     round: {
       type: Number,
       required: true,
@@ -89,22 +172,21 @@ export default defineComponent({
       type: Number,
       required: true,
     },
+    multiplayerGameSummary: {
+      type: Array,
+      required: true,
+    },
   },
 
   setup(props, context) {
-    const state = reactive<{
-      map: google.maps.Map | null;
-    }>({
-      map: null,
-    });
-
+    let map: google.maps.Map;
     let markers: google.maps.Marker[] = [];
     let polylines: google.maps.Polyline[] = [];
 
     const putMarker = (position: google.maps.LatLng): void => {
       const marker = new google.maps.Marker({
         position: position,
-        map: state.map,
+        map: map,
       });
       markers.push(marker);
     };
@@ -124,7 +206,7 @@ export default defineComponent({
         path: [from, to],
         strokeColor: "#ff4343",
       });
-      polyline.setMap(state.map);
+      polyline.setMap(map);
       polylines.push(polyline);
     };
 
@@ -156,23 +238,47 @@ export default defineComponent({
       context.emit("onClickExitButton");
     };
 
+    const endMultiplayerGame = (): void => {
+      context.emit("endMultiplayerGame");
+    };
+
     watch(
       () => props.isShowingResult,
       (newVal: boolean) => {
-        if (newVal && props.randomLatLng && props.selectedLatLng) {
-          putMarker(props.randomLatLng);
-          putMarker(props.selectedLatLng);
-          drawPolyline(props.randomLatLng, props.selectedLatLng);
-        } else if (!newVal) {
-          removeMarkers();
-          removePolyline();
+        if (props.selectedMode === "multiplayer") {
+          if (
+            newVal &&
+            props.randomLatLng &&
+            props.selectedLatLngArr.length > 0 &&
+            props.distanceByPlayerArr.length > 0
+          ) {
+            putMarker(props.randomLatLng);
+            (props.selectedLatLngArr as google.maps.LatLng[]).forEach(
+              (latLng: google.maps.LatLng) => {
+                putMarker(latLng);
+                drawPolyline(props.randomLatLng, latLng);
+              }
+            );
+          } else {
+            removeMarkers();
+            removePolyline();
+          }
+        } else {
+          if (newVal && props.randomLatLng && props.selectedLatLng) {
+            putMarker(props.randomLatLng);
+            putMarker(props.selectedLatLng);
+            drawPolyline(props.randomLatLng, props.selectedLatLng);
+          } else if (!newVal) {
+            removeMarkers();
+            removePolyline();
+          }
         }
       }
     );
 
     onMounted(() => {
       if (document.getElementById("result-map") !== null) {
-        state.map = new google.maps.Map(
+        map = new google.maps.Map(
           document.getElementById("result-map") as HTMLElement,
           {
             center: { lat: 37.86926, lng: -122.254811 },
@@ -186,11 +292,11 @@ export default defineComponent({
     });
 
     return {
-      state,
       onClickNextRoundButton,
       onClickViewSummaryButton,
       onClickPlayAgainButton,
       onClickExitButton,
+      endMultiplayerGame,
     };
   },
 });
@@ -203,7 +309,7 @@ export default defineComponent({
   height: 100%;
   top: 0;
   left: 0;
-  z-index: 999;
+  z-index: 3;
 }
 
 #result-map {
@@ -239,6 +345,12 @@ export default defineComponent({
   flex-direction: row;
 }
 
+.button-container-multiplayer-game {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+}
+
 .text {
   color: #ffffff;
   font-family: "Roboto medium";
@@ -252,6 +364,10 @@ export default defineComponent({
   border: none;
   border-radius: 5px;
   cursor: pointer;
+}
+
+.disabled-button {
+  cursor: not-allowed;
 }
 
 #next-round-button,

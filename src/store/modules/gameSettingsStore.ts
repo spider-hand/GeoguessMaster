@@ -8,8 +8,9 @@ export interface GameSettingsState {
   selectedSize: number;
   selectedTime: number | null;
   playerName: string;
+  playerId: string;
   isOwner: boolean;
-  roomNumber: number;
+  roomNumber: string;
   geoJSON: any;
 }
 
@@ -19,8 +20,9 @@ const getDefaultState = (): GameSettingsState => ({
   selectedSize: 2,
   selectedTime: 1,
   playerName: "",
+  playerId: "",
   isOwner: true,
-  roomNumber: -1,
+  roomNumber: "",
   geoJSON: null,
 });
 
@@ -37,7 +39,11 @@ export const gameSettingsStore = {
       if (state.isOwner) {
         return state.playerName !== "";
       } else {
-        return state.playerName !== "" && state.roomNumber < 0;
+        return (
+          state.playerName !== "" &&
+          !isNaN(Number(state.roomNumber)) &&
+          state.roomNumber !== ""
+        );
       }
     },
   },
@@ -60,10 +66,13 @@ export const gameSettingsStore = {
     changePlayerName(state: GameSettingsState, value: string) {
       state.playerName = value;
     },
+    savePlayerId(state: GameSettingsState, value: string) {
+      state.playerId = value;
+    },
     switchIsOwner(state: GameSettingsState, value: boolean) {
       state.isOwner = value;
     },
-    changeRoomNumber(state: GameSettingsState, value: number) {
+    changeRoomNumber(state: GameSettingsState, value: string) {
       state.roomNumber = value;
     },
     fetchGeoJSON(state: GameSettingsState, value: any) {
@@ -89,13 +98,16 @@ export const gameSettingsStore = {
     changePlayerNameAction({ commit }: any, payload: any) {
       commit("changePlayerName", payload.playerName);
     },
+    savePlayerIdAction({ commit }: any, payload: any) {
+      commit("savePlayerId", payload.playerId);
+    },
     switchIsOwnerAction({ commit }: any, payload: any) {
       commit("switchIsOwner", payload.isOwner);
     },
     changeRoomNumberAction({ commit }: any, payload: any) {
       commit("changeRoomNumber", payload.roomNumber);
     },
-    async fetchGeoJSONAction({ state, commit, rootState }: any, payload: any) {
+    async fetchGeoJSONAction({ commit }: any, payload: any) {
       try {
         const resp = await axios.get(
           `${process.env.BASE_URL}geoJSON/${payload.countryCode}.json`
