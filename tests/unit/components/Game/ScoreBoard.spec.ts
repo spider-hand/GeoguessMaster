@@ -3,7 +3,7 @@ import { shallowMount, VueWrapper } from "@vue/test-utils";
 import ScoreBoard from "@/components/Game/ScoreBoard.vue";
 
 describe("Test ScoreBoard component", () => {
-  let wrapper: VueWrapper<any> | null = null;
+  let wrapper: VueWrapper<any>;
 
   beforeEach(() => {
     wrapper = shallowMount(ScoreBoard, {
@@ -16,18 +16,18 @@ describe("Test ScoreBoard component", () => {
   });
 
   afterEach(() => {
-    wrapper!.unmount();
+    wrapper.unmount();
   });
 
   it("Test selectedMap text", () => {
-    expect(wrapper!.find("#selected-map").text()).toBe("Test");
+    expect(wrapper.find("#selected-map").text()).toBe("Test");
   });
 
   it("Test round text", () => {
-    expect(wrapper!.find("#round").text()).toBe("1 / 5");
+    expect(wrapper.find("#round").text()).toBe("1 / 5");
   });
 
   it("Test round text", () => {
-    expect(wrapper!.find("#score").text()).toBe("1000");
+    expect(wrapper.find("#score").text()).toBe("1000");
   });
 });

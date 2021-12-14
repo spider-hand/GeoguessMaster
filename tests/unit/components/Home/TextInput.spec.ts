@@ -3,7 +3,7 @@ import { shallowMount, VueWrapper } from "@vue/test-utils";
 import TextInput from "@/components/Home/TextInput.vue";
 
 describe("Test TextInput component", () => {
-  let wrapper: VueWrapper<any> | null = null;
+  let wrapper: VueWrapper<any>;
 
   beforeEach(() => {
     wrapper = shallowMount(TextInput, {
@@ -18,46 +18,46 @@ describe("Test TextInput component", () => {
   });
 
   afterEach(() => {
-    wrapper!.unmount();
+    wrapper.unmount();
   });
 
   it("Test default state", () => {
-    expect(wrapper!.vm.state.inputValue).toBe("");
+    expect(wrapper.vm.state.inputValue).toBe("");
   });
 
   it("Test input name", () => {
-    expect(wrapper!.find("input[name='test']").exists()).toBe(true);
+    expect(wrapper.find("input[name='test']").exists()).toBe(true);
   });
 
   it("Test input placeholder", () => {
-    expect(wrapper!.find("input[placeholder='This is test']").exists()).toBe(true);
+    expect(wrapper.find("input[placeholder='This is test']").exists()).toBe(true);
   });
 
   it("Test input value", () => {
-    expect(wrapper!.find("input").element.value).toBe("");
+    expect(wrapper.find("input").element.value).toBe("");
   });
 
   it("Make sure the input is not disabled", () => {
-    expect(wrapper!.find("input").attributes("disabled")).not.toBeDefined();
+    expect(wrapper.find("input").attributes("disabled")).not.toBeDefined();
   });
 
   it("Test disabled input", async () => {
-    await wrapper!.setProps({ disabled: true });
+    await wrapper.setProps({ disabled: true });
 
-    expect(wrapper!.find("input").attributes("disabled")).toBeDefined();
+    expect(wrapper.find("input").attributes("disabled")).toBeDefined();
   });
 
   it("Test input value", async () => {
-    const input = wrapper!.find("input");
-    await input.setValue("Hello, world!");
+    const input = wrapper.find("input");
+    await input.setValue("Hello, world");
 
-    expect(input.element.value).toBe("Hello, world!");
+    expect(input.element.value).toBe("Hello, world");
   });
 
   it("Test onChangeValue event", async () => {
-    const input = wrapper!.find("input");
-    await input.setValue("Hello, world!");
+    const input = wrapper.find("input");
+    await input.setValue("Hello, world");
 
-    expect(wrapper!.emitted().onChangeValue[0]).toEqual(["Hello, world!"]);
+    expect(wrapper.emitted().onChangeValue[0]).toEqual(["Hello, world"]);
   });
 });
