@@ -34,7 +34,7 @@ describe("Test SelectBox component", () => {
 
   it("Test selected option", () => {
     expect(wrapper!.find(".selected-option").text()).toBe(MAP_OPTIONS[0].text);
-  })
+  });
 
   it("Test if the dialog doesn't show", () => {
     expect(wrapper!.find(".select-box-dialog").exists()).toBe(false);
@@ -46,19 +46,26 @@ describe("Test SelectBox component", () => {
     expect(wrapper!.find(".select-box-dialog").exists()).toBe(true);
   });
 
-  it("Test the style", () => {
-    const selectBoxContainer =  wrapper!.find(".select-box-container");
-    expect(selectBoxContainer.attributes("style")).toBe(
-      "border-right: 1px solid #dcdcdc;"
+  it("Test the style on hovering the mouse", async () => {
+    await wrapper!.find(".select-box-container").trigger("mouseover");
+
+    expect(
+      wrapper!.find(".select-box-highligted-container").classes()
+    ).toContain("on-hover");
+    expect(wrapper!.find(".select-box-container").classes()).toContain(
+      "on-hover-select-box-container"
     );
   });
 
-  it("Test the style on mouse over", async () => {
-    const selectBoxContainer =  wrapper!.find(".select-box-container");
-    await selectBoxContainer.trigger("mouseover");
+  it("Test the style when not hovering", async () => {
+    await wrapper!.find(".select-box-container").trigger("mouseover");
+    await wrapper!.find(".select-box-container").trigger("mouseleave");
 
-    wrapper!.vm.$nextTick(() => {
-      expect(selectBoxContainer.attributes("style")).toBe("");
-    });
+    expect(
+      wrapper!.find(".select-box-highligted-container").classes()
+    ).not.toContain("on-hover");
+    expect(wrapper!.find(".select-box-container").classes()).not.toContain(
+      "on-hover-select-box-container"
+    );
   });
 });
