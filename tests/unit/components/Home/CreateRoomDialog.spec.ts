@@ -12,6 +12,7 @@ describe("Test CreateRoomDialog component", () => {
     wrapper = mount(CreateRoomDialog, {
       props: {
         isShowingDialog: true,
+        isRoomFound: true,
         selectedSize: 2,
         selectedTime: 1,
         playerName: "",
@@ -62,6 +63,12 @@ describe("Test CreateRoomDialog component", () => {
 
   it("Test the button style when isReadyForMultiplayerGame is false", () => {
     expect(wrapper.find(".start-game-button").classes()).toContain("cursor-not-allowed");
+  });
+
+  it("Test error message when isRoomFound is false", async () => {
+    await wrapper.setProps({ isRoomFound: false });
+
+    expect(wrapper.vm.roomCannnotBeFoundError).toBe("The room cannot be found.");
   });
 
   it("Test onChangeSize event", () => {
