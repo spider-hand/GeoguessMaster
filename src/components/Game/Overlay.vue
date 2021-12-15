@@ -65,4 +65,10 @@ export default defineComponent({
   font-size: 24px;
   color: #ffffff;
 }
+
+@media only screen and (max-width: 480px) {
+  .text {
+    font-size: 20px;
+  }
+}
 </style>

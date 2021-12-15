@@ -1,9 +1,18 @@
 <template>
-  <div
-    id="map-container"
-    @mouseover="onMouseOverMap"
-    @mouseleave="onMouseLeaveMap"
-  ></div>
+  <div>
+    <div
+      id="map-container"
+      @mouseover="onMouseOverMap"
+      @mouseleave="onMouseLeaveMap"
+    ></div>
+    <div
+      id="hide-map-button"
+      v-if="isMakeGuessButtonClicked"
+      @click="onClickHideMapButton"
+    >
+      <span id="close-icon" class="material-icons">close</span>
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -23,6 +32,10 @@ export default defineComponent({
     },
     round: {
       type: Number,
+      required: true,
+    },
+    isMakeGuessButtonClicked: {
+      type: Boolean,
       required: true,
     },
   },
@@ -71,6 +84,10 @@ export default defineComponent({
       markers.push(marker);
     };
 
+    const onClickHideMapButton = (): void => {
+      context.emit("onClickHideMapButton");
+    };
+
     watch(
       () => props.randomLatLng,
       (newVal: google.maps.LatLng | null) => {
@@ -102,6 +119,7 @@ export default defineComponent({
     return {
       onMouseOverMap,
       onMouseLeaveMap,
+      onClickHideMapButton,
     };
   },
 });
@@ -119,5 +137,36 @@ export default defineComponent({
   transform-origin: bottom left;
   transform: scale(0.75);
   transition: transform 0.3s;
+}
+
+#hide-map-button {
+  display: none;
+}
+
+@media only screen and (max-width: 480px) {
+  #map-container {
+    bottom: -280px;
+    opacity: 1;
+    transition: transform 1s;
+  }
+
+  #hide-map-button {
+    display: block;
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    bottom: 292px;
+    left: 324px;
+    border-radius: 12px;
+    background-color: #ff4343;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #close-icon {
+    color: #ffffff;
+  }
 }
 </style>

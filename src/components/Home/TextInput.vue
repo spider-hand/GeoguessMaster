@@ -17,6 +17,7 @@
       @input="onChangeValue"
       :disabled="disabled"
     />
+    <span v-if="errorMsg" class="error-text">{{ errorMsg }}</span>
   </div>
 </template>
 
@@ -45,6 +46,10 @@ export default defineComponent({
     disabled: {
       type: Boolean,
       default: false,
+      required: false,
+    },
+    errorMsg: {
+      type: String,
       required: false,
     },
   },
@@ -113,5 +118,12 @@ export default defineComponent({
 
 .disabled-input ::placeholder {
   color: #dcdcdc;
+}
+
+.error-text {
+  margin-top: 2px;
+  font-family: "Roboto";
+  font-size: 10px;
+  color: #ff4343;
 }
 </style>

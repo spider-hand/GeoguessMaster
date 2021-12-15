@@ -71,6 +71,7 @@
         :inputValue="roomNumber"
         @onChangeValue="onChangeRoomNumber"
         :disabled="isOwner"
+        :errorMsg="roomCannnotBeFoundError"
       />
     </div>
     <div class="button-container">
@@ -87,7 +88,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, computed } from "vue";
 
 import Counter from "@/components/Home/Counter.vue";
 import Switch from "@/components/Home/Switch.vue";
@@ -96,6 +97,10 @@ import TextInput from "@/components/Home/TextInput.vue";
 export default defineComponent({
   props: {
     isShowingDialog: {
+      type: Boolean,
+      required: true,
+    },
+    isRoomFound: {
       type: Boolean,
       required: true,
     },
@@ -132,6 +137,10 @@ export default defineComponent({
   },
 
   setup(props, context) {
+    const roomCannnotBeFoundError = computed<string | null>(() =>
+      !props.isRoomFound ? "The room cannot be found." : null
+    );
+
     const onChangeSize = (newVal: number): void => {
       context.emit("onChangeSize", newVal);
     };
@@ -157,6 +166,7 @@ export default defineComponent({
     };
 
     return {
+      roomCannnotBeFoundError,
       onChangeSize,
       onChangeTime,
       onChangePlayerName,

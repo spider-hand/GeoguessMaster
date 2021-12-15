@@ -18,6 +18,7 @@ export interface InGameState {
   isWaitingForOtherPlayers: boolean;
   isShowingResult: boolean;
   isShowingSummary: boolean;
+  isMakeGuessButtonClicked: boolean;
 }
 
 const getDefaultState = (): InGameState => ({
@@ -33,6 +34,7 @@ const getDefaultState = (): InGameState => ({
   isWaitingForOtherPlayers: false,
   isShowingResult: false,
   isShowingSummary: false,
+  isMakeGuessButtonClicked: false,
 });
 
 export const inGameStore = {
@@ -97,6 +99,9 @@ export const inGameStore = {
     saveIsWaitingForOtherPlayers(state: InGameState, value: boolean) {
       state.isWaitingForOtherPlayers = value;
     },
+    saveIsMakeGuessButtonClicked(state: InGameState, value: boolean) {
+      state.isMakeGuessButtonClicked = value;
+    },
   },
   actions: {
     resetInGameStateAction({ commit }: any) {
@@ -131,6 +136,7 @@ export const inGameStore = {
       commit("saveIsThisRoundReady", false);
       commit("saveIsNextRoundReady", false);
       commit("saveIsShowingResult", false);
+      commit("saveIsMakeGuessButtonClicked", false);
       commit("saveRandomLatLng", null);
       commit("saveSelectedLatLng", null);
       commit("resetSelectedLatLngArr");
@@ -144,6 +150,9 @@ export const inGameStore = {
     },
     saveIsWaitingForOtherPlayersAction({ commit }: any, payload: any) {
       commit("saveIsWaitingForOtherPlayers", payload.isWaitingForOtherPlayers);
+    },
+    saveIsMakeGuessButtonClickedAction({ commit }: any, payload: any) {
+      commit("saveIsMakeGuessButtonClicked", payload.isMakeGuessButtonClicked);
     },
   },
 };

@@ -47,6 +47,9 @@
             v-if="store.state.gameSettings.selectedMode === 'single'"
             @click="startSinglePlayerGame"
           >
+            <span id="travel-explore-icon" class="material-icons"
+              >travel_explore</span
+            >
             <span class="create-button-text">START</span>
           </div>
           <div
@@ -55,10 +58,14 @@
             v-if="store.state.gameSettings.selectedMode === 'multiplayer'"
             @click="openCreateRoomDialog"
           >
+            <span id="travel-explore-icon" class="material-icons"
+              >travel_explore</span
+            >
             <span class="create-button-text">CREATE ROOM</span>
           </div>
           <CreateRoomDialog
             :isShowingDialog="state.isShowingRoomCreateDialog"
+            :isRoomFound="state.isRoomFound"
             :selectedSize="store.state.gameSettings.selectedSize"
             :selectedTime="store.state.gameSettings.selectedTime"
             :playerName="store.state.gameSettings.playerName"
@@ -78,7 +85,6 @@
         <img
           :src="require(`@/assets/${store.state.gameSettings.selectedMap}.png`)"
           class="map-image"
-          width="680"
         />
       </div>
     </div>
@@ -145,8 +151,10 @@ export default defineComponent({
 
     const state = reactive<{
       isShowingRoomCreateDialog: boolean;
+      isRoomFound: boolean;
     }>({
       isShowingRoomCreateDialog: false,
+      isRoomFound: true,
     });
 
     const onChangeSelectedMap = (option: SelectboxOption): void => {
@@ -200,44 +208,48 @@ export default defineComponent({
     };
 
     const startMultiplayerGame = async (): Promise<void> => {
-      if (store.state.gameSettings.isOwner) {
-        let randomNumber: number;
-        let snapshot: DataSnapshot;
-        do {
-          randomNumber = Math.floor(Math.random() * 9999);
-          snapshot = await get(child(dbRef(database), `${randomNumber}`));
-        } while (snapshot.exists());
-        store.dispatch("changeRoomNumberAction", {
-          roomNumber: randomNumber,
-        });
-        const playerNameRef = await push(
-          dbRef(database, `${randomNumber}/playerName`),
-          store.state.gameSettings.playerName
-        );
-        store.dispatch("savePlayerIdAction", {
-          playerId: playerNameRef.key,
-        });
-        await update(dbRef(database, `${randomNumber}`), {
-          active: true,
-          size: store.state.gameSettings.selectedSize,
-          time: store.state.gameSettings.selectedTime,
-        });
-        router.push("game");
-      } else {
-        const roomNumber = store.state.gameSettings.roomNumber;
-        const snapshot = await get(child(dbRef(database), `${roomNumber}`));
-        if (snapshot.exists()) {
+      try {
+        if (store.state.gameSettings.isOwner) {
+          let randomNumber: number;
+          let snapshot: DataSnapshot;
+          do {
+            randomNumber = Math.floor(Math.random() * 9999);
+            snapshot = await get(child(dbRef(database), `${randomNumber}`));
+          } while (snapshot.exists());
+          store.dispatch("changeRoomNumberAction", {
+            roomNumber: randomNumber,
+          });
           const playerNameRef = await push(
-            dbRef(database, `${roomNumber}/playerName`),
+            dbRef(database, `${randomNumber}/playerName`),
             store.state.gameSettings.playerName
           );
           store.dispatch("savePlayerIdAction", {
             playerId: playerNameRef.key,
           });
+          await update(dbRef(database, `${randomNumber}`), {
+            active: true,
+            size: store.state.gameSettings.selectedSize,
+            time: store.state.gameSettings.selectedTime,
+          });
           router.push("game");
         } else {
-          console.log("The room doesn't exist.");
+          const roomNumber = store.state.gameSettings.roomNumber;
+          const snapshot = await get(child(dbRef(database), `${roomNumber}`));
+          if (snapshot.exists()) {
+            const playerNameRef = await push(
+              dbRef(database, `${roomNumber}/playerName`),
+              store.state.gameSettings.playerName
+            );
+            store.dispatch("savePlayerIdAction", {
+              playerId: playerNameRef.key,
+            });
+            router.push("game");
+          } else {
+            state.isRoomFound = false;
+          }
         }
+      } catch (err) {
+        console.log(`StartMultiplayerGame error: ${err}`);
       }
     };
 
@@ -275,6 +287,7 @@ export default defineComponent({
   top: 0;
   left: 0;
   background: linear-gradient(#0000ae, #000057);
+  overflow-x: hidden;
   overflow-y: auto;
 }
 
@@ -352,6 +365,10 @@ export default defineComponent({
   color: #ffffff;
 }
 
+#travel-explore-icon {
+  display: none;
+}
+
 .map-image-container {
   width: 100%;
   padding: 24px 0;
@@ -361,6 +378,7 @@ export default defineComponent({
 }
 
 .map-image {
+  width: 680px;
   border-radius: 8px;
 }
 
@@ -382,5 +400,45 @@ export default defineComponent({
   font-family: "Roboto medium";
   font-size: 12px;
   color: #ffffff;
+}
+
+@media only screen and (max-width: 480px) {
+  .header {
+    height: 48px;
+  }
+
+  .header-right {
+    width: 64px;
+  }
+
+  .title {
+    display: none;
+  }
+
+  .start-game-button {
+    position: absolute;
+    right: 4px;
+    width: 48px;
+    border-radius: 24px;
+    background-color: #ffffff;
+  }
+
+  .start-game-button .create-button-text {
+    display: none;
+  }
+
+  #travel-explore-icon {
+    display: block;
+    color: #ff4343;
+  }
+
+  .game-create-box {
+    width: 92%;
+    height: 48px;
+  }
+
+  .map-image {
+    height: 100%;
+  }
 }
 </style>

@@ -4,9 +4,10 @@
       v-show="
         store.state.gameSettings.selectedMode === 'multiplayer' &&
         (!store.state.inGame.isThisRoundReady ||
-          store.state.inGame.isWaitingForOtherPlayers)
+          store.state.inGame.isWaitingForOtherPlayers ||
+          state.isEndingMultiplayerGame)
       "
-      :msg="'Waiting for other players to get ready..'"
+      :msg="state.overlayMsg"
     />
     <ResultModal
       v-show="store.state.inGame.isShowingResult"
@@ -59,16 +60,25 @@
       :isOwner="store.state.gameSettings.isOwner"
       :randomLatLng="store.state.inGame.randomLatLng"
       :round="store.state.inGame.round"
+      :isMakeGuessButtonClicked="store.state.inGame.isMakeGuessButtonClicked"
       @updateSelectedLatLng="updateSelectedLatLng"
+      @onClickHideMapButton="onClickHideMapButton"
     />
     <button
       id="guess-button"
       :class="['long-button', isGuessButtonDisabled ? 'disabled-button' : null]"
       :disabled="isGuessButtonDisabled"
-      v-if="!state.isGuessButtonClicked"
       @click="onClickGuessButton"
     >
       <span class="button-text">GUESS</span>
+    </button>
+    <button
+      id="make-guess-button"
+      class="long-button"
+      v-show="!store.state.inGame.isMakeGuessButtonClicked"
+      @click="onClickMakeGuessButton"
+    >
+      <span class="button-text">MAKE GUESS</span>
     </button>
   </div>
 </template>
@@ -115,28 +125,33 @@ export default defineComponent({
     const router = useRouter();
 
     const state = reactive<{
-      isGuessButtonClicked: boolean;
       isGameReady: boolean;
+      isEndingMultiplayerGame: boolean;
       multiplayerGameSummary: Array<Summary>;
+      overlayMsg: string;
     }>({
-      isGuessButtonClicked: false,
       isGameReady: false,
+      isEndingMultiplayerGame: false,
       multiplayerGameSummary: [],
+      overlayMsg: "Waiting for other players to get ready..",
     });
 
     const isGuessButtonDisabled = computed<boolean>(
       () =>
         store.state.inGame.selectedLatLng === null ||
-        state.isGuessButtonClicked ||
         (store.state.gameSettings.selectedMode === "multiplayer" &&
           !store.state.inGame.isThisRoundReady)
     );
 
     const fetchGeoJSON = async (callback: () => void): Promise<void> => {
-      await store.dispatch("fetchGeoJSONAction", {
-        countryCode: store.state.gameSettings.selectedMap,
-      });
-      callback();
+      try {
+        await store.dispatch("fetchGeoJSONAction", {
+          countryCode: store.state.gameSettings.selectedMap,
+        });
+        callback();
+      } catch (err) {
+        console.log(`fetchGeoJSON error: ${err}`);
+      }
     };
 
     const updateRandomLatLng = (latLng: google.maps.LatLng): void => {
@@ -166,6 +181,22 @@ export default defineComponent({
       );
     };
 
+    const onClickMakeGuessButton = (): void => {
+      store.dispatch("saveIsMakeGuessButtonClickedAction", {
+        isMakeGuessButtonClicked: true,
+      });
+      document.getElementById("map-container")!.style.transform =
+        "translateY(-340px)";
+    };
+
+    const onClickHideMapButton = (): void => {
+      store.dispatch("saveIsMakeGuessButtonClickedAction", {
+        isMakeGuessButtonClicked: false,
+      });
+      document.getElementById("map-container")!.style.transform =
+        "translateY(300px)";
+    };
+
     const onClickGuessButton = async (): Promise<void> => {
       store.dispatch("saveScoreAction", {
         score: store.getters.distance,
@@ -179,35 +210,44 @@ export default defineComponent({
         store.dispatch("saveIsWaitingForOtherPlayersAction", {
           isWaitingForOtherPlayers: true,
         });
-        await update(
-          dbRef(
-            database,
-            `${store.state.gameSettings.roomNumber}/round${store.state.inGame.round}`
-          ),
-          {
-            [store.state.gameSettings.playerId]: store.getters.distance,
-          }
-        );
-        await set(
-          dbRef(
-            database,
-            `${store.state.gameSettings.roomNumber}/guess/${store.state.gameSettings.playerId}`
-          ),
-          {
-            lat: store.state.inGame.selectedLatLng?.lat(),
-            lng: store.state.inGame.selectedLatLng?.lng(),
-          }
-        );
-        await update(
-          dbRef(database, `${store.state.gameSettings.roomNumber}/score`),
-          {
-            [store.state.gameSettings.playerId]: store.state.inGame.score,
-          }
-        );
+        try {
+          await update(
+            dbRef(
+              database,
+              `${store.state.gameSettings.roomNumber}/round${store.state.inGame.round}`
+            ),
+            {
+              [store.state.gameSettings.playerId]: store.getters.distance,
+            }
+          );
+          await set(
+            dbRef(
+              database,
+              `${store.state.gameSettings.roomNumber}/guess/${store.state.gameSettings.playerId}`
+            ),
+            {
+              lat: store.state.inGame.selectedLatLng?.lat(),
+              lng: store.state.inGame.selectedLatLng?.lng(),
+            }
+          );
+          await update(
+            dbRef(database, `${store.state.gameSettings.roomNumber}/score`),
+            {
+              [store.state.gameSettings.playerId]: store.state.inGame.score,
+            }
+          );
+        } catch (err) {
+          console.log(`onClickGuessButton error: ${err}`);
+        }
       }
     };
 
     const onClickNextRoundButton = async (): Promise<void> => {
+      if (store.state.inGame.isMakeGuessButtonClicked) {
+        // Hide map for mobile devices
+        onClickHideMapButton();
+      }
+
       const gameHistory = {
         randomLatLng: store.state.inGame.randomLatLng,
         selectedLatLng: store.state.inGame.selectedLatLng,
@@ -222,25 +262,29 @@ export default defineComponent({
         store.state.gameSettings.selectedMode === "multiplayer" &&
         !store.state.gameSettings.isOwner
       ) {
-        await set(
-          dbRef(
-            database,
-            `/${store.state.gameSettings.roomNumber}/round${store.state.inGame.round}`
-          ),
-          {
-            [store.state.gameSettings.playerId]: 0,
-          }
-        );
-        const snapshot = await get(
-          child(
-            dbRef(database),
-            `/${store.state.gameSettings.roomNumber}/streetView/round${store.state.inGame.round}`
-          )
-        );
-        const randomLat = snapshot.child("lat").val();
-        const randomLng = snapshot.child("lng").val();
-        const randomLatLng = new google.maps.LatLng(randomLat, randomLng);
-        updateRandomLatLng(randomLatLng);
+        try {
+          await set(
+            dbRef(
+              database,
+              `/${store.state.gameSettings.roomNumber}/round${store.state.inGame.round}`
+            ),
+            {
+              [store.state.gameSettings.playerId]: 0,
+            }
+          );
+          const snapshot = await get(
+            child(
+              dbRef(database),
+              `/${store.state.gameSettings.roomNumber}/streetView/round${store.state.inGame.round}`
+            )
+          );
+          const randomLat = snapshot.child("lat").val();
+          const randomLng = snapshot.child("lng").val();
+          const randomLatLng = new google.maps.LatLng(randomLat, randomLng);
+          updateRandomLatLng(randomLatLng);
+        } catch (err) {
+          console.log(`onClickNextRoundButton error: ${err}`);
+        }
       }
     };
 
@@ -255,23 +299,35 @@ export default defineComponent({
     };
 
     const endMultiplayerGame = async (): Promise<void> => {
-      await update(
-        dbRef(database, `/${store.state.gameSettings.roomNumber}/hasDone`),
-        {
-          [store.state.gameSettings.playerId]: true,
-        }
-      );
-      store.dispatch("saveIsWaitingForOtherPlayersAction", {
-        isWaitingForOtherPlayers: true,
-      });
+      try {
+        await update(
+          dbRef(database, `/${store.state.gameSettings.roomNumber}/hasDone`),
+          {
+            [store.state.gameSettings.playerId]: true,
+          }
+        );
+        store.dispatch("saveIsWaitingForOtherPlayersAction", {
+          isWaitingForOtherPlayers: true,
+        });
+      } catch (err) {
+        console.log(`endMultiplayerGame error: ${err}`);
+      }
     };
 
     const onClickExitButton = (): void => {
-      if (store.state.gameSettings.selectedMode === "multiplayer") {
-        off(dbRef(database, `/${store.state.gameSettings.roomNumber}`));
-        remove(dbRef(database, `/${store.state.gameSettings.roomNumber}`));
-      }
       router.back();
+    };
+
+    const onEndMultiplayerGame = (): void => {
+      // Multiplayer game
+      state.overlayMsg = "Disconnecting from this game..";
+      state.isEndingMultiplayerGame = true;
+      off(dbRef(database, `/${store.state.gameSettings.roomNumber}`));
+      remove(dbRef(database, `/${store.state.gameSettings.roomNumber}`));
+
+      setTimeout(() => {
+        router.back();
+      }, 3000);
     };
 
     onMounted(() => {
@@ -280,121 +336,141 @@ export default defineComponent({
 
       if (store.state.gameSettings.selectedMode === "multiplayer") {
         onValue(dbRef(database, `/${roomNumber}`), async (snapshot) => {
-          if (
-            !snapshot.child("active").exists() ||
-            !snapshot.child("active").val()
-          ) {
-            // Exit the game when the game finished
-            onClickExitButton();
-          } else {
-            // Put the player into the current round's node
+          try {
             if (
-              !snapshot
-                .child(`round${store.state.inGame.round}`)
-                .hasChild(playerId)
+              !snapshot.child("active").exists() ||
+              !snapshot.child("active").val()
             ) {
-              await update(
-                dbRef(
-                  database,
-                  `/${roomNumber}/round${store.state.inGame.round}`
-                ),
-                {
-                  [playerId]: 0,
-                }
-              );
-              if (!store.state.gameSettings.isOwner) {
-                const randomLat = snapshot
-                  .child(`streetView/round${store.state.inGame.round}/lat`)
-                  .val();
-                const randomLng = snapshot
-                  .child(`streetView/round${store.state.inGame.round}/lng`)
-                  .val();
-                const randomLatLng = new google.maps.LatLng(
-                  randomLat,
-                  randomLng
+              // Exit the game when the game finished
+              onEndMultiplayerGame();
+            } else {
+              // Put the player into the current round's node
+              if (
+                !snapshot
+                  .child(`round${store.state.inGame.round}`)
+                  .hasChild(playerId)
+              ) {
+                await update(
+                  dbRef(
+                    database,
+                    `/${roomNumber}/round${store.state.inGame.round}`
+                  ),
+                  {
+                    [playerId]: 0,
+                  }
                 );
-                updateRandomLatLng(randomLatLng);
+                if (!store.state.gameSettings.isOwner) {
+                  const randomLat = snapshot
+                    .child(`streetView/round${store.state.inGame.round}/lat`)
+                    .val();
+                  const randomLng = snapshot
+                    .child(`streetView/round${store.state.inGame.round}/lng`)
+                    .val();
+                  const randomLatLng = new google.maps.LatLng(
+                    randomLat,
+                    randomLng
+                  );
+                  updateRandomLatLng(randomLatLng);
+                }
               }
-            }
-            if (
-              snapshot.child(`round${store.state.inGame.round}`).size ===
-              snapshot.child("size").val()
-            ) {
-              // Hide RoomNumberDialog when all players proceed to this round
-              state.isGameReady = true;
-              // Enable guess button when all players are put into the current round's node
-              store.dispatch("saveIsThisRoundReadyAction", {
-                isThisRoundReady: true,
-              });
-              // Start a timer
-            }
-            if (
-              snapshot.child("streetView").size ===
-              store.state.inGame.round + 1
-            ) {
-              // Allow other players to proceed to the next round after the owner load a StreetView first
-              store.dispatch("saveIsNextRoundReadyAction", {
-                isNextRoundReady: true,
-              });
-            }
-
-            if (snapshot.child("guess").size === snapshot.child("size").val()) {
-              // Show the result when all players finished guessing locations
-              snapshot.child("guess").forEach((childSnapshot) => {
-                const lat = childSnapshot.child("lat").val();
-                const lng = childSnapshot.child("lng").val();
-                const latlng = new google.maps.LatLng(lat, lng);
-                const playerName = snapshot
-                  .child("playerName")
-                  .child(childSnapshot.key!)
-                  .val();
-                const distance = snapshot
-                  .child(
-                    `round${store.state.inGame.round}/${childSnapshot.key!}`
-                  )
-                  .val();
-                store.dispatch("updateSelectedLatLngArrAction", {
-                  selectedLatLng: latlng,
+              if (
+                snapshot.child(`round${store.state.inGame.round}`).size ===
+                snapshot.child("size").val()
+              ) {
+                // Hide RoomNumberDialog when all players proceed to this round
+                state.isGameReady = true;
+                // Enable guess button when all players are put into the current round's node
+                store.dispatch("saveIsThisRoundReadyAction", {
+                  isThisRoundReady: true,
                 });
-                store.dispatch("updateDistanceByPlayerArrAction", {
-                  distanceByPlayer: {
-                    playerName: playerName,
-                    distance: distance,
-                  },
+                // Start a timer
+              }
+              if (
+                snapshot.child("streetView").size ===
+                store.state.inGame.round + 1
+              ) {
+                // Allow other players to proceed to the next round after the owner load a StreetView first
+                store.dispatch("saveIsNextRoundReadyAction", {
+                  isNextRoundReady: true,
                 });
-              });
-              store.dispatch("saveIsWaitingForOtherPlayersAction", {
-                isWaitingForOtherPlayers: false,
-              });
-              store.dispatch("saveIsShowingResultAction", {
-                isShowingResult: true,
-              });
+              }
 
-              if (store.state.inGame.round === 5) {
-                // Summary
-                snapshot.child("score").forEach((childSnapshot) => {
+              if (
+                snapshot.child("guess").size === snapshot.child("size").val()
+              ) {
+                // Show the result when all players finished guessing locations
+                snapshot.child("guess").forEach((childSnapshot) => {
+                  const lat = childSnapshot.child("lat").val();
+                  const lng = childSnapshot.child("lng").val();
+                  const latlng = new google.maps.LatLng(lat, lng);
                   const playerName = snapshot
                     .child("playerName")
                     .child(childSnapshot.key!)
                     .val();
-                  const score = childSnapshot.val();
-                  state.multiplayerGameSummary.push({
-                    playerName: playerName,
-                    score: score,
+                  const distance = snapshot
+                    .child(
+                      `round${store.state.inGame.round}/${childSnapshot.key!}`
+                    )
+                    .val();
+                  store.dispatch("updateSelectedLatLngArrAction", {
+                    selectedLatLng: latlng,
+                  });
+                  store.dispatch("updateDistanceByPlayerArrAction", {
+                    distanceByPlayer: {
+                      playerName: playerName,
+                      distance: distance,
+                    },
                   });
                 });
-              }
-              // Remove guess node every time the round is done
-              remove(dbRef(database, `/${roomNumber}/guess`));
-            }
+                store.dispatch("saveIsWaitingForOtherPlayersAction", {
+                  isWaitingForOtherPlayers: false,
+                });
+                store.dispatch("saveIsShowingResultAction", {
+                  isShowingResult: true,
+                });
 
-            if (
-              snapshot.child("hasDone").size === snapshot.child("size").val()
-            ) {
-              update(dbRef(database, `${roomNumber}`), {
-                active: false,
+                if (store.state.inGame.round === 5) {
+                  // Summary
+                  snapshot.child("score").forEach((childSnapshot) => {
+                    const playerName = snapshot
+                      .child("playerName")
+                      .child(childSnapshot.key!)
+                      .val();
+                    const score = childSnapshot.val();
+                    state.multiplayerGameSummary.push({
+                      playerName: playerName,
+                      score: score,
+                    });
+                  });
+                }
+                // Remove guess node every time the round is done
+                remove(dbRef(database, `/${roomNumber}/guess`));
+              }
+
+              if (
+                snapshot.child("hasDone").size === snapshot.child("size").val()
+              ) {
+                update(dbRef(database, `${roomNumber}`), {
+                  active: false,
+                });
+              }
+              // Disconnect the game when the player pressed the back button
+              window.addEventListener("popstate", () => {
+                update(dbRef(database, `${roomNumber}`), {
+                  active: false,
+                });
+                off(dbRef(database, `${roomNumber}`));
+              });
+              // Disconnect the game when the player refreshed the window
+              window.addEventListener("beforeunload", () => {
+                update(dbRef(database, `${roomNumber}`), {
+                  active: false,
+                });
+                off(dbRef(database, `${roomNumber}`));
               });
             }
+          } catch (err) {
+            console.log(`onValue error: ${err}`);
           }
         });
       }
@@ -409,6 +485,8 @@ export default defineComponent({
       updateSelectedLatLng,
       saveStreetView,
       onClickGuessButton,
+      onClickMakeGuessButton,
+      onClickHideMapButton,
       onClickNextRoundButton,
       onClickViewSummaryButton,
       onClickPlayAgainButton,
@@ -453,5 +531,16 @@ export default defineComponent({
 
 #guess-button {
   background-color: #ff4343;
+}
+
+#make-guess-button {
+  display: none;
+}
+
+@media only screen and (max-width: 480px) {
+  #make-guess-button {
+    display: block;
+    background-color: #ff4343;
+  }
 }
 </style>

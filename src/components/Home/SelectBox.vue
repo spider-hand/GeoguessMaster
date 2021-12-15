@@ -140,4 +140,24 @@ export default defineComponent({
   font-size: 16px;
   color: #3c3c3c;
 }
+
+@media only screen and (max-width: 480px) {
+  .select-box-highligted-container {
+    width: 40%;
+  }
+
+  .select-box-container {
+    width: 100%;
+    height: 44px;
+    padding: 0 20px;
+  }
+
+  .select-box-title {
+    font-size: 10px;
+  }
+
+  .selected-option {
+    font-size: 14px;
+  }
+}
 </style>
