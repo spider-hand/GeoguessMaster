@@ -53,7 +53,7 @@
             <span class="create-button-text">START</span>
           </div>
           <div
-            class="start-game-button"
+            class="create-room-button"
             ref="createRoomButtonRef"
             v-if="store.state.gameSettings.selectedMode === 'multiplayer'"
             @click="openCreateRoomDialog"
@@ -70,7 +70,7 @@
             :selectedTime="store.state.gameSettings.selectedTime"
             :playerName="store.state.gameSettings.playerName"
             :isOwner="store.state.gameSettings.isOwner"
-            :roomNumber="store.state.gameSettings.roomNumber.toString()"
+            :roomNumber="store.state.gameSettings.roomNumber"
             :isReadyForMultiplayerGame="store.getters.isReadyForMultiplayerGame"
             @onChangeSize="onChangeSize"
             @onChangeTime="onChangeTime"
@@ -348,7 +348,8 @@ export default defineComponent({
   align-items: center;
 }
 
-.start-game-button {
+.start-game-button,
+.create-room-button {
   width: 172px;
   height: 48px;
   background-color: #ff4343;
@@ -415,7 +416,8 @@ export default defineComponent({
     display: none;
   }
 
-  .start-game-button {
+  .start-game-button,
+  .create-room-button {
     position: absolute;
     right: 4px;
     width: 48px;
