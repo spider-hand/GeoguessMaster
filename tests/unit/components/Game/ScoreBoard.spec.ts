@@ -9,8 +9,10 @@ describe("Test ScoreBoard component", () => {
     wrapper = shallowMount(ScoreBoard, {
       props: {
         selectedMap: "Test",
+        selectedMode: "single",
         round: 1,
         score: 1000,
+        countdown: "00:00",
       },
     });
   });
@@ -29,5 +31,16 @@ describe("Test ScoreBoard component", () => {
 
   it("Test round text", () => {
     expect(wrapper.find("#score").text()).toBe("1000");
+  });
+
+  it("Countdown text should not appear for single player game", () => {
+    expect(wrapper.find("#time").exists()).toBe(false);
+  });
+
+  it("Countdown text should appear for multiplayer game", async () => {
+    await wrapper.setProps({ selectedMode: "multiplayer" });
+
+    expect(wrapper.find("#time").exists()).toBe(true);
+    expect(wrapper.find("#time").text()).toBe("00:00");
   });
 });

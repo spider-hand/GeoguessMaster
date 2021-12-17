@@ -1,19 +1,26 @@
 <template>
   <div class="score-board">
-    <div class="content-wrapper">
-      <span class="sub-text">Map</span>
-      <br />
-      <span id="selected-map" class="main-text">{{ selectedMap }}</span>
-    </div>
-    <div class="content-wrapper">
-      <span class="sub-text">Round</span>
-      <br />
-      <span id="round" class="main-text">{{ round }} / 5</span>
-    </div>
-    <div class="content-wrapper">
-      <span class="sub-text">Score</span>
-      <br />
-      <span id="score" class="main-text">{{ score }}</span>
+    <div class="content-container">
+      <div class="content-wrapper">
+        <span class="sub-text">Map</span>
+        <br />
+        <span id="selected-map" class="main-text">{{ selectedMap }}</span>
+      </div>
+      <div class="content-wrapper">
+        <span class="sub-text">Round</span>
+        <br />
+        <span id="round" class="main-text">{{ round }} / 5</span>
+      </div>
+      <div class="content-wrapper">
+        <span class="sub-text">Score</span>
+        <br />
+        <span id="score" class="main-text">{{ score }}</span>
+      </div>
+      <div v-if="selectedMode === 'multiplayer'" class="content-wrapper">
+        <span class="sub-text">Time</span>
+        <br />
+        <span id="time" class="main-text">{{ countdown }}</span>
+      </div>
     </div>
   </div>
 </template>
@@ -27,6 +34,10 @@ export default defineComponent({
       type: String,
       required: true,
     },
+    selectedMode: {
+      type: String,
+      required: true,
+    },
     round: {
       type: Number,
       required: true,
@@ -34,6 +45,9 @@ export default defineComponent({
     score: {
       type: Number,
       required: true,
+    },
+    countdown: {
+      type: String,
     },
   },
 });
@@ -52,11 +66,16 @@ export default defineComponent({
   z-index: 1;
   display: flex;
   align-items: center;
+  justify-content: center;
+}
+
+.content-container {
+  display: flex;
   flex-direction: row;
 }
 
 .content-wrapper {
-  margin: 0 12px;
+  margin-right: 16px;
 }
 
 .main-text {

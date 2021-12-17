@@ -45,8 +45,10 @@
     />
     <ScoreBoard
       :selectedMap="store.getters.selectedMapText"
+      :selectedMode="store.state.gameSettings.selectedMode"
       :round="store.state.inGame.round"
       :score="store.state.inGame.score"
+      :countdown="countdown"
     />
     <RoomNumberDialog
       v-if="
@@ -149,11 +151,13 @@ export default defineComponent({
     const state = reactive<{
       isGameReady: boolean;
       isEndingMultiplayerGame: boolean;
+      remainingTime: number;
       multiplayerGameSummary: Array<Summary>;
       overlayMsg: string;
     }>({
       isGameReady: false,
       isEndingMultiplayerGame: false,
+      remainingTime: 0,
       multiplayerGameSummary: [],
       overlayMsg: "Waiting for other players to get ready..",
     });
@@ -164,6 +168,18 @@ export default defineComponent({
         (store.state.gameSettings.selectedMode === "multiplayer" &&
           !store.state.inGame.isThisRoundReady)
     );
+
+    const countdown = computed<string>(() => {
+      let min: string | number = Math.floor(state.remainingTime / 60);
+      let sec: string | number = state.remainingTime % 60;
+      if (min < 10) {
+        min = `0${min}`;
+      }
+      if (sec < 10) {
+        sec = `0${sec}`;
+      }
+      return `${min}:${sec}`;
+    });
 
     const fetchGeoJSON = async (callback: () => void): Promise<void> => {
       try {
@@ -207,6 +223,26 @@ export default defineComponent({
           lng: latLng.lng(),
         }
       );
+    };
+
+    const startTimer = (): void => {
+      if (!store.state.inGame.isWaitingForOtherPlayers) {
+        if (state.remainingTime > 0) {
+          setTimeout(() => {
+            state.remainingTime -= 1;
+            startTimer();
+          }, 1000);
+        } else {
+          if (!store.state.inGame.selectedLatLng) {
+            const latLng = new google.maps.LatLng({
+              lat: 37.86926,
+              lng: -122.254811,
+            });
+            updateSelectedLatLng(latLng);
+          }
+          onClickGuessButton();
+        }
+      }
     };
 
     const onClickMakeGuessButton = (): void => {
@@ -432,6 +468,13 @@ export default defineComponent({
                   isThisRoundReady: true,
                 });
                 // Start a timer
+                if (!store.state.inGame.hasTimerStarted) {
+                  store.dispatch("saveHasTimerStartedAction", {
+                    hasTimerStarted: true,
+                  });
+                  state.remainingTime = snapshot.child("time").val() * 60;
+                  startTimer();
+                }
               }
               if (
                 snapshot.child("streetView").size ===
@@ -528,6 +571,7 @@ export default defineComponent({
       store,
       state,
       isGuessButtonDisabled,
+      countdown,
       fetchGeoJSON,
       updateRandomLatLng,
       updateSelectedLatLng,

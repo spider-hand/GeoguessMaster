@@ -245,6 +245,9 @@ export default defineComponent({
             store.dispatch("savePlayerIdAction", {
               playerId: playerNameRef.key,
             });
+            store.dispatch("changeSelectedTimeAction", {
+              selectedTime: snapshot.child("time").val(),
+            });
             router.push("game");
           } else {
             state.isRoomFound = false;

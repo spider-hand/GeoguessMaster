@@ -14,6 +14,7 @@ export interface InGameState {
   distanceByPlayerArr: Array<DistanceByPlayer>;
   score: number;
   round: number;
+  hasTimerStarted: boolean;
   isThisRoundReady: boolean;
   isNextRoundReady: boolean;
   isWaitingForOtherPlayers: boolean;
@@ -31,6 +32,7 @@ const getDefaultState = (): InGameState => ({
   distanceByPlayerArr: [],
   score: 0,
   round: 1,
+  hasTimerStarted: false,
   isThisRoundReady: false,
   isNextRoundReady: false,
   isWaitingForOtherPlayers: false,
@@ -86,6 +88,9 @@ export const inGameStore = {
     saveScore(state: InGameState, value: number) {
       state.score += value;
     },
+    saveHasTimerStarted(state: InGameState, value: boolean) {
+      state.hasTimerStarted = value;
+    },
     saveIsShowingResult(state: InGameState, value: boolean) {
       state.isShowingResult = value;
     },
@@ -133,6 +138,9 @@ export const inGameStore = {
     saveScoreAction({ commit }: any, payload: any) {
       commit("saveScore", payload.score);
     },
+    saveHasTimerStartedAction({ commit }: any, payload: any) {
+      commit("saveHasTimerStarted", payload.hasTimerStarted);
+    },
     saveIsShowingResultAction({ commit }: any, payload: any) {
       commit("saveIsShowingResult", payload.isShowingResult);
     },
@@ -143,6 +151,7 @@ export const inGameStore = {
       commit("proceedToNextRound");
       commit("saveIsThisRoundReady", false);
       commit("saveIsNextRoundReady", false);
+      commit("saveHasTimerStarted", false);
       commit("saveIsShowingResult", false);
       commit("saveIsMakeGuessButtonClicked", false);
       commit("saveRandomLatLng", null);
