@@ -9,6 +9,7 @@ export interface InGameState {
   randomLatLng: google.maps.LatLng | null;
   selectedLatLng: google.maps.LatLng | null;
   selectedLatLngArr: Array<google.maps.LatLng>;
+  panorama: google.maps.StreetViewPanorama | null;
   gameHistory: Array<GameHistory>;
   distanceByPlayerArr: Array<DistanceByPlayer>;
   score: number;
@@ -25,6 +26,7 @@ const getDefaultState = (): InGameState => ({
   randomLatLng: null,
   selectedLatLng: null,
   selectedLatLngArr: [],
+  panorama: null,
   gameHistory: [],
   distanceByPlayerArr: [],
   score: 0,
@@ -68,6 +70,9 @@ export const inGameStore = {
     },
     resetSelectedLatLngArr(state: InGameState) {
       state.selectedLatLngArr = [];
+    },
+    savePanorama(state: InGameState, value: google.maps.StreetViewPanorama) {
+      state.panorama = value;
     },
     updateGameHistory(state: InGameState, value: GameHistory) {
       state.gameHistory.push(value);
@@ -115,6 +120,9 @@ export const inGameStore = {
     },
     updateSelectedLatLngArrAction({ commit }: any, payload: any) {
       commit("updateSelectedLatLngArr", payload.selectedLatLng);
+    },
+    savePanoramaAction({ commit }: any, payload: any) {
+      commit("savePanorama", payload.panorama);
     },
     updateGameHistoryAction({ commit }: any, payload: any) {
       commit("updateGameHistory", payload.gameHistory);

@@ -135,6 +135,7 @@ export default defineComponent({
             pitch: 0,
           });
           context.emit("updateRandomLatLng", data.location.latLng);
+          context.emit("savePanorama", panorama);
 
           if (props.selectedMode === "multiplayer" && props.isOwner) {
             context.emit("saveStreetView", data.location.latLng);

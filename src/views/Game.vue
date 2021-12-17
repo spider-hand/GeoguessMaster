@@ -39,6 +39,7 @@
       :randomLatLng="store.state.inGame.randomLatLng"
       :round="store.state.inGame.round"
       @updateRandomLatLng="updateRandomLatLng"
+      @savePanorama="savePanorama"
       @saveStreetView="saveStreetView"
       @fetchGeoJSON="fetchGeoJSON"
     />
@@ -79,6 +80,27 @@
       @click="onClickMakeGuessButton"
     >
       <span class="button-text">MAKE GUESS</span>
+    </button>
+    <button
+      id="reset-location-button"
+      class="round-button"
+      @click="onClickResetLocationButton"
+    >
+      <span class="material-icons">my_location</span>
+    </button>
+    <button
+      id="zoom-in-button"
+      class="round-button"
+      @click="onClickZoomInButton"
+    >
+      <span class="material-icons">zoom_in</span>
+    </button>
+    <button
+      id="zoom-out-button"
+      class="round-button"
+      @click="onClickZoomOutButton"
+    >
+      <span class="material-icons">zoom_out</span>
     </button>
   </div>
 </template>
@@ -163,6 +185,12 @@ export default defineComponent({
     const updateSelectedLatLng = (latLng: google.maps.LatLng): void => {
       store.dispatch("saveSelectedLatLngAction", {
         selectedLatLng: latLng,
+      });
+    };
+
+    const savePanorama = (panorama: google.maps.StreetViewPanorama): void => {
+      store.dispatch("savePanoramaAction", {
+        panorama: panorama,
       });
     };
 
@@ -285,6 +313,26 @@ export default defineComponent({
         } catch (err) {
           console.log(`onClickNextRoundButton error: ${err}`);
         }
+      }
+    };
+
+    const onClickResetLocationButton = (): void => {
+      store.state.inGame.panorama?.setPosition(store.state.inGame.randomLatLng);
+    };
+
+    const onClickZoomInButton = (): void => {
+      let current = store.state.inGame.panorama?.getZoom();
+      if (current) {
+        current++;
+        store.state.inGame.panorama?.setZoom(current);
+      }
+    };
+
+    const onClickZoomOutButton = (): void => {
+      let current = store.state.inGame.panorama?.getZoom();
+      if (current) {
+        current--;
+        store.state.inGame.panorama?.setZoom(current);
       }
     };
 
@@ -483,11 +531,15 @@ export default defineComponent({
       fetchGeoJSON,
       updateRandomLatLng,
       updateSelectedLatLng,
+      savePanorama,
       saveStreetView,
       onClickGuessButton,
       onClickMakeGuessButton,
       onClickHideMapButton,
       onClickNextRoundButton,
+      onClickResetLocationButton,
+      onClickZoomInButton,
+      onClickZoomOutButton,
       onClickViewSummaryButton,
       onClickPlayAgainButton,
       onClickExitButton,
@@ -518,6 +570,20 @@ export default defineComponent({
   z-index: 1;
 }
 
+.round-button {
+  position: absolute;
+  right: 12px;
+  width: 48px;
+  height: 48px;
+  border: none;
+  border-radius: 24px;
+  cursor: pointer;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .disabled-button {
   opacity: 0.7;
   cursor: not-allowed;
@@ -535,6 +601,21 @@ export default defineComponent({
 
 #make-guess-button {
   display: none;
+}
+
+#reset-location-button {
+  color: #3c3c3c;
+  bottom: 228px;
+}
+
+#zoom-in-button {
+  bottom: 164px;
+  color: #ff4343;
+}
+
+#zoom-out-button {
+  bottom: 100px;
+  color: #0000ae;
 }
 
 @media only screen and (max-width: 480px) {
