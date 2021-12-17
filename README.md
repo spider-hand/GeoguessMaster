@@ -1,6 +1,6 @@
 <p width="100%" align="center">
   <img 
-    src="https://raw.githubusercontent.com/spider-hand/Geoguess-Master/master/.github/images/logo.png"
+    src="../master/.github/images/logo.png"
     width="96" 
     alt="logo"
   />
@@ -16,7 +16,7 @@ This game is completely for free but there is a limitation. I am setting a quota
 If you see the map color reverted, it means the quota on the day has already been exceeded.
 
 ## Build Setups
-Even though there is a limitation on this game, you can build your own game and even customize this game because this game is open source. Here is the [instruction]('../master/docs/Setup.md'). If you want to run this project on local, see this [instruction]('../master/docs/SetupLocal.md').
+Even though there is a limitation on this game, you can build your own game and even customize this game because this game is open source. Here is the [instruction](../master/docs/Setup.md). If you want to run this project on local, see this [instruction](../master/docs/SetupLocal.md).
 
 ## Features
 - Free
@@ -27,7 +27,7 @@ Even though there is a limitation on this game, you can build your own game and 
 
 ## License
 Copyright (c) Spider Hand. All rights reserved.  
-Licensed under the [MIT]('../master/LICENSE') license.
+Licensed under the [MIT](../master/LICENSE) license.
 
 ## Contact
 Feel free to give me feedback!  
