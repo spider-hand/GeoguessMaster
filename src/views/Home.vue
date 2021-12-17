@@ -112,6 +112,7 @@ import {
   child,
   DataSnapshot,
   update,
+  serverTimestamp,
 } from "firebase/database";
 
 import SelectBox from "@/components/Home/SelectBox.vue";
@@ -230,6 +231,7 @@ export default defineComponent({
             active: true,
             size: store.state.gameSettings.selectedSize,
             time: store.state.gameSettings.selectedTime,
+            createdAt: serverTimestamp(),
           });
           router.push("game");
         } else {
@@ -425,7 +427,7 @@ export default defineComponent({
     background-color: #ffffff;
   }
 
-  .start-game-button .create-button-text {
+  .create-button-text {
     display: none;
   }
 
