@@ -249,4 +249,10 @@ export default defineComponent({
   cursor: not-allowed;
   opacity: 0.7;
 }
+
+@media only screen and (max-width: 480px) {
+  .create-room-dialog {
+    width: 80%;
+  }
+}
 </style>
