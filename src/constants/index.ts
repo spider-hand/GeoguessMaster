@@ -5,6 +5,7 @@ export const MAP_OPTIONS: SelectboxOption[] = [
     text: "World",
     value: "WORLD",
   },
+  /**
   {
     text: "France",
     value: "FRA",
@@ -17,10 +18,12 @@ export const MAP_OPTIONS: SelectboxOption[] = [
     text: "India",
     value: "IND",
   },
+*/
   {
     text: "Japan",
     value: "JPN",
   },
+  /** 
   {
     text: "South Korea",
     value: "KOR",
@@ -29,6 +32,7 @@ export const MAP_OPTIONS: SelectboxOption[] = [
     text: "United States",
     value: "USA",
   },
+*/
 ];
 
 export const MODE_OPTIONS: SelectboxOption[] = [
