@@ -16,7 +16,7 @@ jobs:
         node-version: [16.x]
 
     env:
-      NODE_ENV: production
+      NODE_ENV: development
       BASE_URL: https://geoguessmaster.net/
       VUE_APP_API_KEY: VUE_APP_API_KEY
       VUE_APP_FIREBASE_API_KEY: VUE_APP_FIREBASE_API_KEY
