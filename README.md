@@ -6,10 +6,6 @@
   />
 </p>
 
-[![build](https://github.com/spider-hand/Geoguess-Master/actions/workflows/build.yml/badge.svg)](https://github.com/spider-hand/Geoguess-Master/actions/workflows/build.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![codecov](https://codecov.io/gh/spider-hand/Geoguess-Master/branch/master/graph/badge.svg?token=QU5VAMBJIX)](https://codecov.io/gh/spider-hand/Geoguess-Master)
-  
 # Geoguess Master
 Geoguess Master is an open source geoguess game.
 
