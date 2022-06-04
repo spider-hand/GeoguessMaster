@@ -120,9 +120,10 @@ export default defineComponent({
 .select-box-container {
   width: 180px;
   height: 48px;
-  padding: 12px 24px 0 24px;
+  padding: 4px 24px 0 24px;
   cursor: pointer;
   border-right: 1px solid $color-white-secondary;
+  box-sizing: border-box;
 
   &.on-hover {
     border-right: none;
@@ -147,7 +148,7 @@ export default defineComponent({
   .select-box-container {
     width: 100%;
     height: 44px;
-    padding: 12px 16px 0 16px;
+    padding: 8px 16px 0 16px;
   }
 
   .select-box-title {

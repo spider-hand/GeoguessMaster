@@ -1,5 +1,9 @@
 <template>
-  <div :class="$style['create-room-dialog']" v-if="isShowingDialog">
+  <div
+    id="create-room-dialog"
+    :class="$style['create-room-dialog']"
+    v-if="isShowingDialog"
+  >
     <div :class="$style['form-container']">
       <div>
         <div
