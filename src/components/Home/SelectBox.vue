@@ -6,7 +6,10 @@
     ]"
   >
     <div
-      :class="[$style['select-box-container'], state.isHovering && 'on-hover']"
+      :class="[
+        $style['select-box-container'],
+        state.isHovering && $style['on-hover'],
+      ]"
       ref="selectboxRef"
       @mouseover="onMouseOver"
       @mouseleave="onMouseLeave"
