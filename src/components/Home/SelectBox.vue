@@ -1,19 +1,19 @@
 <template>
   <div
-    class="select-box-highligted-container"
-    :class="[state.isHovering ? 'on-hover' : '']"
+    :class="[
+      $style['select-box-highligted-container'],
+      state.isHovering && $style['on-hover'],
+    ]"
   >
     <div
-      class="select-box-container"
-      :class="[state.isHovering ? 'on-hover-select-box-container' : '']"
+      :class="[$style['select-box-container'], state.isHovering && 'on-hover']"
       ref="selectboxRef"
       @mouseover="onMouseOver"
       @mouseleave="onMouseLeave"
       @click="onClickSelectbox"
     >
-      <span class="select-box-title">{{ title }}</span>
-      <br />
-      <span class="selected-option">{{ selectedOption.text }}</span>
+      <div :class="$style['select-box-title']">{{ title }}</div>
+      <div :class="$style['selected-option']">{{ selectedOption.text }}</div>
     </div>
     <SelectboxDialog
       :isShowingDialog="state.isShowingDialog"
@@ -102,7 +102,7 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
+<style module lang="scss">
 .select-box-highligted-container {
   position: relative;
   height: 100%;
@@ -111,34 +111,32 @@ export default defineComponent({
   border-radius: 32px;
   display: flex;
   align-items: center;
-}
 
-.on-hover {
-  background-color: #eeeeee;
+  &.on-hover {
+    background-color: $color-white-primary;
+  }
 }
 
 .select-box-container {
   width: 180px;
   height: 48px;
-  padding: 0 24px;
+  padding: 12px 24px 0 24px;
   cursor: pointer;
-  border-right: 1px solid #dcdcdc;
-}
+  border-right: 1px solid $color-white-secondary;
 
-.on-hover-select-box-container {
-  border-right: none;
+  &.on-hover {
+    border-right: none;
+  }
 }
 
 .select-box-title {
-  font-family: "Roboto medium";
   font-size: 12px;
-  color: #5f5f5f;
+  color: $color-black-secondary;
 }
 
 .selected-option {
-  font-family: "Roboto medium";
   font-size: 16px;
-  color: #3c3c3c;
+  color: $color-black-primary;
 }
 
 @media only screen and (max-width: 480px) {
@@ -149,7 +147,7 @@ export default defineComponent({
   .select-box-container {
     width: 100%;
     height: 44px;
-    padding: 0 20px;
+    padding: 12px 16px 0 16px;
   }
 
   .select-box-title {

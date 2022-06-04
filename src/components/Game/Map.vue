@@ -1,23 +1,19 @@
 <template>
   <div>
+    <div :class="$style['map-container']" ref="mapRef"></div>
     <div
-      id="map-container"
-      @mouseover="onMouseOverMap"
-      @mouseleave="onMouseLeaveMap"
-    ></div>
-    <div
-      id="hide-map-button"
+      :class="$style['hide-map-button']"
       v-if="isMakeGuessButtonClicked"
       @click="onClickHideMapButton"
     >
-      <span id="close-icon" class="material-icons">close</span>
+      <span class="material-icons">close</span>
     </div>
   </div>
 </template>
 
 <script lang="ts">
 /*global google*/
-import { defineComponent, onMounted, watch } from "vue";
+import { defineComponent, onMounted, ref, watch } from "vue";
 
 export default defineComponent({
   props: {
@@ -42,7 +38,19 @@ export default defineComponent({
 
   setup(props, context) {
     let map: google.maps.Map;
+    const mapRef = ref<HTMLElement>();
     const markers: google.maps.Marker[] = [];
+
+    watch(
+      () => props.isMakeGuessButtonClicked,
+      (newVal: boolean, oldVal: boolean) => {
+        if (newVal && mapRef.value) {
+          mapRef.value.style.transform = "translateY(-340px)";
+        } else if (!newVal && mapRef.value) {
+          mapRef.value.style.transform = "translateY(300px)";
+        }
+      }
+    );
 
     watch(
       () => props.round,
@@ -52,22 +60,6 @@ export default defineComponent({
         }
       }
     );
-
-    const onMouseOverMap = (): void => {
-      const mapEl = document.getElementById("map-container");
-      if (mapEl !== null) {
-        mapEl.style.opacity = "1.0";
-        mapEl.style.transform = "scale(1)";
-      }
-    };
-
-    const onMouseLeaveMap = (): void => {
-      const mapEl = document.getElementById("map-container");
-      if (mapEl !== null) {
-        mapEl.style.opacity = "0.7";
-        mapEl.style.transform = "scale(0.75)";
-      }
-    };
 
     const removeMarkers = (): void => {
       markers.forEach((marker, index) => {
@@ -102,31 +94,27 @@ export default defineComponent({
     );
 
     onMounted(() => {
-      if (document.getElementById("map-container") !== null) {
-        map = new google.maps.Map(
-          document.getElementById("map-container") as HTMLElement,
-          {
-            center: { lat: 37.86926, lng: -122.254811 },
-            zoom: 1,
-            fullscreenControl: false,
-            mapTypeControl: false,
-            streetViewControl: false,
-          }
-        );
+      if (mapRef.value) {
+        map = new google.maps.Map(mapRef.value as HTMLElement, {
+          center: { lat: 37.86926, lng: -122.254811 },
+          zoom: 1,
+          fullscreenControl: false,
+          mapTypeControl: false,
+          streetViewControl: false,
+        });
       }
     });
 
     return {
-      onMouseOverMap,
-      onMouseLeaveMap,
+      mapRef,
       onClickHideMapButton,
     };
   },
 });
 </script>
 
-<style scoped>
-#map-container {
+<style module lang="scss">
+.map-container {
   position: absolute;
   bottom: 54px;
   left: 12px;
@@ -137,20 +125,25 @@ export default defineComponent({
   transform-origin: bottom left;
   transform: scale(0.75);
   transition: transform 0.3s;
+
+  &:hover {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
-#hide-map-button {
+.hide-map-button {
   display: none;
 }
 
 @media only screen and (max-width: 480px) {
-  #map-container {
+  .map-container {
     bottom: -280px;
     opacity: 1;
     transition: transform 1s;
   }
 
-  #hide-map-button {
+  .hide-map-button {
     display: block;
     position: absolute;
     width: 24px;
@@ -158,15 +151,12 @@ export default defineComponent({
     bottom: 292px;
     left: 324px;
     border-radius: 12px;
-    background-color: #ff4343;
+    background-color: $color-red-primary;
+    color: white;
     z-index: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-  }
-
-  #close-icon {
-    color: #ffffff;
   }
 }
 </style>

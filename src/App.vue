@@ -3,4 +3,8 @@
   <router-view />
 </template>
 
-<style></style>
+<style lang="scss">
+body {
+  font-family: "Roboto", sans-serif;
+}
+</style>

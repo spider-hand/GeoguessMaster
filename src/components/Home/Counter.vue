@@ -1,36 +1,29 @@
 <template>
-  <div class="counter-container">
-    <div style="flex-grow: 1"></div>
+  <div :class="$style['counter']">
     <button
-      class="button"
-      id="decrement-button"
-      :class="[disabledDecrement || disabled ? 'disabled-button' : '']"
+      :class="[
+        $style['button'],
+        disabledDecrement || disabled ? $style['disabled'] : $style['active'],
+      ]"
       @click="decrement"
       :disabled="disabledDecrement || disabled"
     >
-      <span
-        class="button-text"
-        :class="[disabledDecrement || disabled ? 'disabled-text' : '']"
-        >-</span
-      >
+      -
     </button>
-    <div class="text-wrapper">
-      <span class="text" :class="[disabled ? 'disabled-text' : '']">
+    <div :class="$style['text-wrapper']">
+      <span :class="[$style['text'], disabled ? 'disabled' : $style['active']]">
         {{ count }}
       </span>
     </div>
     <button
-      class="button"
-      id="increment-button"
       @click="increment"
-      :class="[disabledIncrement || disabled ? 'disabled-button' : '']"
+      :class="[
+        $style['button'],
+        disabledIncrement || disabled ? $style['disabled'] : $style['active'],
+      ]"
       :disabled="disabledIncrement || disabled"
     >
-      <span
-        class="button-text"
-        :class="[disabledIncrement || disabled ? 'disabled-text' : '']"
-        >+</span
-      >
+      +
     </button>
   </div>
 </template>
@@ -82,27 +75,34 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
-.counter-container {
+<style module lang="scss">
+.counter {
   position: absolute;
   right: 24px;
   width: 150px;
   display: flex;
+  justify-content: right;
   flex-direction: row;
 }
 
 .button {
   width: 36px;
   height: 36px;
-  border: 1px solid #dcdcdc;
   border-radius: 18px;
-  background-color: #ffffff;
-  cursor: pointer;
-}
+  background-color: white;
+  font-size: 20px;
 
-.disabled-button {
-  border: 1px solid #eeeeee;
-  cursor: not-allowed;
+  &.active {
+    border: 1px solid $color-white-secondary;
+    color: $color-black-secondary;
+    cursor: pointer;
+  }
+
+  &.disabled {
+    border: 1px solid $color-white-primary;
+    color: $color-white-secondary;
+    cursor: not-allowed;
+  }
 }
 
 .text-wrapper {
@@ -113,18 +113,14 @@ export default defineComponent({
 }
 
 .text {
-  font-family: "Roboto medium";
   font-size: 16px;
-  color: #3c3c3c;
-}
 
-.button-text {
-  color: #5f5f5f;
-  font-family: "Roboto medium";
-  font-size: 20px;
-}
+  &.active {
+    color: $color-black-primary;
+  }
 
-.disabled-text {
-  color: #dcdcdc;
+  &.disabled {
+    color: $color-white-secondary;
+  }
 }
 </style>

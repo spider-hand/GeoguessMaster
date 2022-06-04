@@ -1,20 +1,23 @@
 <template>
-  <div class="create-room-dialog" v-if="isShowingDialog">
-    <div class="form-container">
+  <div :class="$style['create-room-dialog']" v-if="isShowingDialog">
+    <div :class="$style['form-container']">
       <div>
-        <span
-          id="size-form-title"
-          class="form-title"
-          :class="[!isOwner ? 'disabled-form-title' : '']"
-          >Size
-        </span>
-        <br />
-        <span
-          id="size-form-helper-text"
-          class="form-helper-text"
-          :class="[!isOwner ? 'disabled-form-helper-text' : '']"
-          >2-5 people</span
+        <div
+          :class="[
+            $style['form-title'],
+            !isOwner ? $style['disabled'] : $style['active'],
+          ]"
         >
+          Size
+        </div>
+        <div
+          :class="[
+            $style['form-helper-text'],
+            !isOwner ? $style['disabled'] : $style['active'],
+          ]"
+        >
+          2-5 people
+        </div>
       </div>
       <Counter
         :min="2"
@@ -24,20 +27,22 @@
         @onChangeValue="onChangeSize"
       />
     </div>
-    <div class="form-container">
+    <div :class="$style['form-container']">
       <div>
         <span
-          id="time-form-title"
-          class="form-title"
-          :class="[!isOwner ? 'disabled-form-title' : '']"
+          :class="[
+            $style['form-title'],
+            !isOwner ? $style['disabled'] : $style['active'],
+          ]"
         >
           Time per round
         </span>
         <br />
         <span
-          id="time-form-helper-text"
-          class="form-helper-text"
-          :class="[!isOwner ? 'disabled-form-helper-text' : '']"
+          :class="[
+            $style['form-helper-text'],
+            !isOwner ? $style['disabled'] : $style['active'],
+          ]"
         >
           1-10 minutes
         </span>
@@ -50,7 +55,7 @@
         @onChangeValue="onChangeTime"
       />
     </div>
-    <div class="form-container">
+    <div :class="$style['form-container']">
       <TextInput
         label="Player Name"
         name="player-name"
@@ -59,11 +64,11 @@
         @onChangeValue="onChangePlayerName"
       />
     </div>
-    <div class="form-container">
-      <span class="form-title">Are you an owner?</span>
+    <div :class="$style['form-container']">
+      <span :class="$style['form-title']">Are you an owner?</span>
       <Switch :ans="isOwner" @onChangeValue="onChangeIsOwner" />
     </div>
-    <div class="form-container">
+    <div :class="$style['form-container']">
       <TextInput
         label="Room Number"
         name="room-number"
@@ -74,14 +79,16 @@
         :errorMsg="roomCannnotBeFoundError"
       />
     </div>
-    <div class="button-container">
+    <div :class="$style['button-container']">
       <button
-        class="start-game-button"
-        :class="[!isReadyForMultiplayerGame ? 'cursor-not-allowed' : '']"
+        :class="[
+          $style['start-game-button'],
+          !isReadyForMultiplayerGame ? $style['disabled'] : $style['active'],
+        ]"
         :disabled="!isReadyForMultiplayerGame"
         @click="onClickStartMultiplayerGameButton"
       >
-        <span class="button-text">START</span>
+        START
       </button>
     </div>
   </div>
@@ -178,7 +185,7 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
+<style module lang="scss">
 .create-room-dialog {
   position: absolute;
   bottom: -393px;
@@ -186,7 +193,7 @@ export default defineComponent({
   width: 320px;
   height: 377px;
   padding: 0 32px;
-  background: #ffffff;
+  background: white;
   border-radius: 20px;
   display: flex;
   align-items: center;
@@ -200,24 +207,31 @@ export default defineComponent({
   flex-direction: row;
   display: flex;
   align-items: center;
-  border-bottom: 1px solid #dcdcdc;
+  border-bottom: 1px solid $color-white-secondary;
 }
 
 .form-title {
-  font-family: "Roboto medium";
   font-size: 16px;
-  color: #3c3c3c;
+
+  &.active {
+    color: $color-black-primary;
+  }
+
+  &.disabled {
+    color: $color-white-secondary;
+  }
 }
 
 .form-helper-text {
-  font-family: "Roboto medium";
   font-size: 12px;
-  color: #5f5f5f;
-}
 
-.disabled-form-title,
-.disabled-form-helper-text {
-  color: #dcdcdc;
+  &.active {
+    color: $color-black-secondary;
+  }
+
+  &.disabled {
+    color: $color-white-secondary;
+  }
 }
 
 .button-container {
@@ -230,24 +244,23 @@ export default defineComponent({
 .start-game-button {
   width: 129px;
   height: 36px;
-  background-color: #ff4343;
+  background-color: $color-red-primary;
   border: none;
   border-radius: 18px;
+  font-size: 14px;
+  color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-}
 
-.button-text {
-  font-family: "Roboto medium";
-  font-size: 14px;
-  color: #ffffff;
-}
+  &.active {
+    cursor: pointer;
+  }
 
-.cursor-not-allowed {
-  cursor: not-allowed;
-  opacity: 0.7;
+  &.disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
 }
 
 @media only screen and (max-width: 480px) {

@@ -18,14 +18,18 @@ describe("Test Switch component", () => {
   });
 
   it("Test onChangeValue event onClick yes button", async () => {
-    await wrapper.find("#option-yes").trigger("click");
+    const optionYes = wrapper.findAll(".option")[0];
+    await optionYes.trigger("click");
 
     expect(wrapper.emitted().onChangeValue[0]).toEqual([true]);
+    expect(optionYes.classes()).toContain("selected");
   });
 
   it("Test onChangeValue event onClick no button", async () => {
-    await wrapper.find("#option-no").trigger("click");
+    const optionNo = wrapper.findAll(".option")[1];
+    await optionNo.trigger("click");
 
     expect(wrapper.emitted().onChangeValue[0]).toEqual([false]);
+    expect(optionNo.classes()).toContain("not-selected");
   });
 });

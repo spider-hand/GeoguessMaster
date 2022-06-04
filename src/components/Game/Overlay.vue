@@ -1,8 +1,8 @@
 <template>
-  <div class="overlay">
-    <div class="container">
-      <span class="text">{{ msg }}</span>
-      <div class="loader"></div>
+  <div :class="$style['overlay']">
+    <div :class="$style['container']">
+      <span :class="$style['text']">{{ msg }}</span>
+      <div :class="$style['loader']"></div>
     </div>
   </div>
 </template>
@@ -20,7 +20,7 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
+<style module lang="scss">
 .overlay {
   position: absolute;
   width: 100%;
@@ -61,7 +61,6 @@ export default defineComponent({
 }
 
 .text {
-  font-family: "Roboto medium";
   font-size: 24px;
   color: #ffffff;
 }

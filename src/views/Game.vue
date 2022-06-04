@@ -1,5 +1,5 @@
 <template>
-  <div class="screen">
+  <div :class="$style['screen']">
     <Overlay
       v-show="
         store.state.gameSettings.selectedMode === 'multiplayer' &&
@@ -68,40 +68,32 @@
       @onClickHideMapButton="onClickHideMapButton"
     />
     <button
-      id="guess-button"
-      :class="['long-button', isGuessButtonDisabled ? 'disabled-button' : null]"
+      :class="[
+        $style['guess-button'],
+        isGuessButtonDisabled ? $style['disabled'] : $style['active'],
+      ]"
       :disabled="isGuessButtonDisabled"
       @click="onClickGuessButton"
     >
-      <span class="button-text">GUESS</span>
+      GUESS
     </button>
     <button
-      id="make-guess-button"
-      class="long-button"
+      :class="$style['make-guess-button']"
       v-show="!store.state.inGame.isMakeGuessButtonClicked"
       @click="onClickMakeGuessButton"
     >
-      <span class="button-text">MAKE GUESS</span>
+      MAKE GUESS
     </button>
     <button
-      id="reset-location-button"
-      class="round-button"
+      :class="$style['reset-location-button']"
       @click="onClickResetLocationButton"
     >
       <span class="material-icons">my_location</span>
     </button>
-    <button
-      id="zoom-in-button"
-      class="round-button"
-      @click="onClickZoomInButton"
-    >
+    <button :class="$style['zoom-in-button']" @click="onClickZoomInButton">
       <span class="material-icons">zoom_in</span>
     </button>
-    <button
-      id="zoom-out-button"
-      class="round-button"
-      @click="onClickZoomOutButton"
-    >
+    <button :class="$style['zoom-out-button']" @click="onClickZoomOutButton">
       <span class="material-icons">zoom_out</span>
     </button>
   </div>
@@ -249,16 +241,12 @@ export default defineComponent({
       store.dispatch("saveIsMakeGuessButtonClickedAction", {
         isMakeGuessButtonClicked: true,
       });
-      document.getElementById("map-container")!.style.transform =
-        "translateY(-340px)";
     };
 
     const onClickHideMapButton = (): void => {
       store.dispatch("saveIsMakeGuessButtonClickedAction", {
         isMakeGuessButtonClicked: false,
       });
-      document.getElementById("map-container")!.style.transform =
-        "translateY(300px)";
     };
 
     const onClickGuessButton = async (): Promise<void> => {
@@ -593,7 +581,7 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
+<style module lang="scss">
 .screen {
   position: absolute;
   width: 100%;
@@ -611,8 +599,28 @@ export default defineComponent({
   height: 36px;
   border: none;
   border-radius: 5px;
-  cursor: pointer;
+  font-size: 16px;
+  color: white;
   z-index: 1;
+
+  &.active {
+    cursor: pointer;
+  }
+
+  &.disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+}
+
+.guess-button {
+  @extend .long-button;
+  background-color: $color-red-primary;
+}
+
+.make-guess-button {
+  @extend .long-button;
+  display: none;
 }
 
 .round-button {
@@ -629,44 +637,29 @@ export default defineComponent({
   justify-content: center;
 }
 
-.disabled-button {
-  opacity: 0.7;
-  cursor: not-allowed;
-}
-
-.button-text {
-  font-family: "Roboto medium";
-  font-size: 16px;
-  color: #ffffff;
-}
-
-#guess-button {
-  background-color: #ff4343;
-}
-
-#make-guess-button {
-  display: none;
-}
-
-#reset-location-button {
-  color: #3c3c3c;
+.reset-location-button {
+  @extend .round-button;
+  color: $color-black-primary;
   bottom: 228px;
 }
 
-#zoom-in-button {
+.zoom-in-button {
+  @extend .round-button;
   bottom: 164px;
-  color: #ff4343;
+  color: $color-red-primary;
 }
 
-#zoom-out-button {
+.zoom-out-button {
+  @extend .round-button;
   bottom: 100px;
-  color: #0000ae;
+  color: $color-brand-primary;
 }
 
 @media only screen and (max-width: 480px) {
-  #make-guess-button {
+  .make-guess-button {
+    @extend .long-button;
     display: block;
-    background-color: #ff4343;
+    background-color: $color-red-primary;
   }
 }
 </style>

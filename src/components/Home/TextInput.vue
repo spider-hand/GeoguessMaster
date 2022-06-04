@@ -1,23 +1,27 @@
 <template>
-  <div class="input-wrapper">
+  <div :class="$style['input-wrapper']">
     <label
       :for="name"
-      class="input-label"
-      :classs="[disabled ? 'disabled-input-label' : '']"
+      :class="[
+        $style['input-label'],
+        disabled ? $style['disabled'] : $style['active'],
+      ]"
     >
       {{ label }}
     </label>
     <input
       type="text"
       :name="name"
-      class="text-input"
-      :class="[disabled ? 'disabled-input' : '']"
+      :class="[
+        $style['text-input'],
+        disabled ? $style['disabled'] : $style['active'],
+      ]"
       :placeholder="placeholder"
       v-model="state.inputValue"
       @input="onChangeValue"
       :disabled="disabled"
     />
-    <span v-if="errorMsg" class="error-text">{{ errorMsg }}</span>
+    <span v-if="errorMsg" :class="$style['error-text']">{{ errorMsg }}</span>
   </div>
 </template>
 
@@ -73,7 +77,7 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
+<style module lang="scss">
 .input-wrapper {
   display: flex;
   flex-direction: column;
@@ -81,49 +85,48 @@ export default defineComponent({
 
 .input-label {
   margin-bottom: 4px;
-  font-family: "Roboto medium";
   font-size: 10px;
-  color: #5f5f5f;
-}
 
-.disabled-input-label {
-  color: #dcdcdc;
+  &.active {
+    color: $color-black-secondary;
+  }
+
+  &.disabled {
+    color: $color-white-secondary;
+  }
 }
 
 .text-input {
   border: none;
-  font-family: "Roboto";
   font-size: 16px;
-  border-bottom: 1px solid #dcdcdc;
-  color: #3c3c3c;
-}
 
-.text-input ::placeholder {
-  color: #5f5f5f;
-}
+  &:focus-visible {
+    box-shadow: none;
+    outline: 0;
+  }
 
-.text-input::placeholder {
-  color: var(--placeholder-color);
-}
+  &.active {
+    border-bottom: 1px solid $color-white-secondary;
+    color: $color-black-primary;
 
-.text-input:focus-visible {
-  box-shadow: none;
-  outline: 0;
-}
+    &::placeholder {
+      color: $color-black-secondary;
+    }
+  }
 
-.disabled-input {
-  border-bottom: 1px solid #eeeeee;
-  color: #dcdcdc;
-}
+  &.disabled {
+    border-bottom: 1px solid $color-white-primary;
+    color: $color-white-secondary;
 
-.disabled-input ::placeholder {
-  color: #dcdcdc;
+    &::placeholder {
+      color: $color-white-secondary;
+    }
+  }
 }
 
 .error-text {
   margin-top: 2px;
-  font-family: "Roboto";
   font-size: 10px;
-  color: #ff4343;
+  color: $color-red-primary;
 }
 </style>

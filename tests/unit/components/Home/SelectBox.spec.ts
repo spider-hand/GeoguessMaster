@@ -50,7 +50,7 @@ describe("Test SelectBox component", () => {
   it("Dialog should disappear when clicking outside component", async () => {
     await wrapper.find(".select-box-container").trigger("click");
 
-    await window.document.body.dispatchEvent(new Event('click'));
+    await window.document.body.dispatchEvent(new Event("click"));
 
     expect(wrapper.find(".select-box-dialog").exists()).toBe(false);
   });
@@ -70,7 +70,7 @@ describe("Test SelectBox component", () => {
       wrapper.find(".select-box-highligted-container").classes()
     ).toContain("on-hover");
     expect(wrapper.find(".select-box-container").classes()).toContain(
-      "on-hover-select-box-container"
+      "on-hover"
     );
   });
 

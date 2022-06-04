@@ -40,29 +40,29 @@ describe("Test CreateRoomDialog component", () => {
   it("Test the size text style when isOwner is false", async () => {
     await wrapper.setProps({ isOwner: false });
 
-    expect(wrapper.find("#size-form-title").classes()).toContain("disabled-form-title");
+    expect(wrapper.findAll(".form-title")[0].classes()).toContain("disabled");
   });
 
   it("Test the size helper text style when isOwner is false", async () => {
     await wrapper.setProps({ isOwner: false });
 
-    expect(wrapper.find("#size-form-helper-text").classes()).toContain("disabled-form-helper-text");
+    expect(wrapper.findAll(".form-helper-text")[0].classes()).toContain("disabled");
   });
 
   it("Test the time text style when isOwner is false", async () => {
     await wrapper.setProps({ isOwner: false });
     
-    expect(wrapper.find("#time-form-title").classes()).toContain("disabled-form-title");
+    expect(wrapper.findAll(".form-title")[1].classes()).toContain("disabled");
   });
 
   it("Test the time helper text style when isOwner is false", async () => {
     await wrapper.setProps({ isOwner: false });
 
-    expect(wrapper.find("#time-form-helper-text").classes()).toContain("disabled-form-helper-text");
+    expect(wrapper.findAll(".form-helper-text")[1].classes()).toContain("disabled");
   });
 
   it("Test the button style when isReadyForMultiplayerGame is false", () => {
-    expect(wrapper.find(".start-game-button").classes()).toContain("cursor-not-allowed");
+    expect(wrapper.find(".start-game-button").classes()).toContain("disabled");
   });
 
   it("Test error message when isRoomFound is false", async () => {

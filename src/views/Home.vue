@@ -1,9 +1,13 @@
 <template>
-  <div class="screen">
-    <div class="header">
-      <img src="@/assets/logo.png" class="logo" />
-      <span class="title">Geoguess Master</span>
-      <div class="header-right">
+  <div :class="$style['screen']">
+    <div :class="$style['header']">
+      <img
+        src="@/assets/images/logo.png"
+        :class="$style['logo']"
+        alt="Geoguess Master Logo"
+      />
+      <span :class="$style['title']">Geoguess Master</span>
+      <div :class="$style['header-right']">
         <a href="https://github.com/spider-hand/Geoguess-Master">
           <GithubIcon
             title="Github repository link here."
@@ -13,9 +17,9 @@
         </a>
       </div>
     </div>
-    <div class="container">
-      <div class="game-create-box-container">
-        <div class="game-create-box">
+    <div :class="$style['container']">
+      <div :class="$style['game-create-box-container']">
+        <div :class="$style['game-create-box']">
           <SelectBox
             title="Map"
             :selectedOption="
@@ -43,25 +47,25 @@
             @onChangeOption="onChangeSelectedMode"
           />
           <div
-            class="start-game-button"
+            :class="$style['start-game-button']"
             v-if="store.state.gameSettings.selectedMode === 'single'"
             @click="startSinglePlayerGame"
           >
-            <span id="travel-explore-icon" class="material-icons"
+            <span :class="$style['travel-explore-icon']" class="material-icons"
               >travel_explore</span
             >
-            <span class="create-button-text">START</span>
+            <div :class="$style['button-text']">START</div>
           </div>
           <div
-            class="create-room-button"
+            :class="$style['create-room-button']"
             ref="createRoomButtonRef"
             v-if="store.state.gameSettings.selectedMode === 'multiplayer'"
             @click="openCreateRoomDialog"
           >
-            <span id="travel-explore-icon" class="material-icons"
+            <span :class="$style['travel-explore-icon']" class="material-icons"
               >travel_explore</span
             >
-            <span class="create-button-text">CREATE ROOM</span>
+            <div :class="$style['button-text']">CREATE ROOM</div>
           </div>
           <CreateRoomDialog
             :isShowingDialog="state.isShowingRoomCreateDialog"
@@ -81,20 +85,21 @@
           />
         </div>
       </div>
-      <div class="map-image-container">
+      <div :class="$style['map-image-container']">
         <img
-          :src="require(`@/assets/${store.state.gameSettings.selectedMap}.png`)"
-          class="map-image"
+          :src="
+            require(`@/assets/images/${store.state.gameSettings.selectedMap}.png`)
+          "
+          :class="$style['map-image']"
+          alt="Selected Map Image"
         />
       </div>
     </div>
-    <div class="footer">
-      <div class="copyright-container">
-        <span class="copyright-text">
-          All rights reserved. Copyright © {{ new Date().getFullYear() }}
-          <strong>Spider Hand</strong>
-        </span>
-      </div>
+    <div :class="$style['footer']">
+      <span :class="$style['copyright-text']">
+        All rights reserved. Copyright © {{ new Date().getFullYear() }}
+        <strong>Spider Hand</strong>
+      </span>
     </div>
   </div>
 </template>
@@ -138,7 +143,7 @@ export default defineComponent({
       let isRoomCreateDialogClicked = false;
       const path = event.composedPath();
       path.forEach((el) => {
-        if ((el as Element).className === "create-room-dialog") {
+        if ((el as Element).id === "create-room-dialog") {
           isRoomCreateDialogClicked = true;
           return;
         }
@@ -284,7 +289,7 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
+<style module lang="scss">
 .screen {
   position: absolute;
   width: 100%;
@@ -323,8 +328,7 @@ export default defineComponent({
 }
 
 .title {
-  color: #ffffff;
-  font-family: "Roboto medium";
+  color: white;
   font-size: 20px;
 }
 
@@ -357,21 +361,17 @@ export default defineComponent({
 .create-room-button {
   width: 172px;
   height: 48px;
-  background-color: #ff4343;
+  background-color: $color-red-primary;
   border-radius: 32px;
+  font-size: 16px;
+  color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
 }
 
-.create-button-text {
-  font-family: "Roboto medium";
-  font-size: 16px;
-  color: #ffffff;
-}
-
-#travel-explore-icon {
+.travel-explore-icon {
   display: none;
 }
 
@@ -398,14 +398,9 @@ export default defineComponent({
   align-items: center;
 }
 
-.copyright-container {
-  padding: 0 12px;
-}
-
 .copyright-text {
-  font-family: "Roboto medium";
   font-size: 12px;
-  color: #ffffff;
+  color: white;
 }
 
 @media only screen and (max-width: 480px) {
@@ -427,16 +422,16 @@ export default defineComponent({
     right: 4px;
     width: 48px;
     border-radius: 24px;
-    background-color: #ffffff;
+    background-color: white;
   }
 
-  .create-button-text {
+  .button-text {
     display: none;
   }
 
-  #travel-explore-icon {
+  .travel-explore-icon {
     display: block;
-    color: #ff4343;
+    color: $color-red-primary;
   }
 
   .game-create-box {

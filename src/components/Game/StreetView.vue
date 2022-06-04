@@ -1,10 +1,10 @@
 <template>
-  <div id="street-view-container"></div>
+  <div :class="$style['street-view']" ref="streetviewRef"></div>
 </template>
 
 <script lang="ts">
 /*global google*/
-import { defineComponent, onMounted, watch } from "vue";
+import { defineComponent, onMounted, watch, ref } from "vue";
 
 import { Feature, feature, MultiPolygon } from "@turf/helpers";
 import { randomPosition } from "@turf/random";
@@ -42,6 +42,7 @@ export default defineComponent({
 
   setup(props, context) {
     let panorama: google.maps.StreetViewPanorama;
+    const streetviewRef = ref<HTMLElement>();
 
     watch(
       () => props.round,
@@ -117,9 +118,9 @@ export default defineComponent({
         data !== null &&
         data.location !== undefined
       ) {
-        if (document.getElementById("street-view-container") !== null) {
+        if (streetviewRef.value) {
           panorama = new google.maps.StreetViewPanorama(
-            document.getElementById("street-view-container") as HTMLElement
+            streetviewRef.value as HTMLElement
           );
           panorama.setOptions({
             zoomControl: false,
@@ -164,12 +165,16 @@ export default defineComponent({
         }
       }
     });
+
+    return {
+      streetviewRef,
+    };
   },
 });
 </script>
 
-<style scoped>
-#street-view-container {
+<style module lang="scss">
+.street-view {
   position: absolute;
   height: 100%;
   width: 100%;

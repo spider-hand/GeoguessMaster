@@ -1,21 +1,23 @@
 <template>
-  <div class="switch-container">
+  <div :class="$style['switch-container']">
     <button
-      class="option"
-      id="option-yes"
+      :class="[
+        $style['option'],
+        ans ? $style['selected'] : $style['not-selected'],
+      ]"
       @click="onClickYes"
-      :style="{ backgroundColor: ans ? '#ffffff' : '#eeeeee' }"
     >
-      <span class="option-text">YES</span>
+      YES
     </button>
     <div style="flex-grow: 1"></div>
     <button
-      class="option"
-      id="option-no"
+      :class="[
+        $style['option'],
+        ans ? $style['not-selected'] : $style['selected'],
+      ]"
       @click="onClickNo"
-      :style="{ backgroundColor: ans ? '#eeeeee' : '#ffffff' }"
     >
-      <span class="option-text">NO</span>
+      NO
     </button>
   </div>
 </template>
@@ -48,14 +50,14 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
+<style module lang="scss">
 .switch-container {
   position: absolute;
   right: 24px;
   height: 36px;
   width: 150px;
   padding: 0 4px;
-  background-color: #eeeeee;
+  background-color: $color-white-primary;
   border-radius: 24px;
   display: flex;
   flex-direction: row;
@@ -67,15 +69,19 @@ export default defineComponent({
   width: 64px;
   border: none;
   border-radius: 24px;
+  font-size: 12px;
+  color: $color-black-secondary;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-}
 
-.option-text {
-  font-family: "Roboto medium";
-  font-size: 12px;
-  color: #5f5f5f;
+  &.selected {
+    background-color: white;
+  }
+
+  &.not-selected {
+    background-color: $color-white-primary;
+  }
 }
 </style>
