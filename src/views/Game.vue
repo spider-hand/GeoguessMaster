@@ -395,11 +395,14 @@ export default defineComponent({
       state.overlayMsg = "Disconnecting from this game..";
       state.isEndingMultiplayerGame = true;
       off(dbRef(database, `/${store.state.gameSettings.roomNumber}`));
-      remove(dbRef(database, `/${store.state.gameSettings.roomNumber}`));
 
-      setTimeout(() => {
-        router.back();
-      }, 3000);
+      if (store.state.gameSettings.roomNumber !== "") {
+        remove(dbRef(database, `/${store.state.gameSettings.roomNumber}`));
+
+        setTimeout(() => {
+          router.back();
+        }, 3000);
+      }
     };
 
     onMounted(() => {
