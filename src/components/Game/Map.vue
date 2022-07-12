@@ -1,13 +1,13 @@
 <template>
   <div>
-    <div :class="$style['map-container']" ref="mapRef"></div>
-    <div
-      :class="$style['hide-map-button']"
+    <div :class="$style['map']" ref="mapRef"></div>
+    <button
+      :class="$style['map__button']"
       v-if="isMakeGuessButtonClicked"
       @click="onClickHideMapButton"
     >
       <span class="material-icons">close</span>
-    </div>
+    </button>
   </div>
 </template>
 
@@ -114,7 +114,7 @@ export default defineComponent({
 </script>
 
 <style module lang="scss">
-.map-container {
+.map {
   position: absolute;
   bottom: 54px;
   left: 12px;
@@ -132,24 +132,24 @@ export default defineComponent({
   }
 }
 
-.hide-map-button {
+.map__button {
   display: none;
 }
 
 @media only screen and (max-width: 480px) {
-  .map-container {
+  .map {
     bottom: -280px;
     opacity: 1;
     transition: transform 1s;
   }
 
-  .hide-map-button {
-    display: block;
+  .map__button {
     position: absolute;
     width: 24px;
     height: 24px;
     bottom: 292px;
     left: 324px;
+    border: none;
     border-radius: 12px;
     background-color: $color-red-primary;
     color: white;

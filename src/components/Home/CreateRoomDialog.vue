@@ -4,20 +4,22 @@
     :class="$style['create-room-dialog']"
     v-if="isShowingDialog"
   >
-    <div :class="$style['form-container']">
+    <div :class="$style['create-room-dialog__form']">
       <div>
         <div
           :class="[
-            $style['form-title'],
-            !isOwner ? $style['disabled'] : $style['active'],
+            !isOwner
+              ? $style['create-room-dialog__form-title--disabled']
+              : $style['create-room-dialog__form-title'],
           ]"
         >
           Size
         </div>
         <div
           :class="[
-            $style['form-helper-text'],
-            !isOwner ? $style['disabled'] : $style['active'],
+            !isOwner
+              ? $style['create-room-dialog__form-helper-text--disabled']
+              : $style['create-room-dialog__form-helper-text'],
           ]"
         >
           2-5 people
@@ -31,12 +33,13 @@
         @onChangeValue="onChangeSize"
       />
     </div>
-    <div :class="$style['form-container']">
+    <div :class="$style['create-room-dialog__form']">
       <div>
         <span
           :class="[
-            $style['form-title'],
-            !isOwner ? $style['disabled'] : $style['active'],
+            !isOwner
+              ? $style['create-room-dialog__form-title--disabled']
+              : $style['create-room-dialog__form-title'],
           ]"
         >
           Time per round
@@ -44,8 +47,9 @@
         <br />
         <span
           :class="[
-            $style['form-helper-text'],
-            !isOwner ? $style['disabled'] : $style['active'],
+            !isOwner
+              ? $style['create-room-dialog__form-helper-text--disabled']
+              : $style['create-room-dialog__form-helper-text'],
           ]"
         >
           1-10 minutes
@@ -59,7 +63,7 @@
         @onChangeValue="onChangeTime"
       />
     </div>
-    <div :class="$style['form-container']">
+    <div :class="$style['create-room-dialog__form']">
       <TextInput
         label="Player Name"
         name="player-name"
@@ -68,11 +72,11 @@
         @onChangeValue="onChangePlayerName"
       />
     </div>
-    <div :class="$style['form-container']">
+    <div :class="$style['create-room-dialog__form']">
       <span :class="$style['form-title']">Are you an owner?</span>
       <Switch :ans="isOwner" @onChangeValue="onChangeIsOwner" />
     </div>
-    <div :class="$style['form-container']">
+    <div :class="$style['create-room-dialog__form']">
       <TextInput
         label="Room Number"
         name="room-number"
@@ -83,11 +87,12 @@
         :errorMsg="roomCannnotBeFoundError"
       />
     </div>
-    <div :class="$style['button-container']">
+    <div :class="$style['create-room-dialog__button-wrapper']">
       <button
         :class="[
-          $style['start-game-button'],
-          !isReadyForMultiplayerGame ? $style['disabled'] : $style['active'],
+          isReadyForMultiplayerGame
+            ? $style['create-room-dialog__button']
+            : $style['create-room-dialog__button--disabled'],
         ]"
         :disabled="!isReadyForMultiplayerGame"
         @click="onClickStartMultiplayerGameButton"
@@ -204,7 +209,7 @@ export default defineComponent({
   flex-direction: column;
 }
 
-.form-container {
+.create-room-dialog__form {
   width: 100%;
   height: 48px;
   padding: 8px 16px;
@@ -214,38 +219,34 @@ export default defineComponent({
   border-bottom: 1px solid $color-white-secondary;
 }
 
-.form-title {
+.create-room-dialog__form-title {
   font-size: 16px;
+  color: $color-black-primary;
 
-  &.active {
-    color: $color-black-primary;
-  }
-
-  &.disabled {
+  &--disabled {
+    @extend .create-room-dialog__form-title;
     color: $color-white-secondary;
   }
 }
 
-.form-helper-text {
+.create-room-dialog__form-helper-text {
   font-size: 12px;
+  color: $color-black-secondary;
 
-  &.active {
-    color: $color-black-secondary;
-  }
-
-  &.disabled {
+  &--disabled {
+    @extend .create-room-dialog__form-helper-text;
     color: $color-white-secondary;
   }
 }
 
-.button-container {
+.create-room-dialog__button-wrapper {
   width: 100%;
   height: 52px;
   display: flex;
   align-items: center;
 }
 
-.start-game-button {
+.create-room-dialog__button {
   width: 129px;
   height: 36px;
   background-color: $color-red-primary;
@@ -256,12 +257,10 @@ export default defineComponent({
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
 
-  &.active {
-    cursor: pointer;
-  }
-
-  &.disabled {
+  &--disabled {
+    @extend .create-room-dialog__button;
     cursor: not-allowed;
     opacity: 0.7;
   }

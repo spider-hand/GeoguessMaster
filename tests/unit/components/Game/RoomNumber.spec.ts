@@ -11,15 +11,15 @@ describe("Test RoomNumberDialog", () => {
   });
 
   it("Test roomNumber text", () => {
-    expect(wrapper.find(".room-number").text()).toBe("9999");
+    expect(wrapper.find(".room-number-dialog__text").text()).toBe("9999");
   });
 
   it("Test component style when the game is not ready", () => {
-    expect(wrapper.find(".room-number-dialog").classes()).not.toContain("animated");
+    expect(wrapper.find(".room-number-dialog").exists()).toBe(true);
   });
 
   it("Dialog is gone when the game is ready", async () => {
     await wrapper.setProps({ isGameReady: true });
-    expect(wrapper.find(".room-number-dialog").classes()).toContain("animated");
+    expect(wrapper.find(".room-number-dialog--animated").exists()).toBe(true);
   });
 });

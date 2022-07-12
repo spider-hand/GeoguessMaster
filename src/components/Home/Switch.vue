@@ -1,9 +1,10 @@
 <template>
-  <div :class="$style['switch-container']">
+  <div :class="$style['switch']">
     <button
       :class="[
-        $style['option'],
-        ans ? $style['selected'] : $style['not-selected'],
+        ans
+          ? $style['switch__option--selected']
+          : $style['switch__option--not-selected'],
       ]"
       @click="onClickYes"
     >
@@ -12,8 +13,9 @@
     <div style="flex-grow: 1"></div>
     <button
       :class="[
-        $style['option'],
-        ans ? $style['not-selected'] : $style['selected'],
+        ans
+          ? $style['switch__option--not-selected']
+          : $style['switch__option--selected'],
       ]"
       @click="onClickNo"
     >
@@ -51,7 +53,7 @@ export default defineComponent({
 </script>
 
 <style module lang="scss">
-.switch-container {
+.switch {
   position: absolute;
   right: 24px;
   height: 36px;
@@ -64,7 +66,7 @@ export default defineComponent({
   align-items: center;
 }
 
-.option {
+.switch__option {
   height: 28px;
   width: 64px;
   border: none;
@@ -76,11 +78,13 @@ export default defineComponent({
   justify-content: center;
   cursor: pointer;
 
-  &.selected {
+  &--selected {
+    @extend .switch__option;
     background-color: white;
   }
 
-  &.not-selected {
+  &--not-selected {
+    @extend .switch__option;
     background-color: $color-white-primary;
   }
 }

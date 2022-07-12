@@ -28,8 +28,8 @@ describe("Test Home component", () => {
   });
 
   it("Create room button doesn't appear when selectedMode is single", () => {
-    expect(wrapper.find(".start-game-button").exists()).toBe(true);
-    expect(wrapper.find(".create-room-button").exists()).toBe(false);
+    expect(wrapper.findAll(".page__button").length).toBe(1);
+    expect(wrapper.findAll(".page__button-text")[0].text()).toBe("START");
   });
 
   it("Start game button doesn't appear when selectedMode is multiplayer", () => {
@@ -39,8 +39,8 @@ describe("Test Home component", () => {
       value: "multiplayer",
     });
     wrapper.vm.$nextTick(() => {
-      expect(wrapper.find(".start-game-button").exists()).toBe(false);
-      expect(wrapper.find(".create-room-button").exists()).toBe(true);
+      expect(wrapper.findAll(".page__button").length).toBe(1);
+      expect(wrapper.findAll(".page__button-text")[0].text()).toBe("CREATE ROOM");
     });
   });
 
@@ -77,7 +77,7 @@ describe("Test Home component", () => {
       value: "multiplayer",
     });
     wrapper.vm.$nextTick(() => {
-      wrapper.find(".create-room-button").trigger("click");
+      wrapper.find(".page__button").trigger("click");
 
       expect(wrapper.vm.state.isShowingRoomCreateDialog).toBe(true);
     });

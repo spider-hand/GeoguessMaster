@@ -10,6 +10,6 @@ describe("Test Overlay component", () => {
   });
 
   it("Test msg text", () => {
-    expect(wrapper.find(".text").text()).toBe("This is test.");
+    expect(wrapper.find(".overlay__text").text()).toBe("This is test.");
   });
 });

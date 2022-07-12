@@ -38,13 +38,13 @@ describe("Test TextInput component", () => {
   });
 
   it("Test input label text", () => {
-    expect(wrapper.find(".input-label").text()).toBe("Test");
+    expect(wrapper.find(".input__label").text()).toBe("Test");
   });
 
   it("Test error message text", async () => {
     await wrapper.setProps({ errorMsg: "Error message test" });
 
-    expect(wrapper.find(".error-text").text()).toBe("Error message test");
+    expect(wrapper.find(".input__error-text").text()).toBe("Error message test");
   });
 
   it("Make sure the input is not disabled", () => {

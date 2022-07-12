@@ -9,12 +9,14 @@
     }"
   >
     <div
-      :class="$style['option-wrapper']"
+      :class="$style['select-box-dialog__option-wrapper']"
       v-for="option in options"
       :key="option.value"
       @click="onChangeOption(option)"
     >
-      <span :class="$style['option-text']">{{ option.text }}</span>
+      <span :class="$style['select-box-dialog__option-text']">{{
+        option.text
+      }}</span>
     </div>
   </div>
 </template>
@@ -58,7 +60,7 @@ export default defineComponent({
   overflow-y: auto;
 }
 
-.option-wrapper {
+.select-box-dialog__option-wrapper {
   height: 32px;
   padding: 4px 48px;
   display: flex;
@@ -66,7 +68,7 @@ export default defineComponent({
   cursor: pointer;
 }
 
-.option-text {
+.select-box-dialog__option-text {
   font-size: 16px;
   color: $color-black-primary;
 }

@@ -41,13 +41,13 @@ describe("Test SelectBoxDialog component", () => {
   });
 
   it("Test dialog style when the number of options are less than 4", async () => {
-    await wrapper.setProps({ 
-      options:  [
+    await wrapper.setProps({
+      options: [
         { text: "1", value: "1" },
         { text: "2", value: "2" },
         { text: "3", value: "3" },
         { text: "4", value: "4" },
-      ], 
+      ],
     });
 
     const length = wrapper.props("options").length;
@@ -60,15 +60,17 @@ describe("Test SelectBoxDialog component", () => {
   });
 
   it("Test option text", () => {
-    const option = wrapper.findAll(".option-wrapper")[0];
-    expect(option.find(".option-text").text()).toBe("1");
+    const option = wrapper.findAll(".select-box-dialog__option-wrapper")[0];
+    expect(option.find(".select-box-dialog__option-text").text()).toBe("1");
   });
 
   it("Test onClick option", async () => {
-    const option = wrapper.findAll(".option-wrapper")[0];
-    
-    await option.trigger('click');
+    const option = wrapper.findAll(".select-box-dialog__option-wrapper")[0];
 
-    expect(wrapper.emitted().onChangeOption[0]).toEqual([{ text: "1", value: "1" }]);
+    await option.trigger("click");
+
+    expect(wrapper.emitted().onChangeOption[0]).toEqual([
+      { text: "1", value: "1" },
+    ]);
   });
 });

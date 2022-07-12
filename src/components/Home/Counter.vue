@@ -2,24 +2,30 @@
   <div :class="$style['counter']">
     <button
       :class="[
-        $style['button'],
-        disabledDecrement || disabled ? $style['disabled'] : $style['active'],
+        disabledDecrement || disabled
+          ? $style['counter__button--disabled']
+          : $style['counter__button'],
       ]"
       @click="decrement"
       :disabled="disabledDecrement || disabled"
     >
       -
     </button>
-    <div :class="$style['text-wrapper']">
-      <span :class="[$style['text'], disabled ? 'disabled' : $style['active']]">
+    <div :class="$style['counter__text-wrapper']">
+      <span
+        :class="[
+          disabled ? 'counter__text--disabled' : $style['counter__text'],
+        ]"
+      >
         {{ count }}
       </span>
     </div>
     <button
       @click="increment"
       :class="[
-        $style['button'],
-        disabledIncrement || disabled ? $style['disabled'] : $style['active'],
+        disabledIncrement || disabled
+          ? $style['counter__button--disabled']
+          : $style['counter__button'],
       ]"
       :disabled="disabledIncrement || disabled"
     >
@@ -85,41 +91,37 @@ export default defineComponent({
   flex-direction: row;
 }
 
-.button {
+.counter__button {
   width: 36px;
   height: 36px;
   border-radius: 18px;
   background-color: white;
   font-size: 20px;
+  border: 1px solid $color-white-secondary;
+  color: $color-black-secondary;
+  cursor: pointer;
 
-  &.active {
-    border: 1px solid $color-white-secondary;
-    color: $color-black-secondary;
-    cursor: pointer;
-  }
-
-  &.disabled {
-    border: 1px solid $color-white-primary;
+  &--disabled {
+    @extend .counter__button;
+    border-color: $color-white-primary;
     color: $color-white-secondary;
     cursor: not-allowed;
   }
 }
 
-.text-wrapper {
+.counter__text-wrapper {
   width: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.text {
+.counter__text {
   font-size: 16px;
+  color: $color-black-primary;
 
-  &.active {
-    color: $color-black-primary;
-  }
-
-  &.disabled {
+  &--disabled {
+    @extend .counter__text;
     color: $color-white-secondary;
   }
 }

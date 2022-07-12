@@ -1,22 +1,27 @@
 <template>
   <div
     :class="[
-      $style['select-box-highligted-container'],
-      state.isHovering && $style['on-hover'],
+      state.isHovering
+        ? $style['select-box-wrapper--on-hover']
+        : $style['select-box-wrapper'],
+      ,
     ]"
   >
     <div
       :class="[
-        $style['select-box-container'],
-        state.isHovering && $style['on-hover'],
+        state.isHovering
+          ? $style['select-box--on-hover']
+          : $style['select-box'],
       ]"
       ref="selectboxRef"
       @mouseover="onMouseOver"
       @mouseleave="onMouseLeave"
       @click="onClickSelectbox"
     >
-      <div :class="$style['select-box-title']">{{ title }}</div>
-      <div :class="$style['selected-option']">{{ selectedOption.text }}</div>
+      <div :class="$style['select-box__title']">{{ title }}</div>
+      <div :class="$style['select-box__selected-option']">
+        {{ selectedOption.text }}
+      </div>
     </div>
     <SelectboxDialog
       :isShowingDialog="state.isShowingDialog"
@@ -106,7 +111,7 @@ export default defineComponent({
 </script>
 
 <style module lang="scss">
-.select-box-highligted-container {
+.select-box-wrapper {
   position: relative;
   height: 100%;
   width: 228px;
@@ -115,12 +120,13 @@ export default defineComponent({
   display: flex;
   align-items: center;
 
-  &.on-hover {
+  &--on-hover {
+    @extend .select-box-wrapper;
     background-color: $color-white-primary;
   }
 }
 
-.select-box-container {
+.select-box {
   width: 180px;
   height: 48px;
   padding: 4px 24px 0 24px;
@@ -128,37 +134,38 @@ export default defineComponent({
   border-right: 1px solid $color-white-secondary;
   box-sizing: border-box;
 
-  &.on-hover {
+  &--on-hover {
+    @extend .select-box;
     border-right: none;
   }
 }
 
-.select-box-title {
+.select-box__title {
   font-size: 12px;
   color: $color-black-secondary;
 }
 
-.selected-option {
+.select-box__selected-option {
   font-size: 16px;
   color: $color-black-primary;
 }
 
 @media only screen and (max-width: 480px) {
-  .select-box-highligted-container {
+  .select-box-wrapper {
     width: 40%;
   }
 
-  .select-box-container {
+  .select-box {
     width: 100%;
     height: 44px;
     padding: 8px 16px 0 16px;
   }
 
-  .select-box-title {
+  .select-box__title {
     font-size: 10px;
   }
 
-  .selected-option {
+  .select-box__selected-option {
     font-size: 14px;
   }
 }

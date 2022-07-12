@@ -1,25 +1,25 @@
 <template>
   <div :class="$style['score-board']">
-    <div :class="$style['content-wrapper']">
-      <div :class="$style['label']">Map</div>
-      <div :class="$style['main-text']">
+    <div :class="$style['score-board__wrapper']">
+      <div :class="$style['score-board__label']">Map</div>
+      <div :class="$style['score-board__text']">
         {{ selectedMap }}
       </div>
     </div>
-    <div :class="$style['content-wrapper']">
-      <div :class="$style['label']">Round</div>
-      <div :class="$style['main-text']">{{ round }} / 5</div>
+    <div :class="$style['score-board__wrapper']">
+      <div :class="$style['score-board__label']">Round</div>
+      <div :class="$style['score-board__text']">{{ round }} / 5</div>
     </div>
     <div>
-      <div :class="$style['label']">Score</div>
-      <div :class="$style['main-text']">{{ score }}</div>
+      <div :class="$style['score-board__label']">Score</div>
+      <div :class="$style['score-board__text']">{{ score }}</div>
     </div>
     <div
       v-if="selectedMode === 'multiplayer'"
-      :class="$style['content-wrapper']"
+      :class="$style['score-board__wrapper']"
     >
-      <div :class="$style['label']">Time</div>
-      <div :class="$style['main-text']">{{ countdown }}</div>
+      <div :class="$style['score-board__label']">Time</div>
+      <div :class="$style['score-board__text']">{{ countdown }}</div>
     </div>
   </div>
 </template>
@@ -69,16 +69,16 @@ export default defineComponent({
   flex-direction: row;
 }
 
-.content-wrapper {
+.score-board__wrapper {
   margin: 0 16px;
 }
 
-.main-text {
+.score-board__text {
   color: white;
   font-size: 16px;
 }
 
-.label {
+.score-board__label {
   color: white;
   font-size: 12px;
 }

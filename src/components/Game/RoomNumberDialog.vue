@@ -1,10 +1,14 @@
 <template>
   <div
-    :class="[$style['room-number-dialog'], isGameReady && $style['animated']]"
+    :class="[
+      isGameReady
+        ? $style['room-number-dialog--animated']
+        : $style['room-number-dialog'],
+    ]"
   >
     <div>
-      <div :class="$style['label']">Room Number</div>
-      <div :class="$style['room-number']">{{ roomNumber }}</div>
+      <div :class="$style['room-number-dialog__label']">Room Number</div>
+      <div :class="$style['room-number-dialog__text']">{{ roomNumber }}</div>
     </div>
   </div>
 </template>
@@ -41,19 +45,20 @@ export default defineComponent({
   align-items: center;
   justify-content: center;
   transition: transform 1s;
+
+  &--animated {
+    @extend .room-number-dialog;
+    transform: translateY(-200px);
+  }
 }
 
-.animated {
-  transform: translateY(-200px);
-}
-
-.room-number {
-  color: white;
-  font-size: 16px;
-}
-
-.label {
+.room-number-dialog__label {
   color: white;
   font-size: 12px;
+}
+
+.room-number-dialog__text {
+  color: white;
+  font-size: 16px;
 }
 </style>

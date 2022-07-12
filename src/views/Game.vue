@@ -1,5 +1,5 @@
 <template>
-  <div :class="$style['screen']">
+  <div :class="$style['page']">
     <Overlay
       v-show="
         store.state.gameSettings.selectedMode === 'multiplayer' &&
@@ -69,8 +69,9 @@
     />
     <button
       :class="[
-        $style['guess-button'],
-        isGuessButtonDisabled ? $style['disabled'] : $style['active'],
+        isGuessButtonDisabled
+          ? $style['page__long-button--disabed']
+          : $style['page__long-button'],
       ]"
       :disabled="isGuessButtonDisabled"
       @click="onClickGuessButton"
@@ -78,22 +79,28 @@
       GUESS
     </button>
     <button
-      :class="$style['make-guess-button']"
+      :class="$style['page__long-button2']"
       v-show="!store.state.inGame.isMakeGuessButtonClicked"
       @click="onClickMakeGuessButton"
     >
       MAKE GUESS
     </button>
     <button
-      :class="$style['reset-location-button']"
+      :class="$style['page__round-button--black']"
       @click="onClickResetLocationButton"
     >
       <span class="material-icons">my_location</span>
     </button>
-    <button :class="$style['zoom-in-button']" @click="onClickZoomInButton">
+    <button
+      :class="$style['page__round-button--red']"
+      @click="onClickZoomInButton"
+    >
       <span class="material-icons">zoom_in</span>
     </button>
-    <button :class="$style['zoom-out-button']" @click="onClickZoomOutButton">
+    <button
+      :class="$style['page__round-button--brand']"
+      @click="onClickZoomOutButton"
+    >
       <span class="material-icons">zoom_out</span>
     </button>
   </div>
@@ -585,7 +592,7 @@ export default defineComponent({
 </script>
 
 <style module lang="scss">
-.screen {
+.page {
   position: absolute;
   width: 100%;
   height: 100%;
@@ -594,7 +601,7 @@ export default defineComponent({
   overflow: hidden;
 }
 
-.long-button {
+.page__long-button {
   position: absolute;
   bottom: 10px;
   left: 12px;
@@ -602,31 +609,25 @@ export default defineComponent({
   height: 36px;
   border: none;
   border-radius: 5px;
+  background-color: $color-red-primary;
   font-size: 16px;
   color: white;
   z-index: 1;
+  cursor: pointer;
 
-  &.active {
-    cursor: pointer;
-  }
-
-  &.disabled {
+  &--disabled {
+    @extend .page__long-button;
     opacity: 0.7;
     cursor: not-allowed;
   }
 }
 
-.guess-button {
-  @extend .long-button;
-  background-color: $color-red-primary;
+.page__long-button2 {
+  @extend .page__long-button;
+  visibility: hidden;
 }
 
-.make-guess-button {
-  @extend .long-button;
-  display: none;
-}
-
-.round-button {
+.page__round-button {
   position: absolute;
   right: 12px;
   width: 48px;
@@ -638,31 +639,30 @@ export default defineComponent({
   display: flex;
   align-items: center;
   justify-content: center;
-}
 
-.reset-location-button {
-  @extend .round-button;
-  color: $color-black-primary;
-  bottom: 228px;
-}
+  &--black {
+    @extend .page__round-button;
+    color: $color-black-primary;
+    bottom: 228px;
+  }
 
-.zoom-in-button {
-  @extend .round-button;
-  bottom: 164px;
-  color: $color-red-primary;
-}
+  &--brand {
+    @extend .page__round-button;
+    bottom: 100px;
+    color: $color-brand-primary;
+  }
 
-.zoom-out-button {
-  @extend .round-button;
-  bottom: 100px;
-  color: $color-brand-primary;
+  &--red {
+    @extend .page__round-button;
+    bottom: 164px;
+    color: $color-red-primary;
+  }
 }
 
 @media only screen and (max-width: 480px) {
-  .make-guess-button {
-    @extend .long-button;
-    display: block;
-    background-color: $color-red-primary;
+  .page__long-button2 {
+    @extend .page__long-button;
+    visibility: visible;
   }
 }
 </style>

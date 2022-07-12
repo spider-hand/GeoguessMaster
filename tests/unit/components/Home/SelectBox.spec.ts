@@ -30,11 +30,13 @@ describe("Test SelectBox component", () => {
   });
 
   it("Test title", () => {
-    expect(wrapper.find(".select-box-title").text()).toBe("Map");
+    expect(wrapper.find(".select-box__title").text()).toBe("Map");
   });
 
   it("Test selected option", () => {
-    expect(wrapper.find(".selected-option").text()).toBe(MAP_OPTIONS[0].text);
+    expect(wrapper.find(".select-box__selected-option").text()).toBe(
+      MAP_OPTIONS[0].text
+    );
   });
 
   it("Test if the dialog doesn't show", () => {
@@ -42,13 +44,13 @@ describe("Test SelectBox component", () => {
   });
 
   it("Test if the dialog shows up onClickSelectBox", async () => {
-    await wrapper.find(".select-box-container").trigger("click");
+    await wrapper.find(".select-box").trigger("click");
 
     expect(wrapper.find(".select-box-dialog").exists()).toBe(true);
   });
 
   it("Dialog should disappear when clicking outside component", async () => {
-    await wrapper.find(".select-box-container").trigger("click");
+    await wrapper.find(".select-box").trigger("click");
 
     await window.document.body.dispatchEvent(new Event("click"));
 
@@ -56,7 +58,7 @@ describe("Test SelectBox component", () => {
   });
 
   it("Dialog should not disapper when clicking the dialog itself", async () => {
-    await wrapper.find(".select-box-container").trigger("click");
+    await wrapper.find(".select-box").trigger("click");
 
     await wrapper.find(".select-box-dialog").trigger("click");
 
@@ -64,26 +66,18 @@ describe("Test SelectBox component", () => {
   });
 
   it("Test the style on hovering the mouse", async () => {
-    await wrapper.find(".select-box-container").trigger("mouseover");
+    await wrapper.find(".select-box").trigger("mouseover");
 
-    expect(
-      wrapper.find(".select-box-highligted-container").classes()
-    ).toContain("on-hover");
-    expect(wrapper.find(".select-box-container").classes()).toContain(
-      "on-hover"
-    );
+    expect(wrapper.find(".select-box-wrapper--on-hover").exists()).toBe(true);
+    expect(wrapper.find(".select-box--on-hover").exists()).toBe(true);
   });
 
   it("Test the style when not hovering", async () => {
-    await wrapper.find(".select-box-container").trigger("mouseover");
-    await wrapper.find(".select-box-container").trigger("mouseleave");
+    await wrapper.find(".select-box").trigger("mouseover");
+    await wrapper.find(".select-box--on-hover").trigger("mouseleave");
 
-    expect(
-      wrapper.find(".select-box-highligted-container").classes()
-    ).not.toContain("on-hover");
-    expect(wrapper.find(".select-box-container").classes()).not.toContain(
-      "on-hover-select-box-container"
-    );
+    expect(wrapper.find(".select-box-wrapper--on-hover").exists()).toBe(false);
+    expect(wrapper.find(".select-box--on-hover").exists()).toBe(false);
   });
 
   it("Test onChangeOption", () => {

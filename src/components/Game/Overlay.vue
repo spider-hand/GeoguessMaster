@@ -1,8 +1,8 @@
 <template>
   <div :class="$style['overlay']">
-    <div :class="$style['container']">
-      <span :class="$style['text']">{{ msg }}</span>
-      <div :class="$style['loader']"></div>
+    <div :class="$style['overlay__container']">
+      <span :class="$style['overlay__text']">{{ msg }}</span>
+      <div :class="$style['overlay__loader']"></div>
     </div>
   </div>
 </template>
@@ -34,15 +34,15 @@ export default defineComponent({
   justify-content: center;
 }
 
-.container {
+.overlay__container {
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
 }
 
-.loader {
-  border: 8px solid #ffffff;
+.overlay__loader {
+  border: 8px solid white;
   border-top: 8px solid transparent;
   border-radius: 50%;
   width: 64px;
@@ -60,13 +60,13 @@ export default defineComponent({
   }
 }
 
-.text {
+.overlay__text {
   font-size: 24px;
-  color: #ffffff;
+  color: white;
 }
 
 @media only screen and (max-width: 480px) {
-  .text {
+  .overlay__text {
     font-size: 20px;
   }
 }

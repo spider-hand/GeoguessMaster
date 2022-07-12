@@ -1,10 +1,9 @@
 <template>
-  <div :class="$style['input-wrapper']">
+  <div :class="$style['input']">
     <label
       :for="name"
       :class="[
-        $style['input-label'],
-        disabled ? $style['disabled'] : $style['active'],
+        disabled ? $style['input__label--disabled'] : $style['input__label'],
       ]"
     >
       {{ label }}
@@ -13,15 +12,16 @@
       type="text"
       :name="name"
       :class="[
-        $style['text-input'],
-        disabled ? $style['disabled'] : $style['active'],
+        disabled ? $style['text-input--disabled'] : $style['text-input'],
       ]"
       :placeholder="placeholder"
       v-model="state.inputValue"
       @input="onChangeValue"
       :disabled="disabled"
     />
-    <span v-if="errorMsg" :class="$style['error-text']">{{ errorMsg }}</span>
+    <span v-if="errorMsg" :class="$style['input__error-text']">{{
+      errorMsg
+    }}</span>
   </div>
 </template>
 
@@ -78,20 +78,18 @@ export default defineComponent({
 </script>
 
 <style module lang="scss">
-.input-wrapper {
+.input {
   display: flex;
   flex-direction: column;
 }
 
-.input-label {
+.input__label {
   margin-bottom: 4px;
   font-size: 10px;
+  color: $color-black-secondary;
 
-  &.active {
-    color: $color-black-secondary;
-  }
-
-  &.disabled {
+  &--disabled {
+    @extend .input__label;
     color: $color-white-secondary;
   }
 }
@@ -99,23 +97,21 @@ export default defineComponent({
 .text-input {
   border: none;
   font-size: 16px;
+  border-bottom: 1px solid $color-white-secondary;
+  color: $color-black-primary;
 
   &:focus-visible {
     box-shadow: none;
     outline: 0;
   }
 
-  &.active {
-    border-bottom: 1px solid $color-white-secondary;
-    color: $color-black-primary;
-
-    &::placeholder {
-      color: $color-black-secondary;
-    }
+  &::placeholder {
+    color: $color-black-secondary;
   }
 
-  &.disabled {
-    border-bottom: 1px solid $color-white-primary;
+  &--disabled {
+    @extend .text-input;
+    border-bottom-color: $color-white-primary;
     color: $color-white-secondary;
 
     &::placeholder {
@@ -124,7 +120,7 @@ export default defineComponent({
   }
 }
 
-.error-text {
+.input__error-text {
   margin-top: 2px;
   font-size: 10px;
   color: $color-red-primary;
