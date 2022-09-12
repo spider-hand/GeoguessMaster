@@ -103,8 +103,8 @@
 
 <script lang="ts">
 /*global google*/
-import { GameHistory } from "@/types";
-import { defineComponent, watch, onMounted, ref } from "vue";
+import { GameHistory, Summary, DistanceByPlayer } from "@/types";
+import { defineComponent, watch, onMounted, ref, PropType } from "vue";
 
 export default defineComponent({
   props: {
@@ -150,7 +150,7 @@ export default defineComponent({
       default: null,
     },
     distanceByPlayerArr: {
-      type: Array,
+      type: Array as PropType<DistanceByPlayer[]>,
       required: true,
     },
     round: {
@@ -162,7 +162,7 @@ export default defineComponent({
       required: true,
     },
     multiplayerGameSummary: {
-      type: Array,
+      type: Array as PropType<Summary[]>,
       required: true,
     },
   },

@@ -138,7 +138,7 @@ export default defineComponent({
     },
     roomNumber: {
       type: String,
-      required: false,
+      required: true,
     },
     isReadyForMultiplayerGame: {
       type: Boolean,
@@ -153,8 +153,8 @@ export default defineComponent({
   },
 
   setup(props, context) {
-    const roomCannnotBeFoundError = computed<string | null>(() =>
-      !props.isRoomFound ? "The room cannot be found." : null
+    const roomCannnotBeFoundError = computed<string | undefined>(() =>
+      !props.isRoomFound ? "The room cannot be found." : undefined
     );
 
     const onChangeSize = (newVal: number): void => {

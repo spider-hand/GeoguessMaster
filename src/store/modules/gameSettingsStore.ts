@@ -6,7 +6,7 @@ export interface GameSettingsState {
   selectedMap: string;
   selectedMode: string;
   selectedSize: number;
-  selectedTime: number | null;
+  selectedTime: number;
   playerName: string;
   playerId: string;
   isOwner: boolean;

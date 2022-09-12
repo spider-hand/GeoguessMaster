@@ -12,3 +12,8 @@ export type Summary = {
   playerName: string;
   score: number;
 };
+
+export type DistanceByPlayer = {
+  playerName: string;
+  distance: number;
+}

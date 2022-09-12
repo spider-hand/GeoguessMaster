@@ -23,7 +23,7 @@
 
 <script lang="ts">
 import { SelectboxOption } from "@/types";
-import { defineComponent } from "vue";
+import { defineComponent, PropType } from "vue";
 
 export default defineComponent({
   props: {
@@ -33,7 +33,7 @@ export default defineComponent({
       required: true,
     },
     options: {
-      type: Array,
+      type: Array as PropType<SelectboxOption[]>,
       required: true,
     },
   },
