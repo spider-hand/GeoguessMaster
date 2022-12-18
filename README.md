@@ -6,24 +6,26 @@
   />
 </p>
 
-# Geoguess Master
-Geoguess Master is an open source geoguess game.
+# GeoguessMaster
+Open source geoguess game.
 
 https://geoguessmaster.net/
 
+## Features and Highlights
+- Free
+- Multiplayer game in real time
+- Filter maps by a specific country (For now Japan is the only option because other regions cannot be filtered accurately.)
+- PWA
+
+## Implementation
+Vue.js, TypeScript, SCSS, Firebase Realtime Database
+
 ## Limitations
-This game is completely for free but there is a limitation. I am setting a quota to show Google Maps and Street Views per day because the cost gets really expensive once after exceeding the amount I can use for free in a month.  
-If you see the map color reverted, it means the quota on the day has already been exceeded.
+I am setting a daily quota to show Google Maps and Street View so I can use Google APIs in a free tier. If you see the map color reverted, it means the daily quota has already been exceeded. If you want to avoid this, you could build this project on your local. Please try the setup guide below.
 
 ## Build Setups
-Even though there is a limitation on this game, you can build your own game and even customize this game because this game is open source. Here is the [instruction](../master/docs/Setup.md). If you want to run this project on local, see this [instruction](../master/docs/SetupLocal.md).
-
-## Features
-- Free
-- Multiplayer game using realtime database
-- Filter Maps by a specific country.   
-(There are a few countries you can select for now. But I will consider adding more as the request comes.)
-- Responsive design and PWA
+You can build this project and even customize it on your local. Here is the [instruction](../master/docs/SetupLocal.md) to build this project on your local.
+If you want to deploy your own game server, see [this](../master/docs/Setup.md).
 
 ## License
 Copyright (c) Spider Hand. All rights reserved.  
