@@ -2,6 +2,7 @@
   <div :class="$style['switch']">
     <button
       :class="[
+        $style['switch__option--left'],
         ans
           ? $style['switch__option--selected']
           : $style['switch__option--not-selected'],
@@ -13,6 +14,7 @@
     <div style="flex-grow: 1"></div>
     <button
       :class="[
+        $style['switch__option--right'],
         ans
           ? $style['switch__option--not-selected']
           : $style['switch__option--selected'],
@@ -54,29 +56,40 @@ export default defineComponent({
 
 <style module lang="scss">
 .switch {
-  position: absolute;
-  right: 24px;
-  height: 36px;
-  width: 150px;
-  padding: 0 4px;
-  background-color: $color-white-primary;
-  border-radius: 24px;
   display: flex;
   flex-direction: row;
   align-items: center;
+  position: relative;
+  border-radius: 100px;
+  height: 36px;
+  width: 150px;
+  background-color: var(--color-surface-light);
 }
 
 .switch__option {
-  height: 28px;
-  width: 64px;
-  border: none;
-  border-radius: 24px;
-  font-size: 12px;
-  color: $color-black-secondary;
   display: flex;
   align-items: center;
   justify-content: center;
+  position: absolute;
+  box-sizing: border-box;
+  border: none;
+  border-radius: 24px;
+  padding: 4px 24px;
+  height: 28px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-surface-primary);
   cursor: pointer;
+
+  &--left {
+    @extend .switch__option;
+    left: 4px;
+  }
+
+  &--right {
+    @extend .switch__option;
+    right: 4px;
+  }
 
   &--selected {
     @extend .switch__option;
@@ -85,7 +98,7 @@ export default defineComponent({
 
   &--not-selected {
     @extend .switch__option;
-    background-color: $color-white-primary;
+    background-color: var(--color-surface-light);
   }
 }
 </style>

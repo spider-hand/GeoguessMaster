@@ -1,0 +1,5 @@
+$screen: "only screen";
+$mobile-landscape: "#{$screen} and (min-width: 480px)";
+$tablet-portrait: "#{$screen} and (min-width: 768px)";
+$tablet-landscape: "#{$screen} and (min-width: 992px)";
+$laptop: "#{$screen} and (min-width: 1200px)";

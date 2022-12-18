@@ -1,13 +1,5 @@
 <template>
-  <div
-    :class="$style['select-box-dialog']"
-    v-if="isShowingDialog"
-    :style="{
-      height: options.length <= 4 ? options.length * 40 + 'px' : '180px',
-      bottom:
-        options.length <= 4 ? (options.length * 40 + 16) * -1 + 'px' : '-196px',
-    }"
-  >
+  <div :class="$style['select-box-dialog']">
     <div
       :class="$style['select-box-dialog__option-wrapper']"
       v-for="option in options"
@@ -27,11 +19,6 @@ import { defineComponent, PropType } from "vue";
 
 export default defineComponent({
   props: {
-    isShowingDialog: {
-      type: Boolean,
-      default: false,
-      required: true,
-    },
     options: {
       type: Array as PropType<SelectboxOption[]>,
       required: true,
@@ -53,23 +40,30 @@ export default defineComponent({
 <style module lang="scss">
 .select-box-dialog {
   position: absolute;
+  top: calc(100% + 12px);
   left: 0;
-  width: 300px;
-  background: white;
-  border-radius: 20px;
-  overflow-y: auto;
+  box-shadow: var(--color-shadow-bold);
+  border-radius: 12px;
+  padding: 12px 24px;
+  width: 240px;
+  height: auto;
+  background-color: white;
+
+  @media #{$mobile-landscape} {
+    left: auto;
+  }
 }
 
 .select-box-dialog__option-wrapper {
-  height: 32px;
-  padding: 4px 48px;
   display: flex;
   align-items: center;
+  padding: 12px 0;
   cursor: pointer;
 }
 
 .select-box-dialog__option-text {
   font-size: 16px;
-  color: $color-black-primary;
+  font-weight: 500;
+  color: var(--color-surface-primary);
 }
 </style>

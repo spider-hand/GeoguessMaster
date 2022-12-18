@@ -17,3 +17,5 @@ export type DistanceByPlayer = {
   playerName: string;
   distance: number;
 }
+
+export type LatLngPropType = google.maps.LatLng | null;

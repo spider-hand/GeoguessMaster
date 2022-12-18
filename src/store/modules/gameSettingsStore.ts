@@ -18,7 +18,7 @@ const getDefaultState = (): GameSettingsState => ({
   selectedMap: MAP_OPTIONS[0].value,
   selectedMode: MODE_OPTIONS[0].value,
   selectedSize: 2,
-  selectedTime: 1,
+  selectedTime: 5,
   playerName: "",
   playerId: "",
   isOwner: true,

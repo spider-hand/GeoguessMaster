@@ -14,7 +14,9 @@
     <div :class="$style['counter__text-wrapper']">
       <span
         :class="[
-          disabled ? 'counter__text--disabled' : $style['counter__text'],
+          disabled
+            ? $style['counter__text--disabled']
+            : $style['counter__text'],
         ]"
       >
         {{ count }}
@@ -83,46 +85,46 @@ export default defineComponent({
 
 <style module lang="scss">
 .counter {
-  position: absolute;
-  right: 24px;
-  width: 150px;
   display: flex;
   justify-content: right;
   flex-direction: row;
+  position: relative;
+  width: 150px;
 }
 
 .counter__button {
+  border-radius: 18px;
+  box-sizing: border-box;
   width: 36px;
   height: 36px;
-  border-radius: 18px;
   background-color: white;
   font-size: 20px;
-  border: 1px solid $color-white-secondary;
-  color: $color-black-secondary;
+  border: 2px solid var(--color-surface-secondary);
+  color: var(--color-surface-secondary);
   cursor: pointer;
 
   &--disabled {
     @extend .counter__button;
-    border-color: $color-white-primary;
-    color: $color-white-secondary;
+    border-color: var(--color-surface-light);
+    color: var(--color-surface-light);
     cursor: not-allowed;
   }
 }
 
 .counter__text-wrapper {
-  width: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 32px;
 }
 
 .counter__text {
   font-size: 16px;
-  color: $color-black-primary;
+  color: var(--color-surface-primary);
 
   &--disabled {
     @extend .counter__text;
-    color: $color-white-secondary;
+    color: var(--color-surface-light);
   }
 }
 </style>

@@ -4,12 +4,12 @@
 
 <script lang="ts">
 /*global google*/
-import { defineComponent, onMounted, watch, ref } from "vue";
-
+import { defineComponent, onMounted, watch, ref, PropType } from "vue";
 import { Feature, feature, MultiPolygon } from "@turf/helpers";
 import { randomPosition } from "@turf/random";
 import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
 import bbox from "@turf/bbox";
+import { LatLngPropType } from "@/types";
 
 export default defineComponent({
   props: {
@@ -30,7 +30,7 @@ export default defineComponent({
       required: false,
     },
     randomLatLng: {
-      type: google.maps.LatLng,
+      type: Object as PropType<LatLngPropType>,
       default: null,
       required: false,
     },
@@ -60,7 +60,10 @@ export default defineComponent({
 
     watch(
       () => props.randomLatLng,
-      (newVal: google.maps.LatLng, oldVal: google.maps.LatLng | null) => {
+      (
+        newVal: google.maps.LatLng | null,
+        oldVal: google.maps.LatLng | null
+      ) => {
         if (
           oldVal === null &&
           newVal &&
@@ -176,9 +179,9 @@ export default defineComponent({
 <style module lang="scss">
 .street-view {
   position: absolute;
-  height: 100%;
-  width: 100%;
   top: 0;
   left: 0;
+  height: 100%;
+  width: 100%;
 }
 </style>

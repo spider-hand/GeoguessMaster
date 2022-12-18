@@ -4,24 +4,28 @@
       :for="name"
       :class="[
         disabled ? $style['input__label--disabled'] : $style['input__label'],
+        errorMsg && $style['input__label--error'],
       ]"
     >
       {{ label }}
     </label>
     <input
       type="text"
+      maxlength="20"
       :name="name"
       :class="[
         disabled ? $style['text-input--disabled'] : $style['text-input'],
+        errorMsg && $style['text-input--error'],
       ]"
       :placeholder="placeholder"
       v-model="state.inputValue"
       @input="onChangeValue"
       :disabled="disabled"
     />
-    <span v-if="errorMsg" :class="$style['input__error-text']">{{
-      errorMsg
-    }}</span>
+    <span v-if="errorMsg" :class="$style['input__error']">
+      <span class="material-icons">error</span>
+      {{ errorMsg }}
+    </span>
   </div>
 </template>
 
@@ -85,20 +89,29 @@ export default defineComponent({
 
 .input__label {
   margin-bottom: 4px;
-  font-size: 10px;
-  color: $color-black-secondary;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--color-surface-secondary);
 
   &--disabled {
     @extend .input__label;
-    color: $color-white-secondary;
+    color: var(--color-surface-light) !important;
+  }
+
+  &--error {
+    @extend .input__label;
+    color: var(--color-red-primary);
   }
 }
 
 .text-input {
   border: none;
+  border-bottom: 2px solid var(--color-surface-secondary);
+  width: 100%;
+  line-height: 150%;
   font-size: 16px;
-  border-bottom: 1px solid $color-white-secondary;
-  color: $color-black-primary;
+  font-weight: 500;
+  color: var(--color-surface-primary);
 
   &:focus-visible {
     box-shadow: none;
@@ -106,23 +119,39 @@ export default defineComponent({
   }
 
   &::placeholder {
-    color: $color-black-secondary;
+    color: var(--color-surface-tertiary);
   }
 
   &--disabled {
     @extend .text-input;
-    border-bottom-color: $color-white-primary;
-    color: $color-white-secondary;
+    border-bottom-color: var(--color-surface-light) !important;
+    color: var(--color-surface-light) !important;
 
     &::placeholder {
-      color: $color-white-secondary;
+      color: var(--color-surface-light) !important;
+    }
+  }
+
+  &--error {
+    @extend .text-input;
+    border-bottom-color: var(--color-red-primary);
+    color: var(--color-red-primary);
+
+    &::placeholder {
+      color: var(--color-red-primary);
     }
   }
 }
 
-.input__error-text {
-  margin-top: 2px;
-  font-size: 10px;
-  color: $color-red-primary;
+.input__error {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-red-primary);
+
+  & > span {
+    font-size: 12px;
+  }
 }
 </style>

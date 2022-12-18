@@ -1,0 +1,21 @@
+@import "../../assets/styles/breakpoints";
+
+@mixin pagePadding {
+  padding-right: 12px;
+  padding-left: 12px;
+
+  @media #{$mobile-landscape} {
+    padding-right: 24px;
+    padding-left: 24px;
+  }
+}
+
+@mixin mainText {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+@mixin label {
+  font-size: 12px;
+  font-weight: 400;
+}

@@ -67,42 +67,59 @@
       @updateSelectedLatLng="updateSelectedLatLng"
       @onClickHideMapButton="onClickHideMapButton"
     />
-    <button
-      :class="[
-        isGuessButtonDisabled
-          ? $style['page__long-button--disabed']
-          : $style['page__long-button'],
-      ]"
+    <FlatButton
+      :text="'GUESS'"
+      :style="{
+        zIndex: 1,
+        position: 'absolute',
+        bottom: '12px',
+        left: '12px',
+      }"
       :disabled="isGuessButtonDisabled"
       @click="onClickGuessButton"
-    >
-      GUESS
-    </button>
-    <button
-      :class="$style['page__long-button2']"
+    />
+    <FlatButton
+      :text="'MAKE GUESS'"
+      :style="{
+        zIndex: 1,
+        position: 'absolute',
+        bottom: '12px',
+        left: '12px',
+      }"
+      v-if="store.state.generalSettings.device <= DeviceTypes.MobilePortrait"
       v-show="!store.state.inGame.isMakeGuessButtonClicked"
       @click="onClickMakeGuessButton"
-    >
-      MAKE GUESS
-    </button>
-    <button
-      :class="$style['page__round-button--black']"
+    />
+    <IconButton
+      :icon="'my_location'"
+      :style="{
+        zIndex: 1,
+        position: 'absolute',
+        right: '12px',
+        bottom: '228px',
+      }"
       @click="onClickResetLocationButton"
-    >
-      <span class="material-icons">my_location</span>
-    </button>
-    <button
-      :class="$style['page__round-button--red']"
+    />
+    <IconButton
+      :icon="'zoom_in'"
+      :style="{
+        zIndex: 1,
+        position: 'absolute',
+        right: '12px',
+        bottom: '164px',
+      }"
       @click="onClickZoomInButton"
-    >
-      <span class="material-icons">zoom_in</span>
-    </button>
-    <button
-      :class="$style['page__round-button--brand']"
+    />
+    <IconButton
+      :icon="'zoom_out'"
+      :style="{
+        zIndex: 1,
+        position: 'absolute',
+        right: '12px',
+        bottom: '100px',
+      }"
       @click="onClickZoomOutButton"
-    >
-      <span class="material-icons">zoom_out</span>
-    </button>
+    />
   </div>
 </template>
 
@@ -130,8 +147,11 @@ import ScoreBoard from "@/components/Game/ScoreBoard.vue";
 import ResultModal from "@/components/Game/ResultModal.vue";
 import RoomNumberDialog from "@/components/Game/RoomNumberDialog.vue";
 import Overlay from "@/components/Game/Overlay.vue";
+import FlatButton from "@/components/FlatButton.vue";
+import IconButton from "@/components/IconButton.vue";
 import { database } from "@/firebase";
 import { Summary } from "@/types";
+import { DeviceTypes } from "@/constants";
 
 export default defineComponent({
   components: {
@@ -141,6 +161,8 @@ export default defineComponent({
     ResultModal,
     RoomNumberDialog,
     Overlay,
+    FlatButton,
+    IconButton,
   },
 
   setup() {
@@ -570,6 +592,7 @@ export default defineComponent({
       state,
       isGuessButtonDisabled,
       countdown,
+      DeviceTypes,
       fetchGeoJSON,
       updateRandomLatLng,
       updateSelectedLatLng,
@@ -596,73 +619,8 @@ export default defineComponent({
   position: absolute;
   width: 100%;
   height: 100%;
+  overflow: hidden;
   top: 0;
   left: 0;
-  overflow: hidden;
-}
-
-.page__long-button {
-  position: absolute;
-  bottom: 10px;
-  left: 12px;
-  width: 240px;
-  height: 36px;
-  border: none;
-  border-radius: 5px;
-  background-color: $color-red-primary;
-  font-size: 16px;
-  color: white;
-  z-index: 1;
-  cursor: pointer;
-
-  &--disabled {
-    @extend .page__long-button;
-    opacity: 0.7;
-    cursor: not-allowed;
-  }
-}
-
-.page__long-button2 {
-  @extend .page__long-button;
-  visibility: hidden;
-}
-
-.page__round-button {
-  position: absolute;
-  right: 12px;
-  width: 48px;
-  height: 48px;
-  border: none;
-  border-radius: 24px;
-  cursor: pointer;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  &--black {
-    @extend .page__round-button;
-    color: $color-black-primary;
-    bottom: 228px;
-  }
-
-  &--brand {
-    @extend .page__round-button;
-    bottom: 100px;
-    color: $color-brand-primary;
-  }
-
-  &--red {
-    @extend .page__round-button;
-    bottom: 164px;
-    color: $color-red-primary;
-  }
-}
-
-@media only screen and (max-width: 480px) {
-  .page__long-button2 {
-    @extend .page__long-button;
-    visibility: visible;
-  }
 }
 </style>

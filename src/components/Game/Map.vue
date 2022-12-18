@@ -1,19 +1,32 @@
 <template>
   <div>
     <div :class="$style['map']" ref="mapRef"></div>
-    <button
-      :class="$style['map__button']"
-      v-if="isMakeGuessButtonClicked"
+    <IconButton
+      v-if="
+        store.state.generalSettings.device <= DeviceTypes.MobilePortrait &&
+        isMakeGuessButtonClicked
+      "
+      :icon="'close'"
+      :style="{
+        zIndex: '1',
+        position: 'absolute',
+        bottom: '300px',
+        left: '0px',
+      }"
+      :size="'sm'"
       @click="onClickHideMapButton"
-    >
-      <span class="material-icons">close</span>
-    </button>
+    />
   </div>
 </template>
 
 <script lang="ts">
 /*global google*/
-import { defineComponent, onMounted, ref, watch } from "vue";
+import { defineComponent, onMounted, ref, watch, PropType } from "vue";
+import { useStore } from "vuex";
+import { key } from "@/store";
+import { DeviceTypes } from "@/constants";
+import IconButton from "../IconButton.vue";
+import { LatLngPropType } from "@/types";
 
 export default defineComponent({
   props: {
@@ -22,7 +35,7 @@ export default defineComponent({
       required: true,
     },
     randomLatLng: {
-      type: google.maps.LatLng,
+      type: Object as PropType<LatLngPropType>,
       default: null,
       required: false,
     },
@@ -36,16 +49,21 @@ export default defineComponent({
     },
   },
 
+  components: {
+    IconButton,
+  },
+
   setup(props, context) {
     let map: google.maps.Map;
     const mapRef = ref<HTMLElement>();
     const markers: google.maps.Marker[] = [];
+    const store = useStore(key);
 
     watch(
       () => props.isMakeGuessButtonClicked,
       (newVal: boolean, oldVal: boolean) => {
         if (newVal && mapRef.value) {
-          mapRef.value.style.transform = "translateY(-340px)";
+          mapRef.value.style.transform = "translateY(-352px)";
         } else if (!newVal && mapRef.value) {
           mapRef.value.style.transform = "translateY(300px)";
         }
@@ -107,6 +125,8 @@ export default defineComponent({
 
     return {
       mapRef,
+      store,
+      DeviceTypes,
       onClickHideMapButton,
     };
   },
@@ -115,48 +135,26 @@ export default defineComponent({
 
 <style module lang="scss">
 .map {
-  position: absolute;
-  bottom: 54px;
-  left: 12px;
-  z-index: 1;
-  opacity: 0.7;
-  width: 320px;
-  height: 240px;
   transform-origin: bottom left;
   transform: scale(0.75);
-  transition: transform 0.3s;
+  transition: transform 1s;
+  z-index: 1;
+  opacity: 1;
+  position: absolute;
+  bottom: -280px;
+  left: 12px;
+  width: 320px;
+  height: 240px;
 
   &:hover {
-    opacity: 1;
     transform: scale(1);
-  }
-}
-
-.map__button {
-  display: none;
-}
-
-@media only screen and (max-width: 480px) {
-  .map {
-    bottom: -280px;
     opacity: 1;
-    transition: transform 1s;
   }
 
-  .map__button {
-    position: absolute;
-    width: 24px;
-    height: 24px;
-    bottom: 292px;
-    left: 324px;
-    border: none;
-    border-radius: 12px;
-    background-color: $color-red-primary;
-    color: white;
-    z-index: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  @media #{$mobile-landscape} {
+    bottom: 72px;
+    opacity: 0.7;
+    transition: transform 0.3s;
   }
 }
 </style>

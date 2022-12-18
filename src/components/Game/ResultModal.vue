@@ -1,100 +1,92 @@
 <template>
   <div :class="$style['result-modal']">
-    <div :class="$style['result-modal__map']" ref="resultMapRef"></div>
+    <div
+      :class="
+        $style[
+          state.isMapExpanding
+            ? 'result-modal__map-wrapper--expanded'
+            : 'result-modal__map-wrapper'
+        ]
+      "
+    >
+      <div :class="$style['result-modal__map']" ref="resultMapRef"></div>
+      <IconButton
+        :icon="state.isMapExpanding ? 'expand_less' : 'expand_more'"
+        :style="{
+          zIndex: 1,
+          position: 'absolute',
+          bottom: '12px',
+          left: '12px',
+        }"
+        @click="state.isMapExpanding ? shrinkMap() : expandMap()"
+      />
+    </div>
     <div :class="$style['result-modal__footer']">
       <div
-        :class="$style['result-modal__wrapper']"
-        v-if="!isShowingSummary && selectedMode === 'single'"
+        :class="$style['result-modal__container']"
+        v-if="selectedMode === 'single'"
       >
-        <span :class="$style['result-modal__text']" v-if="distance !== null"
-          >You are {{ distance }}km away.</span
+        <span
+          :class="$style['result-modal__text']"
+          :style="{ marginBottom: '24px' }"
+          v-if="distance !== null"
+          >You are <strong>{{ isShowingSummary ? score : distance }}</strong
+          >km away {{ isShowingSummary ? "in total " : ""
+          }}{{ isShowingSummary ? "&#127881;" : "&#128640;" }}</span
         >
-        <button
-          :class="$style['result-modal__button--red']"
+        <FlatButton
           v-if="round < 5"
+          :text="'NEXT ROUND'"
           @click="onClickNextRoundButton"
-        >
-          NEXT ROUND
-        </button>
-        <button
-          :class="$style['result-modal__button--red']"
-          v-else
-          @click="onClickViewSummaryButton"
-        >
-          VIEW SUMMARY
-        </button>
-      </div>
-      <div v-if="!isShowingSummary && selectedMode === 'multiplayer'">
-        <div :class="$style['result-modal__wrapper']">
-          <span
-            :class="$style['result-modal__text']"
-            style="margin: 4px"
-            v-for="(item, index) in distanceByPlayerArr"
-            :key="index"
-          >
-            {{ item.playerName }} is {{ item.distance }}km away!
-          </span>
-        </div>
-        <div :class="$style['result-modal__button-wrapper2']">
-          <button
-            :class="[
-              !isOwner && !isNextRoundReady
-                ? $style['result-modal__button--red--disabled']
-                : $style['result-modal__button--red'],
-            ]"
-            v-if="round < 5"
-            :disabled="!isOwner && !isNextRoundReady"
-            @click="onClickNextRoundButton"
-          >
-            NEXT ROUND
-          </button>
-          <button
-            :class="$style['result-modal__button--red']"
-            v-else
-            @click="onClickViewSummaryButton"
-          >
-            VIEW SUMMARY
-          </button>
-        </div>
-      </div>
-      <div
-        :class="$style['result-modal__wrapper']"
-        v-if="isShowingSummary && selectedMode === 'single'"
-      >
-        <span :class="$style['result-modal__text']"
-          >You are {{ score }}km away in total.</span
-        >
-        <div :class="$style['result-modal__button-wrapper']">
-          <button
-            :class="$style['result-modal__button--red']"
+        />
+        <div v-else>
+          <FlatButton
+            v-if="isShowingSummary"
+            :text="'PLAY AGAIN'"
+            :style="{
+              marginBottom: '12px',
+            }"
             @click="onClickPlayAgainButton"
-          >
-            PLAY AGAIN
-          </button>
-          <button
-            :class="$style['result-modal__button--brand']"
-            @click="onClickExitButton"
-          >
-            EXIT
-          </button>
+          />
+          <FlatButton
+            :text="isShowingSummary ? 'EXIT' : 'VIEW SUMMARY'"
+            @click="
+              isShowingSummary
+                ? onClickExitButton()
+                : onClickViewSummaryButton()
+            "
+          />
         </div>
       </div>
-      <div v-if="isShowingSummary && selectedMode === 'multiplayer'">
-        <div :class="$style['result-modal__wrapper']">
-          <span
-            :class="$style['result-modal__text']"
-            v-for="(item, index) in multiplayerGameSummary"
-            :key="index"
-            >{{ item.playerName }} is {{ item.score }}km away in total.</span
-          >
-        </div>
-        <div :class="$style['result-modal__button-wrapper2']">
-          <button
-            :class="$style['result-modal__button--brand']"
-            @click="endMultiplayerGame"
-          >
-            EXIT
-          </button>
+      <div :class="$style['result-modal__container']" v-else>
+        <span
+          :class="$style['result-modal__text']"
+          :style="{
+            marginBottom: index !== sortedScore.length - 1 ? '12px' : '24px',
+          }"
+          v-for="(item, index) in sortedScore"
+          :key="index"
+        >
+          <strong>{{ item.playerName }}</strong> is
+          <strong>{{ item.distance }}</strong
+          >km away {{ isShowingSummary ? "in total " : ""
+          }}{{ isShowingSummary && index === 0 ? "&#127941;" : "" }}
+        </span>
+        <FlatButton
+          v-if="round < 5"
+          :text="'NEXT ROUND'"
+          :disabled="!isOwner && !isNextRoundReady"
+          @click="onClickNextRoundButton"
+        />
+        <div v-else>
+          <FlatButton
+            :text="isShowingSummary ? 'EXIT' : 'VIEW SUMMARY'"
+            @click="
+              isShowingSummary
+                ? endMultiplayerGame()
+                : onClickViewSummaryButton()
+            "
+          />
         </div>
       </div>
     </div>
@@ -103,8 +95,23 @@
 
 <script lang="ts">
 /*global google*/
-import { GameHistory, Summary, DistanceByPlayer } from "@/types";
-import { defineComponent, watch, onMounted, ref, PropType } from "vue";
+import {
+  GameHistory,
+  Summary,
+  DistanceByPlayer,
+  LatLngPropType,
+} from "@/types";
+import {
+  defineComponent,
+  watch,
+  onMounted,
+  ref,
+  PropType,
+  computed,
+  reactive,
+} from "vue";
+import FlatButton from "../FlatButton.vue";
+import IconButton from "../IconButton.vue";
 
 export default defineComponent({
   props: {
@@ -129,11 +136,12 @@ export default defineComponent({
       required: true,
     },
     randomLatLng: {
-      type: google.maps.LatLng,
+      type: Object as PropType<LatLngPropType>,
       default: null,
+      required: false,
     },
     selectedLatLng: {
-      type: google.maps.LatLng,
+      type: Object as PropType<LatLngPropType>,
       default: null,
       required: false,
     },
@@ -167,11 +175,25 @@ export default defineComponent({
     },
   },
 
+  components: {
+    FlatButton,
+    IconButton,
+  },
+
   setup(props, context) {
     let map: google.maps.Map;
     const resultMapRef = ref<HTMLElement>();
     let markers: google.maps.Marker[] = [];
     let polylines: google.maps.Polyline[] = [];
+
+    const state = reactive<{ isMapExpanding: boolean }>({
+      isMapExpanding: false,
+    });
+
+    const sortedScore = computed(() => {
+      let copiedArray = [...props.distanceByPlayerArr];
+      return copiedArray.sort((x, y) => x.distance - y.distance);
+    });
 
     const putMarker = (position: google.maps.LatLng): void => {
       const marker = new google.maps.Marker({
@@ -232,6 +254,14 @@ export default defineComponent({
       context.emit("endMultiplayerGame");
     };
 
+    const expandMap = (): void => {
+      state.isMapExpanding = true;
+    };
+
+    const shrinkMap = (): void => {
+      state.isMapExpanding = false;
+    };
+
     watch(
       () => props.isShowingResult,
       (newVal: boolean) => {
@@ -246,7 +276,7 @@ export default defineComponent({
             (props.selectedLatLngArr as google.maps.LatLng[]).forEach(
               (latLng: google.maps.LatLng) => {
                 putMarker(latLng);
-                drawPolyline(props.randomLatLng, latLng);
+                drawPolyline(props.randomLatLng as google.maps.LatLng, latLng);
               }
             );
           } else {
@@ -274,17 +304,22 @@ export default defineComponent({
           fullscreenControl: false,
           mapTypeControl: false,
           streetViewControl: false,
+          zoomControl: false,
         });
       }
     });
 
     return {
+      state,
       resultMapRef,
+      sortedScore,
       onClickNextRoundButton,
       onClickViewSummaryButton,
       onClickPlayAgainButton,
       onClickExitButton,
       endMultiplayerGame,
+      expandMap,
+      shrinkMap,
     };
   },
 });
@@ -292,82 +327,55 @@ export default defineComponent({
 
 <style module lang="scss">
 .result-modal {
+  z-index: 3;
   position: absolute;
-  width: 100%;
-  height: 100%;
   top: 0;
   left: 0;
-  z-index: 3;
+  width: 100%;
+  height: 100%;
+}
+
+.result-modal__map-wrapper {
+  transition: all 0.5s;
+  position: relative;
+  width: 100%;
+  height: 50%;
+
+  &--expanded {
+    @extend .result-modal__map-wrapper;
+    height: 100%;
+  }
 }
 
 .result-modal__map {
   position: absolute;
   width: 100%;
-  height: 70%;
-  top: 0;
-  left: 0;
+  height: 100%;
 }
 
 .result-modal__footer {
-  position: absolute;
-  width: 100%;
-  height: 30%;
-  bottom: 0;
-  left: 0;
-  background-color: $color-brand-primary;
+  @include pagePadding;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding-top: 24px;
+  padding-bottom: 24px;
+  width: 100%;
+  height: 50%;
+  background-color: white;
 }
 
-.result-modal__wrapper {
-  width: 360px;
+.result-modal__container {
   display: flex;
   align-items: center;
   flex-direction: column;
 }
 
-.result-modal__button-wrapper {
-  display: flex;
-  align-items: center;
-  flex-direction: row;
-}
-
-.result-modal__button-wrapper2 {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-}
-
-.result-modal__button {
-  width: 180px;
-  height: 36px;
-  margin: 16px;
-  border: none;
-  border-radius: 5px;
-  color: white;
-  font-size: 16px;
-  cursor: pointer;
-
-  &--red {
-    @extend .result-modal__button;
-    background-color: $color-red-primary;
-
-    &--disabled {
-      @extend .result-modal__button--red;
-      cursor: not-allowed;
-    }
-  }
-
-  &--brand {
-    @extend .result-modal__button;
-    background-color: $color-brand-primary;
-    border: 1.5px solid white;
-  }
-}
-
 .result-modal__text {
   font-size: 16px;
-  color: white;
+  font-weight: 500;
+  color: var(--color-surface-primary);
 }
 </style>

@@ -10,7 +10,7 @@
       <div :class="$style['score-board__label']">Round</div>
       <div :class="$style['score-board__text']">{{ round }} / 5</div>
     </div>
-    <div>
+    <div :class="$style['score-board__wrapper']">
       <div :class="$style['score-board__label']">Score</div>
       <div :class="$style['score-board__text']">{{ score }}</div>
     </div>
@@ -54,32 +54,31 @@ export default defineComponent({
 
 <style module lang="scss">
 .score-board {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  width: 240px;
-  height: 64px;
-  padding: 0 16px;
-  border-radius: 5px;
-  background-color: $color-brand-primary;
-  z-index: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: row;
+  z-index: 1;
+  box-sizing: border-box;
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  max-width: calc(100% - 24px);
+  border-radius: 12px;
+  background: var(--color-brand-gradient);
 }
 
 .score-board__wrapper {
-  margin: 0 16px;
+  padding: 12px 24px;
 }
 
 .score-board__text {
+  @include mainText;
   color: white;
-  font-size: 16px;
 }
 
 .score-board__label {
+  @include label;
   color: white;
-  font-size: 12px;
 }
 </style>

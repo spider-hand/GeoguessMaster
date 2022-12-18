@@ -6,8 +6,13 @@ import {
   GameSettingsState,
 } from "./modules/gameSettingsStore";
 import { inGameStore, InGameState } from "./modules/inGameStore";
+import {
+  generalSettingsStore,
+  GeneralSettingsState,
+} from "./modules/generalSettingsStore";
 
 export interface MyState {
+  generalSettings: GeneralSettingsState;
   gameSettings: GameSettingsState;
   inGame: InGameState;
 }
@@ -20,6 +25,7 @@ export const store = createStore({
   mutations: {},
   actions: {},
   modules: {
+    generalSettings: generalSettingsStore,
     gameSettings: gameSettingsStore,
     inGame: inGameStore,
   },

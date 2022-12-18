@@ -9,8 +9,8 @@
         <div
           :class="[
             !isOwner
-              ? $style['create-room-dialog__form-title--disabled']
-              : $style['create-room-dialog__form-title'],
+              ? $style['create-room-dialog__text--disabled']
+              : $style['create-room-dialog__text'],
           ]"
         >
           Size
@@ -18,13 +18,14 @@
         <div
           :class="[
             !isOwner
-              ? $style['create-room-dialog__form-helper-text--disabled']
-              : $style['create-room-dialog__form-helper-text'],
+              ? $style['create-room-dialog__helper-text--disabled']
+              : $style['create-room-dialog__helper-text'],
           ]"
         >
           2-5 people
         </div>
       </div>
+      <Space />
       <Counter
         :min="2"
         :max="5"
@@ -38,8 +39,8 @@
         <span
           :class="[
             !isOwner
-              ? $style['create-room-dialog__form-title--disabled']
-              : $style['create-room-dialog__form-title'],
+              ? $style['create-room-dialog__text--disabled']
+              : $style['create-room-dialog__text'],
           ]"
         >
           Time per round
@@ -48,13 +49,14 @@
         <span
           :class="[
             !isOwner
-              ? $style['create-room-dialog__form-helper-text--disabled']
-              : $style['create-room-dialog__form-helper-text'],
+              ? $style['create-room-dialog__helper-text--disabled']
+              : $style['create-room-dialog__helper-text'],
           ]"
         >
           1-10 minutes
         </span>
       </div>
+      <Space />
       <Counter
         :min="1"
         :max="10"
@@ -73,7 +75,12 @@
       />
     </div>
     <div :class="$style['create-room-dialog__form']">
-      <span :class="$style['form-title']">Are you an owner?</span>
+      <div>
+        <span :class="$style['create-room-dialog__text']"
+          >Are you an owner?</span
+        >
+      </div>
+      <Space />
       <Switch :ans="isOwner" @onChangeValue="onChangeIsOwner" />
     </div>
     <div :class="$style['create-room-dialog__form']">
@@ -87,18 +94,12 @@
         :errorMsg="roomCannnotBeFoundError"
       />
     </div>
-    <div :class="$style['create-room-dialog__button-wrapper']">
-      <button
-        :class="[
-          isReadyForMultiplayerGame
-            ? $style['create-room-dialog__button']
-            : $style['create-room-dialog__button--disabled'],
-        ]"
+    <div :class="$style['create-room-dialog__footer']">
+      <FlatButton
+        :text="'START'"
         :disabled="!isReadyForMultiplayerGame"
         @click="onClickStartMultiplayerGameButton"
-      >
-        START
-      </button>
+      />
     </div>
   </div>
 </template>
@@ -109,6 +110,8 @@ import { defineComponent, computed } from "vue";
 import Counter from "@/components/Home/Counter.vue";
 import Switch from "@/components/Home/Switch.vue";
 import TextInput from "@/components/Home/TextInput.vue";
+import FlatButton from "../FlatButton.vue";
+import Space from "../Space.vue";
 
 export default defineComponent({
   props: {
@@ -150,6 +153,8 @@ export default defineComponent({
     Counter,
     Switch,
     TextInput,
+    FlatButton,
+    Space,
   },
 
   setup(props, context) {
@@ -196,79 +201,57 @@ export default defineComponent({
 
 <style module lang="scss">
 .create-room-dialog {
-  position: absolute;
-  bottom: -393px;
-  right: 0;
-  width: 320px;
-  height: 377px;
-  padding: 0 32px;
-  background: white;
-  border-radius: 20px;
   display: flex;
   align-items: center;
   flex-direction: column;
+  box-sizing: border-box;
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  padding: 12px 24px;
+  width: 100%;
+  box-shadow: var(--color-shadow-bold);
+  border-radius: 20px;
+  background-color: white;
+
+  @media #{$tablet-landscape} {
+    width: 80%;
+  }
 }
 
 .create-room-dialog__form {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
   width: 100%;
   height: 48px;
-  padding: 8px 16px;
-  flex-direction: row;
+  padding: 12px;
+}
+
+.create-room-dialog__text {
+  @include mainText;
+  color: var(--color-surface-primary);
+
+  &--disabled {
+    @extend .create-room-dialog__text;
+    color: var(--color-surface-light);
+  }
+}
+
+.create-room-dialog__helper-text {
+  @include label;
+  color: var(--color-surface-secondary);
+
+  &--disabled {
+    @extend .create-room-dialog__helper-text;
+    color: var(--color-surface-light);
+  }
+}
+
+.create-room-dialog__footer {
   display: flex;
   align-items: center;
-  border-bottom: 1px solid $color-white-secondary;
-}
-
-.create-room-dialog__form-title {
-  font-size: 16px;
-  color: $color-black-primary;
-
-  &--disabled {
-    @extend .create-room-dialog__form-title;
-    color: $color-white-secondary;
-  }
-}
-
-.create-room-dialog__form-helper-text {
-  font-size: 12px;
-  color: $color-black-secondary;
-
-  &--disabled {
-    @extend .create-room-dialog__form-helper-text;
-    color: $color-white-secondary;
-  }
-}
-
-.create-room-dialog__button-wrapper {
+  margin-top: 12px;
   width: 100%;
-  height: 52px;
-  display: flex;
-  align-items: center;
-}
-
-.create-room-dialog__button {
-  width: 129px;
-  height: 36px;
-  background-color: $color-red-primary;
-  border: none;
-  border-radius: 18px;
-  font-size: 14px;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-
-  &--disabled {
-    @extend .create-room-dialog__button;
-    cursor: not-allowed;
-    opacity: 0.7;
-  }
-}
-
-@media only screen and (max-width: 480px) {
-  .create-room-dialog {
-    width: 80%;
-  }
 }
 </style>

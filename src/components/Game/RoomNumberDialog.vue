@@ -6,10 +6,8 @@
         : $style['room-number-dialog'],
     ]"
   >
-    <div>
-      <div :class="$style['room-number-dialog__label']">Room Number</div>
-      <div :class="$style['room-number-dialog__text']">{{ roomNumber }}</div>
-    </div>
+    <div :class="$style['room-number-dialog__label']">Room Number</div>
+    <div :class="$style['room-number-dialog__text']">{{ roomNumber }}</div>
   </div>
 </template>
 
@@ -32,19 +30,19 @@ export default defineComponent({
 
 <style module lang="scss">
 .room-number-dialog {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  width: 80px;
-  height: 64px;
-  padding: 0 16px;
-  border-radius: 5px;
-  background-color: $color-brand-primary;
-  z-index: 5;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
+  z-index: 5;
   transition: transform 1s;
+  box-sizing: border-box;
+  position: absolute;
+  padding: 12px 24px;
+  top: 12px;
+  right: 12px;
+  border-radius: 12px;
+  background: var(--color-brand-gradient);
 
   &--animated {
     @extend .room-number-dialog;
@@ -53,12 +51,14 @@ export default defineComponent({
 }
 
 .room-number-dialog__label {
+  @include label;
+  width: 100%;
   color: white;
-  font-size: 12px;
 }
 
 .room-number-dialog__text {
+  @include mainText;
+  width: 100%;
   color: white;
-  font-size: 16px;
 }
 </style>

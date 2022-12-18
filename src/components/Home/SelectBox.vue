@@ -1,30 +1,17 @@
 <template>
-  <div
-    :class="[
-      state.isHovering
-        ? $style['select-box-wrapper--on-hover']
-        : $style['select-box-wrapper'],
-      ,
-    ]"
-  >
-    <div
-      :class="[
-        state.isHovering
-          ? $style['select-box--on-hover']
-          : $style['select-box'],
-      ]"
+  <div :class="[$style['select-box-wrapper']]">
+    <button
+      :class="[$style['select-box']]"
       ref="selectboxRef"
-      @mouseover="onMouseOver"
-      @mouseleave="onMouseLeave"
       @click="onClickSelectbox"
     >
       <div :class="$style['select-box__title']">{{ title }}</div>
-      <div :class="$style['select-box__selected-option']">
+      <div :class="$style['select-box__selected']">
         {{ selectedOption.text }}
       </div>
-    </div>
+    </button>
     <SelectboxDialog
-      :isShowingDialog="state.isShowingDialog"
+      v-if="state.isShowingDialog"
       :options="options"
       @onChangeOption="onChangeOption"
     />
@@ -49,7 +36,7 @@ export default defineComponent({
       required: true,
     },
     options: {
-      type: Array,
+      type: Array as PropType<SelectboxOption[]>,
       required: true,
     },
   },
@@ -75,34 +62,23 @@ export default defineComponent({
     });
 
     const state = reactive<{
-      isHovering: boolean;
       isShowingDialog: boolean;
     }>({
-      isHovering: false,
       isShowingDialog: false,
     });
 
-    const onMouseOver = (): void => {
-      state.isHovering = true;
-    };
-
-    const onMouseLeave = (): void => {
-      state.isHovering = false;
-    };
-
-    const onClickSelectbox = (): void => {
+    const onClickSelectbox = (e: any): void => {
       state.isShowingDialog = true;
     };
 
     const onChangeOption = (option: SelectboxOption): void => {
+      state.isShowingDialog = false;
       context.emit("onChangeOption", option);
     };
 
     return {
       state,
       selectboxRef,
-      onMouseOver,
-      onMouseLeave,
       onClickSelectbox,
       onChangeOption,
     };
@@ -112,61 +88,42 @@ export default defineComponent({
 
 <style module lang="scss">
 .select-box-wrapper {
-  position: relative;
   height: 100%;
-  width: 228px;
-  background-color: #ffffff;
-  border-radius: 32px;
-  display: flex;
-  align-items: center;
-
-  &--on-hover {
-    @extend .select-box-wrapper;
-    background-color: $color-white-primary;
-  }
 }
 
 .select-box {
-  width: 180px;
-  height: 48px;
-  padding: 4px 24px 0 24px;
-  cursor: pointer;
-  border-right: 1px solid $color-white-secondary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
   box-sizing: border-box;
+  position: relative;
+  border: none;
+  border-radius: 32px;
+  padding: 0 24px;
+  height: 100%;
+  background-color: white;
+  cursor: pointer;
 
-  &--on-hover {
-    @extend .select-box;
-    border-right: none;
+  &:hover {
+    background-color: var(--color-surface-superlight);
+  }
+
+  @media #{$tablet-landscape} {
+    padding: 0 48px;
   }
 }
 
 .select-box__title {
+  width: 100%;
   font-size: 12px;
-  color: $color-black-secondary;
+  color: var(--color-surface-secondary);
+  text-align: left;
 }
 
-.select-box__selected-option {
+.select-box__selected {
   font-size: 16px;
-  color: $color-black-primary;
-}
-
-@media only screen and (max-width: 480px) {
-  .select-box-wrapper {
-    width: 40%;
-  }
-
-  .select-box {
-    width: 100%;
-    height: 44px;
-    padding: 8px 16px 0 16px;
-  }
-
-  .select-box__title {
-    font-size: 10px;
-  }
-
-  .select-box__selected-option {
-    font-size: 14px;
-  }
+  font-weight: 500;
+  color: var(--color-surface-primary);
 }
 </style>
