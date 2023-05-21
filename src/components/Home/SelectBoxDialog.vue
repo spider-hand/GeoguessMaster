@@ -44,7 +44,6 @@ export default defineComponent({
   left: 0;
   box-shadow: var(--color-shadow-bold);
   border-radius: 12px;
-  padding: 12px 24px;
   width: 240px;
   height: auto;
   background-color: white;
@@ -57,8 +56,13 @@ export default defineComponent({
 .select-box-dialog__option-wrapper {
   display: flex;
   align-items: center;
-  padding: 12px 0;
+  border-radius: 12px;
+  padding: 18px 24px;
   cursor: pointer;
+
+  &:hover {
+    background-color: var(--color-surface-superlight);
+  }
 }
 
 .select-box-dialog__option-text {

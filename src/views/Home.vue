@@ -2,16 +2,16 @@
   <div :class="$style['page']">
     <header :class="$style['page__header']">
       <img
-        src="@/assets/images/logo_plus_title.svg"
+        src="@/assets/images/logo.svg"
         :class="$style['page__logo']"
         alt="Geoguess Master Logo"
       />
       <Space />
-      <a href="https://github.com/spider-hand/Geoguess-Master">
-        <GithubIcon
-          fillColor="var(--color-surface-primary)"
-          id="githib-icon"
-          :size="36"
+      <a href="https://github.com/spider-hand/GeoguessMaster">
+        <img
+          src="@/assets/images/github.svg"
+          :class="$style['page__github-ribbon']"
+          alt="Fork me on Github"
         />
       </a>
     </header>
@@ -40,7 +40,7 @@
         }"
       >
         All rights reserved. Copyright © {{ new Date().getFullYear() }}
-        <strong>Spider Hand</strong>
+        <strong>GeoguessMaster</strong>
       </span>
     </footer>
   </div>
@@ -48,14 +48,12 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import GithubIcon from "vue-material-design-icons/Github.vue";
 import Space from "@/components/Space.vue";
 import AuroraBackground from "@/components/AuroraBackground.vue";
 import CreateGameForm from "@/components/Home/CreateGameForm.vue";
 
 export default defineComponent({
   components: {
-    GithubIcon,
     Space,
     AuroraBackground,
     CreateGameForm,
@@ -95,6 +93,12 @@ export default defineComponent({
   @media #{$tablet-landscape} {
     height: 60px;
   }
+}
+
+.page__github-ribbon {
+  position: absolute;
+  top: 0;
+  right: 0;
 }
 
 .page__container {
