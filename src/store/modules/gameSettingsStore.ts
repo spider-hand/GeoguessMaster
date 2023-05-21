@@ -11,6 +11,7 @@ export interface GameSettingsState {
   playerId: string;
   isOwner: boolean;
   roomNumber: string;
+  isStartingGame: boolean;
   geoJSON: any;
 }
 
@@ -23,6 +24,7 @@ const getDefaultState = (): GameSettingsState => ({
   playerId: "",
   isOwner: true,
   roomNumber: "",
+  isStartingGame: false,
   geoJSON: null,
 });
 
@@ -36,6 +38,8 @@ export const gameSettingsStore = {
       return idx >= 0 ? MAP_OPTIONS[idx].text : "";
     },
     isReadyForMultiplayerGame(state: GameSettingsState) {
+      if (state.isStartingGame) return false;
+
       if (state.isOwner) {
         return state.playerName !== "";
       } else {
@@ -75,6 +79,9 @@ export const gameSettingsStore = {
     changeRoomNumber(state: GameSettingsState, value: string) {
       state.roomNumber = value;
     },
+    clickStartButton(state: GameSettingsState) {
+      state.isStartingGame = true;
+    },
     fetchGeoJSON(state: GameSettingsState, value: any) {
       state.geoJSON = value;
     },
@@ -106,6 +113,9 @@ export const gameSettingsStore = {
     },
     changeRoomNumberAction({ commit }: any, payload: any) {
       commit("changeRoomNumber", payload.roomNumber);
+    },
+    onClickStartButtonAction({ commit }: any) {
+      commit("clickStartButton");
     },
     async fetchGeoJSONAction({ commit }: any, payload: any) {
       try {

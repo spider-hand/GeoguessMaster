@@ -76,9 +76,7 @@
     </div>
     <div :class="$style['create-room-dialog__form']">
       <div>
-        <span :class="$style['create-room-dialog__text']"
-          >Are you an owner?</span
-        >
+        <span :class="$style['create-room-dialog__text']">Are you a host?</span>
       </div>
       <Space />
       <Switch :ans="isOwner" @onChangeValue="onChangeIsOwner" />

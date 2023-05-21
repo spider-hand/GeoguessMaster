@@ -180,6 +180,8 @@ export default defineComponent({
 
     const startMultiplayerGame = async (): Promise<void> => {
       try {
+        store.dispatch("onClickStartButtonAction");
+
         if (store.state.gameSettings.isOwner) {
           let randomNumber: number;
           let snapshot: DataSnapshot;
