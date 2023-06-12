@@ -6,8 +6,8 @@
           ? $style['counter__button--disabled']
           : $style['counter__button'],
       ]"
-      @click="decrement"
       :disabled="disabledDecrement || disabled"
+      @click="decrement"
     >
       -
     </button>
@@ -23,13 +23,13 @@
       </span>
     </div>
     <button
-      @click="increment"
       :class="[
         disabledIncrement || disabled
           ? $style['counter__button--disabled']
           : $style['counter__button'],
       ]"
       :disabled="disabledIncrement || disabled"
+      @click="increment"
     >
       +
     </button>

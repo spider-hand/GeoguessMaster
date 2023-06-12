@@ -1,32 +1,50 @@
 <template>
   <div :class="$style['create-game-form']">
-    <SelectBox
-      title="Map"
-      :selectedOption="
-        MAP_OPTIONS[
-          MAP_OPTIONS.findIndex(
-            (option) => option.value === store.state.gameSettings.selectedMap
-          )
-        ]
-      "
-      :options="MAP_OPTIONS"
-      @onChangeOption="onChangeSelectedMap"
-    />
-    <SelectBox
-      title="Mode"
-      :selectedOption="
-        MODE_OPTIONS[
-          MODE_OPTIONS.findIndex(
-            (option) => option.value === store.state.gameSettings.selectedMode
-          )
-        ]
-      "
-      :options="MODE_OPTIONS"
-      @onChangeOption="onChangeSelectedMode"
-    />
+    <div :class="$style['create-game-form__section']">
+      <button
+        :class="$style['create-game-form__select']"
+        @click="openSelectMapDialog"
+      >
+        <span :class="$style['create-game-form__select-label']">Map</span>
+        <span :class="$style['create-game-form__select-value']">{{
+          MAP_OPTIONS[
+            MAP_OPTIONS.findIndex(
+              (option) => option.value === store.state.gameSettings.selectedMap
+            )
+          ].text
+        }}</span>
+      </button>
+      <SelectBoxDialog
+        v-show="state.isSelectingMap"
+        :options="MAP_OPTIONS"
+        @onChangeOption="onChangeSelectedMap"
+        @close="state.isSelectingMap = false"
+      />
+    </div>
+    <div :class="$style['create-game-form__section']">
+      <button
+        :class="$style['create-game-form__select']"
+        @click="openSelectModeDialog"
+      >
+        <span :class="$style['create-game-form__select-label']">Mode</span>
+        <span :class="$style['create-game-form__select-value']">{{
+          MODE_OPTIONS[
+            MODE_OPTIONS.findIndex(
+              (option) => option.value === store.state.gameSettings.selectedMode
+            )
+          ].text
+        }}</span>
+      </button>
+      <SelectBoxDialog
+        v-show="state.isSelectingMode"
+        :options="MODE_OPTIONS"
+        @onChangeOption="onChangeSelectedMode"
+        @close="state.isSelectingMode = false"
+      />
+    </div>
     <IconButton
-      ref="createRoomButtonRef"
       v-if="store.state.generalSettings.device <= DeviceTypes.TabletPortrait"
+      ref="createRoomButtonRef"
       :icon="'travel_explore'"
       :style="{ position: 'absolute', right: '12px' }"
       @click="
@@ -36,8 +54,8 @@
       "
     />
     <FlatButton
-      ref="createRoomButtonRef"
       v-else
+      ref="createRoomButtonRef"
       :style="{ position: 'absolute', right: '12px' }"
       :text="
         store.state.gameSettings.selectedMode === 'single'
@@ -51,14 +69,14 @@
       "
     />
     <CreateRoomDialog
-      :isShowingDialog="state.isShowingRoomCreateDialog"
-      :isRoomFound="state.isRoomFound"
-      :selectedSize="store.state.gameSettings.selectedSize"
-      :selectedTime="store.state.gameSettings.selectedTime"
-      :playerName="store.state.gameSettings.playerName"
-      :isOwner="store.state.gameSettings.isOwner"
-      :roomNumber="store.state.gameSettings.roomNumber"
-      :isReadyForMultiplayerGame="store.getters.isReadyForMultiplayerGame"
+      :is-showing-dialog="state.isShowingRoomCreateDialog"
+      :is-room-found="state.isRoomFound"
+      :selected-size="store.state.gameSettings.selectedSize"
+      :selected-time="store.state.gameSettings.selectedTime"
+      :player-name="store.state.gameSettings.playerName"
+      :is-owner="store.state.gameSettings.isOwner"
+      :room-number="store.state.gameSettings.roomNumber"
+      :is-ready-for-multiplayer-game="store.getters.isReadyForMultiplayerGame"
       @onChangeSize="onChangeSize"
       @onChangeTime="onChangeTime"
       @onChangePlayerName="onChangePlayerName"
@@ -87,17 +105,17 @@ import { key } from "@/store";
 import { onClickOutside } from "@vueuse/core";
 import { database } from "@/firebase";
 import { DeviceTypes, MAP_OPTIONS, MODE_OPTIONS } from "@/constants";
-import SelectBox from "./SelectBox.vue";
 import CreateRoomDialog from "./CreateRoomDialog.vue";
 import FlatButton from "../FlatButton.vue";
 import IconButton from "../IconButton.vue";
+import SelectBoxDialog from "./SelectBoxDialog.vue";
 
 export default defineComponent({
   components: {
-    SelectBox,
     CreateRoomDialog,
     FlatButton,
     IconButton,
+    SelectBoxDialog,
   },
 
   setup() {
@@ -121,20 +139,34 @@ export default defineComponent({
     const store = useStore(key);
 
     const state = reactive<{
+      isSelectingMap: boolean;
+      isSelectingMode: boolean;
       isShowingRoomCreateDialog: boolean;
       isRoomFound: boolean;
     }>({
+      isSelectingMap: false,
+      isSelectingMode: false,
       isShowingRoomCreateDialog: false,
       isRoomFound: true,
     });
 
+    const openSelectMapDialog = (): void => {
+      state.isSelectingMap = true;
+    };
+
+    const openSelectModeDialog = (): void => {
+      state.isSelectingMode = true;
+    };
+
     const onChangeSelectedMap = (option: SelectboxOption): void => {
+      state.isSelectingMap = false;
       store.dispatch("changeSelectedMapAction", {
         selectedMap: option.value,
       });
     };
 
     const onChangeSelectedMode = (option: SelectboxOption): void => {
+      state.isSelectingMode = false;
       store.dispatch("changeSelectedModeAction", {
         selectedMode: option.value,
       });
@@ -242,6 +274,8 @@ export default defineComponent({
       MAP_OPTIONS,
       MODE_OPTIONS,
       DeviceTypes,
+      openSelectMapDialog,
+      openSelectModeDialog,
       onChangeSelectedMap,
       onChangeSelectedMode,
       openCreateRoomDialog,
@@ -271,5 +305,45 @@ export default defineComponent({
   @media #{$mobile-landscape} {
     width: 640px;
   }
+}
+
+.create-game-form__section {
+  height: 100%;
+}
+
+.create-game-form__select {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  box-sizing: border-box;
+  position: relative;
+  border: none;
+  border-radius: 32px;
+  padding: 0 24px;
+  height: 100%;
+  background-color: white;
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--color-surface-superlight);
+  }
+
+  @media #{$tablet-landscape} {
+    padding: 0 48px;
+  }
+}
+
+.create-game-form__select-label {
+  width: 100%;
+  font-size: 12px;
+  color: var(--color-surface-secondary);
+  text-align: left;
+}
+
+.create-game-form__select-value {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--color-surface-primary);
 }
 </style>

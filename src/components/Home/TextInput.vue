@@ -10,6 +10,7 @@
       {{ label }}
     </label>
     <input
+      v-model="state.inputValue"
       type="text"
       maxlength="20"
       :name="name"
@@ -18,11 +19,13 @@
         errorMsg && $style['text-input--error'],
       ]"
       :placeholder="placeholder"
-      v-model="state.inputValue"
-      @input="onChangeValue"
       :disabled="disabled"
-    />
-    <span v-if="errorMsg" :class="$style['input__error']">
+      @input="onChangeValue"
+    >
+    <span
+      v-if="errorMsg"
+      :class="$style['input__error']"
+    >
       <span class="material-icons">error</span>
       {{ errorMsg }}
     </span>

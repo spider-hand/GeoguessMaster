@@ -3,28 +3,28 @@
     <Overlay
       v-show="
         store.state.gameSettings.selectedMode === 'multiplayer' &&
-        (!store.state.inGame.isThisRoundReady ||
-          store.state.inGame.isWaitingForOtherPlayers ||
-          state.isEndingMultiplayerGame)
+          (!store.state.inGame.isThisRoundReady ||
+            store.state.inGame.isWaitingForOtherPlayers ||
+            state.isEndingMultiplayerGame)
       "
       :msg="state.overlayMsg"
     />
     <ResultModal
       v-show="store.state.inGame.isShowingResult"
-      :selectedMode="store.state.gameSettings.selectedMode"
-      :isOwner="store.state.gameSettings.isOwner"
-      :isShowingResult="store.state.inGame.isShowingResult"
-      :isShowingSummary="store.state.inGame.isShowingSummary"
-      :isNextRoundReady="store.state.inGame.isNextRoundReady"
-      :randomLatLng="store.state.inGame.randomLatLng"
-      :selectedLatLng="store.state.inGame.selectedLatLng"
-      :selectedLatLngArr="store.state.inGame.selectedLatLngArr"
-      :gameHistory="store.state.inGame.gameHistory"
+      :selected-mode="store.state.gameSettings.selectedMode"
+      :is-owner="store.state.gameSettings.isOwner"
+      :is-showing-result="store.state.inGame.isShowingResult"
+      :is-showing-summary="store.state.inGame.isShowingSummary"
+      :is-next-round-ready="store.state.inGame.isNextRoundReady"
+      :random-lat-lng="store.state.inGame.randomLatLng"
+      :selected-lat-lng="store.state.inGame.selectedLatLng"
+      :selected-lat-lng-arr="store.state.inGame.selectedLatLngArr"
+      :game-history="store.state.inGame.gameHistory"
       :distance="store.getters.distance"
-      :distanceByPlayerArr="store.state.inGame.distanceByPlayerArr"
+      :distance-by-player-arr="store.state.inGame.distanceByPlayerArr"
       :round="store.state.inGame.round"
       :score="store.state.inGame.score"
-      :multiplayerGameSummary="state.multiplayerGameSummary"
+      :multiplayer-game-summary="state.multiplayerGameSummary"
       @onClickNextRoundButton="onClickNextRoundButton"
       @onClickViewSummaryButton="onClickViewSummaryButton"
       @onClickPlayAgainButton="onClickPlayAgainButton"
@@ -32,11 +32,11 @@
       @endMultiplayerGame="endMultiplayerGame"
     />
     <StreetView
-      :selectedMap="store.state.gameSettings.selectedMap"
-      :selectedMode="store.state.gameSettings.selectedMode"
-      :isOwner="store.state.gameSettings.isOwner"
-      :geoJSON="store.state.gameSettings.geoJSON"
-      :randomLatLng="store.state.inGame.randomLatLng"
+      :selected-map="store.state.gameSettings.selectedMap"
+      :selected-mode="store.state.gameSettings.selectedMode"
+      :is-owner="store.state.gameSettings.isOwner"
+      :geo-j-s-o-n="store.state.gameSettings.geoJSON"
+      :random-lat-lng="store.state.inGame.randomLatLng"
       :round="store.state.inGame.round"
       @updateRandomLatLng="updateRandomLatLng"
       @savePanorama="savePanorama"
@@ -44,8 +44,8 @@
       @fetchGeoJSON="fetchGeoJSON"
     />
     <ScoreBoard
-      :selectedMap="store.getters.selectedMapText"
-      :selectedMode="store.state.gameSettings.selectedMode"
+      :selected-map="store.getters.selectedMapText"
+      :selected-mode="store.state.gameSettings.selectedMode"
       :round="store.state.inGame.round"
       :score="store.state.inGame.score"
       :countdown="countdown"
@@ -53,17 +53,19 @@
     <RoomNumberDialog
       v-if="
         store.state.gameSettings.selectedMode === 'multiplayer' &&
-        store.state.gameSettings.isOwner
+          store.state.gameSettings.isOwner
       "
-      :roomNumber="store.state.gameSettings.roomNumber"
-      :isGameReady="state.isGameReady"
+      :room-number="store.state.gameSettings.roomNumber"
+      :is-game-ready="state.isGameReady"
     />
     <Map
-      :selectedMode="store.state.gameSettings.selectedMode"
-      :isOwner="store.state.gameSettings.isOwner"
-      :randomLatLng="store.state.inGame.randomLatLng"
+      :selected-mode="store.state.gameSettings.selectedMode"
+      :is-owner="store.state.gameSettings.isOwner"
+      :random-lat-lng="store.state.inGame.randomLatLng"
       :round="store.state.inGame.round"
-      :isMakeGuessButtonClicked="store.state.inGame.isMakeGuessButtonClicked"
+      :is-make-guess-button-clicked="
+        store.state.inGame.isMakeGuessButtonClicked
+      "
       @updateSelectedLatLng="updateSelectedLatLng"
       @onClickHideMapButton="onClickHideMapButton"
     />
@@ -79,6 +81,8 @@
       @click="onClickGuessButton"
     />
     <FlatButton
+      v-if="store.state.generalSettings.device <= DeviceTypes.MobilePortrait"
+      v-show="!store.state.inGame.isMakeGuessButtonClicked"
       :text="'MAKE GUESS'"
       :style="{
         zIndex: 1,
@@ -86,8 +90,6 @@
         bottom: '12px',
         left: '12px',
       }"
-      v-if="store.state.generalSettings.device <= DeviceTypes.MobilePortrait"
-      v-show="!store.state.inGame.isMakeGuessButtonClicked"
       @click="onClickMakeGuessButton"
     />
     <IconButton

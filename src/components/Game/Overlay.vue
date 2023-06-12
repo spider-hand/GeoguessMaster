@@ -10,14 +10,14 @@ import { defineComponent } from "vue";
 import Spinner from "./Spinner.vue";
 
 export default defineComponent({
+  components: {
+    Spinner,
+  },
   props: {
     msg: {
       type: String,
       required: false,
     },
-  },
-  components: {
-    Spinner,
   },
 });
 </script>

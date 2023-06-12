@@ -120,7 +120,7 @@ export const gameSettingsStore = {
     async fetchGeoJSONAction({ commit }: any, payload: any) {
       try {
         const resp = await axios.get(
-          `${process.env.BASE_URL}geoJSON/${payload.countryCode}.json`
+          `${import.meta.env.BASE_URL}geoJSON/${payload.countryCode}.json`
         );
         if (resp.status === 200 && resp.data) {
           const json = JSON.parse(JSON.stringify(resp.data));

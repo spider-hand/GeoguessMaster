@@ -3,8 +3,7 @@
     <span
       :class="$style[`icon-button__icon--${size}`]"
       class="material-icons"
-      >{{ icon }}</span
-    >
+    >{{ icon }}</span>
   </div>
 </template>
 

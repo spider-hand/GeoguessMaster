@@ -1,5 +1,8 @@
 <template>
-  <button :class="$style['flat-button']" :disabled="disabled">
+  <button
+    :class="$style['flat-button']"
+    :disabled="disabled"
+  >
     {{ text }}
   </button>
 </template>

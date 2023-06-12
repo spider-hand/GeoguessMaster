@@ -5,31 +5,29 @@
         src="@/assets/images/logo.svg"
         :class="$style['page__logo']"
         alt="Geoguess Master Logo"
-      />
+      >
       <Space />
       <a href="https://github.com/spider-hand/GeoguessMaster">
         <img
           src="@/assets/images/github.svg"
           :class="$style['page__github-ribbon']"
           alt="Fork me on Github"
-        />
+        >
       </a>
     </header>
     <AuroraBackground
       :from="'var(--color-brand-light)'"
-      :xPercent="'40'"
-      :yPercent="'90'"
+      :x-percent="'40'"
+      :y-percent="'90'"
     />
     <AuroraBackground
       :from="'var(--color-tone-light)'"
-      :xPercent="'90'"
-      :yPercent="'30'"
+      :x-percent="'90'"
+      :y-percent="'30'"
     />
     <div :class="$style['page__container']">
       <CreateGameForm />
-      <span :class="$style['page__title']"
-        >Let's explore the world &#128526;</span
-      >
+      <span :class="$style['page__title']">Let's explore the world &#128526;</span>
     </div>
     <footer :class="$style['page__footer']">
       <span

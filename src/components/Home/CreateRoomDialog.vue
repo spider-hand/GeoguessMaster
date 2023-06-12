@@ -1,8 +1,8 @@
 <template>
   <div
+    v-if="isShowingDialog"
     id="create-room-dialog"
     :class="$style['create-room-dialog']"
-    v-if="isShowingDialog"
   >
     <div :class="$style['create-room-dialog__form']">
       <div>
@@ -45,7 +45,7 @@
         >
           Time per round
         </span>
-        <br />
+        <br>
         <span
           :class="[
             !isOwner
@@ -70,7 +70,7 @@
         label="Player Name"
         name="player-name"
         placeholder="Your Player Name"
-        :inputValue="playerName"
+        :input-value="playerName"
         @onChangeValue="onChangePlayerName"
       />
     </div>
@@ -79,17 +79,20 @@
         <span :class="$style['create-room-dialog__text']">Are you a host?</span>
       </div>
       <Space />
-      <Switch :ans="isOwner" @onChangeValue="onChangeIsOwner" />
+      <Switch
+        :ans="isOwner"
+        @onChangeValue="onChangeIsOwner"
+      />
     </div>
     <div :class="$style['create-room-dialog__form']">
       <TextInput
         label="Room Number"
         name="room-number"
         placeholder="Room Number"
-        :inputValue="roomNumber"
-        @onChangeValue="onChangeRoomNumber"
+        :input-value="roomNumber"
         :disabled="isOwner"
-        :errorMsg="roomCannnotBeFoundError"
+        :error-msg="roomCannnotBeFoundError"
+        @onChangeValue="onChangeRoomNumber"
       />
     </div>
     <div :class="$style['create-room-dialog__footer']">
@@ -112,6 +115,14 @@ import FlatButton from "../FlatButton.vue";
 import Space from "../Space.vue";
 
 export default defineComponent({
+
+  components: {
+    Counter,
+    Switch,
+    TextInput,
+    FlatButton,
+    Space,
+  },
   props: {
     isShowingDialog: {
       type: Boolean,
@@ -145,14 +156,6 @@ export default defineComponent({
       type: Boolean,
       required: true,
     },
-  },
-
-  components: {
-    Counter,
-    Switch,
-    TextInput,
-    FlatButton,
-    Space,
   },
 
   setup(props, context) {

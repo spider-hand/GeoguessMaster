@@ -11,7 +11,7 @@
     >
       YES
     </button>
-    <div style="flex-grow: 1"></div>
+    <div style="flex-grow: 1" />
     <button
       :class="[
         $style['switch__option--right'],

@@ -1,25 +1,39 @@
 <template>
   <div :class="$style['score-board']">
     <div :class="$style['score-board__wrapper']">
-      <div :class="$style['score-board__label']">Map</div>
+      <div :class="$style['score-board__label']">
+        Map
+      </div>
       <div :class="$style['score-board__text']">
         {{ selectedMap }}
       </div>
     </div>
     <div :class="$style['score-board__wrapper']">
-      <div :class="$style['score-board__label']">Round</div>
-      <div :class="$style['score-board__text']">{{ round }} / 5</div>
+      <div :class="$style['score-board__label']">
+        Round
+      </div>
+      <div :class="$style['score-board__text']">
+        {{ round }} / 5
+      </div>
     </div>
     <div :class="$style['score-board__wrapper']">
-      <div :class="$style['score-board__label']">Score</div>
-      <div :class="$style['score-board__text']">{{ score }}</div>
+      <div :class="$style['score-board__label']">
+        Score
+      </div>
+      <div :class="$style['score-board__text']">
+        {{ score }}
+      </div>
     </div>
     <div
       v-if="selectedMode === 'multiplayer'"
       :class="$style['score-board__wrapper']"
     >
-      <div :class="$style['score-board__label']">Time</div>
-      <div :class="$style['score-board__text']">{{ countdown }}</div>
+      <div :class="$style['score-board__label']">
+        Time
+      </div>
+      <div :class="$style['score-board__text']">
+        {{ countdown }}
+      </div>
     </div>
   </div>
 </template>

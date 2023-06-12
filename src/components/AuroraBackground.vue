@@ -4,7 +4,7 @@
     :style="{
       background: `radial-gradient(50% 50% at ${xPercent}% ${yPercent}%, ${from} 0, transparent 100%)`,
     }"
-  ></div>
+  />
 </template>
 
 <script lang="ts">

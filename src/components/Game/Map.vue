@@ -1,10 +1,13 @@
 <template>
   <div>
-    <div :class="$style['map']" ref="mapRef"></div>
+    <div
+      ref="mapRef"
+      :class="$style['map']"
+    />
     <IconButton
       v-if="
         store.state.generalSettings.device <= DeviceTypes.MobilePortrait &&
-        isMakeGuessButtonClicked
+          isMakeGuessButtonClicked
       "
       :icon="'close'"
       :style="{
@@ -29,6 +32,10 @@ import IconButton from "../IconButton.vue";
 import { LatLngPropType } from "@/types";
 
 export default defineComponent({
+
+  components: {
+    IconButton,
+  },
   props: {
     selectedMode: {
       type: String,
@@ -47,10 +54,6 @@ export default defineComponent({
       type: Boolean,
       required: true,
     },
-  },
-
-  components: {
-    IconButton,
   },
 
   setup(props, context) {

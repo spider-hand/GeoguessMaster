@@ -6,8 +6,12 @@
         : $style['room-number-dialog'],
     ]"
   >
-    <div :class="$style['room-number-dialog__label']">Room Number</div>
-    <div :class="$style['room-number-dialog__text']">{{ roomNumber }}</div>
+    <div :class="$style['room-number-dialog__label']">
+      Room Number
+    </div>
+    <div :class="$style['room-number-dialog__text']">
+      {{ roomNumber }}
+    </div>
   </div>
 </template>
 

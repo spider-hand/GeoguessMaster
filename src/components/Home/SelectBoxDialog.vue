@@ -1,9 +1,12 @@
 <template>
-  <div :class="$style['select-box-dialog']">
+  <div
+    ref="dialogRef"
+    :class="$style['select-box-dialog']"
+  >
     <div
-      :class="$style['select-box-dialog__option-wrapper']"
       v-for="option in options"
       :key="option.value"
+      :class="$style['select-box-dialog__option-wrapper']"
       @click="onChangeOption(option)"
     >
       <span :class="$style['select-box-dialog__option-text']">{{
@@ -15,7 +18,8 @@
 
 <script lang="ts">
 import { SelectboxOption } from "@/types";
-import { defineComponent, PropType } from "vue";
+import { defineComponent, PropType, ref } from "vue";
+import { onClickOutside } from "@vueuse/core";
 
 export default defineComponent({
   props: {
@@ -26,11 +30,18 @@ export default defineComponent({
   },
 
   setup(props, context) {
+    const dialogRef = ref(null);
+
+    onClickOutside(dialogRef, () => {
+      context.emit("close");
+    });
+
     const onChangeOption = (option: SelectboxOption): void => {
       context.emit("onChangeOption", option);
     };
 
     return {
+      dialogRef,
       onChangeOption,
     };
   },

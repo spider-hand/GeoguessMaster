@@ -1,5 +1,5 @@
 <template>
-  <div :class="$style['spinner']"></div>
+  <div :class="$style['spinner']" />
 </template>
 
 <style module lang="scss">

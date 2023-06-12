@@ -9,7 +9,10 @@
         ]
       "
     >
-      <div :class="$style['result-modal__map']" ref="resultMapRef"></div>
+      <div
+        ref="resultMapRef"
+        :class="$style['result-modal__map']"
+      />
       <IconButton
         :icon="state.isMapExpanding ? 'expand_less' : 'expand_more'"
         :style="{
@@ -23,17 +26,15 @@
     </div>
     <div :class="$style['result-modal__footer']">
       <div
-        :class="$style['result-modal__container']"
         v-if="selectedMode === 'single'"
+        :class="$style['result-modal__container']"
       >
         <span
+          v-if="distance !== null"
           :class="$style['result-modal__text']"
           :style="{ marginBottom: '24px' }"
-          v-if="distance !== null"
-          >You are <strong>{{ isShowingSummary ? score : distance }}</strong
-          >km away {{ isShowingSummary ? "in total " : ""
-          }}{{ isShowingSummary ? "&#127881;" : "&#128640;" }}</span
-        >
+        >You are <strong>{{ isShowingSummary ? score : distance }}</strong>km away {{ isShowingSummary ? "in total " : ""
+        }}{{ isShowingSummary ? "&#127881;" : "&#128640;" }}</span>
         <FlatButton
           v-if="round < 5"
           :text="'NEXT ROUND'"
@@ -58,18 +59,20 @@
           />
         </div>
       </div>
-      <div :class="$style['result-modal__container']" v-else>
+      <div
+        v-else
+        :class="$style['result-modal__container']"
+      >
         <span
+          v-for="(item, index) in sortedScore"
+          :key="index"
           :class="$style['result-modal__text']"
           :style="{
             marginBottom: index !== sortedScore.length - 1 ? '12px' : '24px',
           }"
-          v-for="(item, index) in sortedScore"
-          :key="index"
         >
           <strong>{{ item.playerName }}</strong> is
-          <strong>{{ item.distance }}</strong
-          >km away {{ isShowingSummary ? "in total " : ""
+          <strong>{{ item.distance }}</strong>km away {{ isShowingSummary ? "in total " : ""
           }}{{ isShowingSummary && index === 0 ? "&#127941;" : "" }}
         </span>
         <FlatButton
@@ -114,6 +117,11 @@ import FlatButton from "../FlatButton.vue";
 import IconButton from "../IconButton.vue";
 
 export default defineComponent({
+
+  components: {
+    FlatButton,
+    IconButton,
+  },
   props: {
     selectedMode: {
       type: String,
@@ -175,11 +183,6 @@ export default defineComponent({
     },
   },
 
-  components: {
-    FlatButton,
-    IconButton,
-  },
-
   setup(props, context) {
     let map: google.maps.Map;
     const resultMapRef = ref<HTMLElement>();
@@ -191,7 +194,7 @@ export default defineComponent({
     });
 
     const sortedScore = computed(() => {
-      let copiedArray = [...props.distanceByPlayerArr];
+      const copiedArray = [...props.distanceByPlayerArr];
       return copiedArray.sort((x, y) => x.distance - y.distance);
     });
 
