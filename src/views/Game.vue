@@ -3,9 +3,9 @@
     <Overlay
       v-show="
         store.state.gameSettings.selectedMode === 'multiplayer' &&
-          (!store.state.inGame.isThisRoundReady ||
-            store.state.inGame.isWaitingForOtherPlayers ||
-            state.isEndingMultiplayerGame)
+        (!store.state.inGame.isThisRoundReady ||
+          store.state.inGame.isWaitingForOtherPlayers ||
+          state.isEndingMultiplayerGame)
       "
       :msg="state.overlayMsg"
     />
@@ -35,13 +35,11 @@
       :selected-map="store.state.gameSettings.selectedMap"
       :selected-mode="store.state.gameSettings.selectedMode"
       :is-owner="store.state.gameSettings.isOwner"
-      :geo-j-s-o-n="store.state.gameSettings.geoJSON"
       :random-lat-lng="store.state.inGame.randomLatLng"
       :round="store.state.inGame.round"
       @updateRandomLatLng="updateRandomLatLng"
       @savePanorama="savePanorama"
       @saveStreetView="saveStreetView"
-      @fetchGeoJSON="fetchGeoJSON"
     />
     <ScoreBoard
       :selected-map="store.getters.selectedMapText"
@@ -53,7 +51,7 @@
     <RoomNumberDialog
       v-if="
         store.state.gameSettings.selectedMode === 'multiplayer' &&
-          store.state.gameSettings.isOwner
+        store.state.gameSettings.isOwner
       "
       :room-number="store.state.gameSettings.roomNumber"
       :is-game-ready="state.isGameReady"
@@ -203,17 +201,6 @@ export default defineComponent({
       }
       return `${min}:${sec}`;
     });
-
-    const fetchGeoJSON = async (callback: () => void): Promise<void> => {
-      try {
-        await store.dispatch("fetchGeoJSONAction", {
-          countryCode: store.state.gameSettings.selectedMap,
-        });
-        callback();
-      } catch (err) {
-        console.log(`fetchGeoJSON error: ${err}`);
-      }
-    };
 
     const updateRandomLatLng = (latLng: google.maps.LatLng): void => {
       store.dispatch("saveRandomLatLngAction", {
@@ -595,7 +582,6 @@ export default defineComponent({
       isGuessButtonDisabled,
       countdown,
       DEVICE_TYPES,
-      fetchGeoJSON,
       updateRandomLatLng,
       updateSelectedLatLng,
       savePanorama,

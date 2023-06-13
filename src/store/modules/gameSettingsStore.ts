@@ -1,5 +1,4 @@
 import { MapTypes, ModeTypes } from "@/types";
-import axios from "axios";
 
 export interface GameSettingsState {
   selectedMap: MapTypes;
@@ -11,7 +10,6 @@ export interface GameSettingsState {
   isOwner: boolean;
   roomNumber: string;
   isStartingGame: boolean;
-  geoJSON: any;
 }
 
 const getDefaultState = (): GameSettingsState => ({
@@ -24,7 +22,6 @@ const getDefaultState = (): GameSettingsState => ({
   isOwner: true,
   roomNumber: "",
   isStartingGame: false,
-  geoJSON: null,
 });
 
 export const gameSettingsStore = {
@@ -75,9 +72,6 @@ export const gameSettingsStore = {
     clickStartButton(state: GameSettingsState) {
       state.isStartingGame = true;
     },
-    fetchGeoJSON(state: GameSettingsState, value: any) {
-      state.geoJSON = value;
-    },
   },
   actions: {
     resetGameSettingsStateAction({ commit }: any) {
@@ -109,20 +103,6 @@ export const gameSettingsStore = {
     },
     onClickStartButtonAction({ commit }: any) {
       commit("clickStartButton");
-    },
-    async fetchGeoJSONAction({ commit }: any, payload: any) {
-      try {
-        const resp = await axios.get(
-          `${import.meta.env.BASE_URL}geoJSON/${payload.countryCode}.json`
-        );
-        if (resp.status === 200 && resp.data) {
-          const json = JSON.parse(JSON.stringify(resp.data));
-          commit("fetchGeoJSON", json);
-        }
-        return resp;
-      } catch (err) {
-        console.log(err);
-      }
     },
   },
 };

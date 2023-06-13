@@ -1,17 +1,9 @@
 <template>
-  <div
-    ref="streetviewRef"
-    :class="$style['street-view']"
-  />
+  <div ref="streetviewRef" :class="$style['street-view']" />
 </template>
 
 <script lang="ts">
-/*global google*/
 import { defineComponent, onMounted, watch, ref, PropType } from "vue";
-import { Feature, feature, MultiPolygon } from "@turf/helpers";
-import { randomPosition } from "@turf/random";
-import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
-import bbox from "@turf/bbox";
 
 export default defineComponent({
   props: {
@@ -26,10 +18,6 @@ export default defineComponent({
     isOwner: {
       type: Boolean,
       required: true,
-    },
-    geoJSON: {
-      type: Object,
-      required: false,
     },
     randomLatLng: {
       type: Object as PropType<google.maps.LatLng | null>,
@@ -84,12 +72,7 @@ export default defineComponent({
       const service = new google.maps.StreetViewService();
       service.getPanorama(
         {
-          location:
-            decidedLatLng !== null
-              ? decidedLatLng
-              : props.geoJSON !== null
-              ? getRandomLatLngInsideCountry()
-              : getRandomLatLng(),
+          location: decidedLatLng !== null ? decidedLatLng : getRandomLatLng(),
           preference: google.maps.StreetViewPreference.NEAREST,
           radius: 100000,
           source: google.maps.StreetViewSource.OUTDOOR,
@@ -102,16 +85,6 @@ export default defineComponent({
       const lat = Math.random() * 170 - 85;
       const lng = Math.random() * 360 - 180;
       return new google.maps.LatLng(lat, lng);
-    };
-
-    const getRandomLatLngInsideCountry = (): google.maps.LatLng => {
-      const featureObj = feature(props.geoJSON);
-
-      let pos;
-      do {
-        pos = randomPosition(bbox(props.geoJSON));
-      } while (booleanPointInPolygon(pos, featureObj as Feature<MultiPolygon>));
-      return new google.maps.LatLng(pos[1], pos[0]);
     };
 
     const checkStreetView = (
@@ -154,19 +127,11 @@ export default defineComponent({
 
     onMounted(() => {
       if (props.selectedMode !== "multiplayer") {
-        if (props.selectedMap === "WORLD" || props.geoJSON !== null) {
-          loadStreetView();
-        } else {
-          context.emit("fetchGeoJSON", loadStreetView);
-        }
+        loadStreetView();
       } else {
         // Multiplayer mode
         if (props.isOwner) {
-          if (props.selectedMap === "WORLD" || props.geoJSON !== null) {
-            loadStreetView();
-          } else {
-            context.emit("fetchGeoJSON", loadStreetView());
-          }
+          loadStreetView();
         }
       }
     });
