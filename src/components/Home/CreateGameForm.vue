@@ -7,11 +7,7 @@
       >
         <span :class="$style['create-game-form__select-label']">Map</span>
         <span :class="$style['create-game-form__select-value']">{{
-          MAP_OPTIONS[
-            MAP_OPTIONS.findIndex(
-              (option) => option.value === store.state.gameSettings.selectedMap
-            )
-          ].text
+          MAP_OPTIONS.get(store.state.gameSettings.selectedMap)
         }}</span>
       </button>
       <SelectBoxDialog
@@ -28,11 +24,7 @@
       >
         <span :class="$style['create-game-form__select-label']">Mode</span>
         <span :class="$style['create-game-form__select-value']">{{
-          MODE_OPTIONS[
-            MODE_OPTIONS.findIndex(
-              (option) => option.value === store.state.gameSettings.selectedMode
-            )
-          ].text
+          MODE_OPTIONS.get(store.state.gameSettings.selectedMode)
         }}</span>
       </button>
       <SelectBoxDialog
@@ -43,7 +35,7 @@
       />
     </div>
     <IconButton
-      v-if="store.state.generalSettings.device <= DeviceTypes.TabletPortrait"
+      v-if="store.state.generalSettings.device <= DEVICE_TYPES.TABLET_PORTRAIT"
       ref="createRoomButtonRef"
       :icon="'travel_explore'"
       :style="{ position: 'absolute', right: '12px' }"
@@ -100,15 +92,15 @@ import {
   update,
   serverTimestamp,
 } from "firebase/database";
-import { SelectboxOption } from "@/types";
 import { key } from "@/store";
 import { onClickOutside } from "@vueuse/core";
 import { database } from "@/firebase";
-import { DeviceTypes, MAP_OPTIONS, MODE_OPTIONS } from "@/constants";
+import { DEVICE_TYPES, MAP_OPTIONS, MODE_OPTIONS } from "@/constants";
 import CreateRoomDialog from "./CreateRoomDialog.vue";
-import FlatButton from "../FlatButton.vue";
-import IconButton from "../IconButton.vue";
+import FlatButton from "@/components/shared/FlatButton.vue";
+import IconButton from "@/components/shared/IconButton.vue";
 import SelectBoxDialog from "./SelectBoxDialog.vue";
+import { MapTypes, ModeTypes } from "@/types";
 
 export default defineComponent({
   components: {
@@ -158,17 +150,17 @@ export default defineComponent({
       state.isSelectingMode = true;
     };
 
-    const onChangeSelectedMap = (option: SelectboxOption): void => {
+    const onChangeSelectedMap = (option: string): void => {
       state.isSelectingMap = false;
       store.dispatch("changeSelectedMapAction", {
-        selectedMap: option.value,
+        selectedMap: option as MapTypes,
       });
     };
 
-    const onChangeSelectedMode = (option: SelectboxOption): void => {
+    const onChangeSelectedMode = (option: string): void => {
       state.isSelectingMode = false;
       store.dispatch("changeSelectedModeAction", {
-        selectedMode: option.value,
+        selectedMode: option as ModeTypes,
       });
     };
 
@@ -273,7 +265,7 @@ export default defineComponent({
       state,
       MAP_OPTIONS,
       MODE_OPTIONS,
-      DeviceTypes,
+      DEVICE_TYPES,
       openSelectMapDialog,
       openSelectModeDialog,
       onChangeSelectedMap,

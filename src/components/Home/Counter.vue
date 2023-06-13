@@ -2,11 +2,11 @@
   <div :class="$style['counter']">
     <button
       :class="[
-        disabledDecrement || disabled
+        disabledDecrement
           ? $style['counter__button--disabled']
           : $style['counter__button'],
       ]"
-      :disabled="disabledDecrement || disabled"
+      :disabled="disabledDecrement"
       @click="decrement"
     >
       -
@@ -24,11 +24,11 @@
     </div>
     <button
       :class="[
-        disabledIncrement || disabled
+        disabledIncrement
           ? $style['counter__button--disabled']
           : $style['counter__button'],
       ]"
-      :disabled="disabledIncrement || disabled"
+      :disabled="disabledIncrement"
       @click="increment"
     >
       +
@@ -60,8 +60,12 @@ export default defineComponent({
   },
 
   setup(props, context) {
-    const disabledIncrement = computed<boolean>(() => props.max <= props.count);
-    const disabledDecrement = computed<boolean>(() => props.min >= props.count);
+    const disabledIncrement = computed<boolean>(
+      () => props.max <= props.count || props.disabled
+    );
+    const disabledDecrement = computed<boolean>(
+      () => props.min >= props.count || props.disabled
+    );
 
     const increment = (): void => {
       const updated = props.count + 1;

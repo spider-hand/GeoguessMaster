@@ -12,7 +12,6 @@ import { Feature, feature, MultiPolygon } from "@turf/helpers";
 import { randomPosition } from "@turf/random";
 import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
 import bbox from "@turf/bbox";
-import { LatLngPropType } from "@/types";
 
 export default defineComponent({
   props: {
@@ -33,7 +32,7 @@ export default defineComponent({
       required: false,
     },
     randomLatLng: {
-      type: Object as PropType<LatLngPropType>,
+      type: Object as PropType<google.maps.LatLng | null>,
       default: null,
       required: false,
     },

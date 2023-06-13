@@ -1,10 +1,9 @@
+import { MapTypes, ModeTypes } from "@/types";
 import axios from "axios";
 
-import { MAP_OPTIONS, MODE_OPTIONS } from "@/constants";
-
 export interface GameSettingsState {
-  selectedMap: string;
-  selectedMode: string;
+  selectedMap: MapTypes;
+  selectedMode: ModeTypes;
   selectedSize: number;
   selectedTime: number;
   playerName: string;
@@ -16,8 +15,8 @@ export interface GameSettingsState {
 }
 
 const getDefaultState = (): GameSettingsState => ({
-  selectedMap: MAP_OPTIONS[0].value,
-  selectedMode: MODE_OPTIONS[0].value,
+  selectedMap: "world",
+  selectedMode: "single",
   selectedSize: 2,
   selectedTime: 5,
   playerName: "",
@@ -31,12 +30,6 @@ const getDefaultState = (): GameSettingsState => ({
 export const gameSettingsStore = {
   state: () => getDefaultState(),
   getters: {
-    selectedMapText(state: GameSettingsState) {
-      const idx = MAP_OPTIONS.findIndex(
-        (option) => option.value === state.selectedMap
-      );
-      return idx >= 0 ? MAP_OPTIONS[idx].text : "";
-    },
     isReadyForMultiplayerGame(state: GameSettingsState) {
       if (state.isStartingGame) return false;
 
@@ -55,10 +48,10 @@ export const gameSettingsStore = {
     resetGameSettingsState(state: GameSettingsState) {
       Object.assign(state, getDefaultState());
     },
-    changeSelectedMap(state: GameSettingsState, value: string) {
+    changeSelectedMap(state: GameSettingsState, value: MapTypes) {
       state.selectedMap = value;
     },
-    changeSelectedMode(state: GameSettingsState, value: string) {
+    changeSelectedMode(state: GameSettingsState, value: ModeTypes) {
       state.selectedMode = value;
     },
     changeSelectedSize(state: GameSettingsState, value: number) {

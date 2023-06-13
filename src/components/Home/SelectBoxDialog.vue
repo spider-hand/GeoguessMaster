@@ -4,27 +4,24 @@
     :class="$style['select-box-dialog']"
   >
     <div
-      v-for="option in options"
-      :key="option.value"
+      v-for="[key, text] in options"
+      :key="key"
       :class="$style['select-box-dialog__option-wrapper']"
-      @click="onChangeOption(option)"
+      @click="onChangeOption(key)"
     >
-      <span :class="$style['select-box-dialog__option-text']">{{
-        option.text
-      }}</span>
+      <span :class="$style['select-box-dialog__option-text']">{{ text }}</span>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { SelectboxOption } from "@/types";
 import { defineComponent, PropType, ref } from "vue";
 import { onClickOutside } from "@vueuse/core";
 
 export default defineComponent({
   props: {
     options: {
-      type: Array as PropType<SelectboxOption[]>,
+      type: Object as PropType<Map<string, string>>,
       required: true,
     },
   },
@@ -36,7 +33,7 @@ export default defineComponent({
       context.emit("close");
     });
 
-    const onChangeOption = (option: SelectboxOption): void => {
+    const onChangeOption = (option: string): void => {
       context.emit("onChangeOption", option);
     };
 

@@ -108,11 +108,11 @@
 <script lang="ts">
 import { defineComponent, computed } from "vue";
 
-import Counter from "@/components/Home/Counter.vue";
-import Switch from "@/components/Home/Switch.vue";
-import TextInput from "@/components/Home/TextInput.vue";
-import FlatButton from "../FlatButton.vue";
-import Space from "../Space.vue";
+import Counter from "@/components/home/Counter.vue";
+import Switch from "@/components/home/Switch.vue";
+import TextInput from "@/components/home/TextInput.vue";
+import FlatButton from "@/components/shared/FlatButton.vue";
+import Space from "@/components/shared/Space.vue";
 
 export default defineComponent({
 

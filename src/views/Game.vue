@@ -81,7 +81,7 @@
       @click="onClickGuessButton"
     />
     <FlatButton
-      v-if="store.state.generalSettings.device <= DeviceTypes.MobilePortrait"
+      v-if="store.state.generalSettings.device <= DEVICE_TYPES.MOBLE_PORTRAIT"
       v-show="!store.state.inGame.isMakeGuessButtonClicked"
       :text="'MAKE GUESS'"
       :style="{
@@ -143,17 +143,17 @@ import {
 } from "firebase/database";
 
 import { key } from "@/store";
-import StreetView from "@/components/Game/StreetView.vue";
-import Map from "@/components/Game/Map.vue";
-import ScoreBoard from "@/components/Game/ScoreBoard.vue";
-import ResultModal from "@/components/Game/ResultModal.vue";
-import RoomNumberDialog from "@/components/Game/RoomNumberDialog.vue";
-import Overlay from "@/components/Game/Overlay.vue";
-import FlatButton from "@/components/FlatButton.vue";
-import IconButton from "@/components/IconButton.vue";
+import StreetView from "@/components/game/StreetView.vue";
+import Map from "@/components/game/Map.vue";
+import ScoreBoard from "@/components/game/ScoreBoard.vue";
+import ResultModal from "@/components/game/ResultModal.vue";
+import RoomNumberDialog from "@/components/game/RoomNumberDialog.vue";
+import Overlay from "@/components/game/Overlay.vue";
+import FlatButton from "@/components/shared/FlatButton.vue";
+import IconButton from "@/components/shared/IconButton.vue";
 import { database } from "@/firebase";
 import { Summary } from "@/types";
-import { DeviceTypes } from "@/constants";
+import { DEVICE_TYPES } from "@/constants";
 
 export default defineComponent({
   components: {
@@ -594,7 +594,7 @@ export default defineComponent({
       state,
       isGuessButtonDisabled,
       countdown,
-      DeviceTypes,
+      DEVICE_TYPES,
       fetchGeoJSON,
       updateRandomLatLng,
       updateSelectedLatLng,

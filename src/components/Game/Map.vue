@@ -6,7 +6,7 @@
     />
     <IconButton
       v-if="
-        store.state.generalSettings.device <= DeviceTypes.MobilePortrait &&
+        store.state.generalSettings.device <= DEVICE_TYPES.MOBLE_PORTRAIT &&
           isMakeGuessButtonClicked
       "
       :icon="'close'"
@@ -27,12 +27,10 @@
 import { defineComponent, onMounted, ref, watch, PropType } from "vue";
 import { useStore } from "vuex";
 import { key } from "@/store";
-import { DeviceTypes } from "@/constants";
-import IconButton from "../IconButton.vue";
-import { LatLngPropType } from "@/types";
+import { DEVICE_TYPES } from "@/constants";
+import IconButton from "@/components/shared/IconButton.vue";
 
 export default defineComponent({
-
   components: {
     IconButton,
   },
@@ -42,7 +40,7 @@ export default defineComponent({
       required: true,
     },
     randomLatLng: {
-      type: Object as PropType<LatLngPropType>,
+      type: Object as PropType<google.maps.LatLng | null>,
       default: null,
       required: false,
     },
@@ -129,7 +127,7 @@ export default defineComponent({
     return {
       mapRef,
       store,
-      DeviceTypes,
+      DEVICE_TYPES,
       onClickHideMapButton,
     };
   },

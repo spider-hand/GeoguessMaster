@@ -46,9 +46,9 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import Space from "@/components/Space.vue";
-import AuroraBackground from "@/components/AuroraBackground.vue";
-import CreateGameForm from "@/components/Home/CreateGameForm.vue";
+import Space from "@/components/shared/Space.vue";
+import AuroraBackground from "@/components/home/AuroraBackground.vue";
+import CreateGameForm from "@/components/home/CreateGameForm.vue";
 
 export default defineComponent({
   components: {

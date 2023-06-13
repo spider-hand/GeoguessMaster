@@ -1,11 +1,11 @@
-import { DeviceTypes } from "../../constants";
+import { DEVICE_TYPES } from "../../constants";
 
 export interface GeneralSettingsState {
   device: number;
 }
 
 const getDefaultState = (): GeneralSettingsState => ({
-  device: DeviceTypes.MobilePortrait,
+  device: DEVICE_TYPES.MOBLE_PORTRAIT,
 });
 
 export const generalSettingsStore = {

@@ -98,12 +98,7 @@
 
 <script lang="ts">
 /*global google*/
-import {
-  GameHistory,
-  Summary,
-  DistanceByPlayer,
-  LatLngPropType,
-} from "@/types";
+import { GameHistory, Summary, DistanceByPlayer } from "@/types";
 import {
   defineComponent,
   watch,
@@ -113,11 +108,10 @@ import {
   computed,
   reactive,
 } from "vue";
-import FlatButton from "../FlatButton.vue";
-import IconButton from "../IconButton.vue";
+import FlatButton from "@/components/shared/FlatButton.vue";
+import IconButton from "@/components/shared/IconButton.vue";
 
 export default defineComponent({
-
   components: {
     FlatButton,
     IconButton,
@@ -144,12 +138,12 @@ export default defineComponent({
       required: true,
     },
     randomLatLng: {
-      type: Object as PropType<LatLngPropType>,
+      type: Object as PropType<google.maps.LatLng | null>,
       default: null,
       required: false,
     },
     selectedLatLng: {
-      type: Object as PropType<LatLngPropType>,
+      type: Object as PropType<google.maps.LatLng | null>,
       default: null,
       required: false,
     },

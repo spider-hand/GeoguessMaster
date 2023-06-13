@@ -1,7 +1,6 @@
-export type SelectboxOption = {
-  text: string;
-  value: string;
-};
+export type MapTypes = "world";
+
+export type ModeTypes = "single" | "multiplayer";
 
 export type GameHistory = {
   randomLatLng: google.maps.LatLng;
@@ -16,6 +15,4 @@ export type Summary = {
 export type DistanceByPlayer = {
   playerName: string;
   distance: number;
-}
-
-export type LatLngPropType = google.maps.LatLng | null;
+};
