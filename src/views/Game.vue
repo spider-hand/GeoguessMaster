@@ -2,28 +2,28 @@
   <div :class="$style['page']">
     <Overlay
       v-show="
-        store.state.gameSettings.selectedMode === 'multiplayer' &&
-        (!store.state.inGame.isThisRoundReady ||
-          store.state.inGame.isWaitingForOtherPlayers ||
-          state.isEndingMultiplayerGame)
+        gameSettingsState.selectedMode === 'multiplayer' &&
+          (!inGameState.isThisRoundReady ||
+            inGameState.isWaitingForOtherPlayers ||
+            state.isEndingMultiplayerGame)
       "
       :msg="state.overlayMsg"
     />
     <ResultModal
-      v-show="store.state.inGame.isShowingResult"
-      :selected-mode="store.state.gameSettings.selectedMode"
-      :is-owner="store.state.gameSettings.isOwner"
-      :is-showing-result="store.state.inGame.isShowingResult"
-      :is-showing-summary="store.state.inGame.isShowingSummary"
-      :is-next-round-ready="store.state.inGame.isNextRoundReady"
-      :random-lat-lng="store.state.inGame.randomLatLng"
-      :selected-lat-lng="store.state.inGame.selectedLatLng"
-      :selected-lat-lng-arr="store.state.inGame.selectedLatLngArr"
-      :game-history="store.state.inGame.gameHistory"
-      :distance="store.getters.distance"
-      :distance-by-player-arr="store.state.inGame.distanceByPlayerArr"
-      :round="store.state.inGame.round"
-      :score="store.state.inGame.score"
+      v-show="inGameState.isShowingResult"
+      :selected-mode="gameSettingsState.selectedMode"
+      :is-owner="gameSettingsState.isOwner"
+      :is-showing-result="inGameState.isShowingResult"
+      :is-showing-summary="inGameState.isShowingSummary"
+      :is-next-round-ready="inGameState.isNextRoundReady"
+      :random-lat-lng="inGameState.randomLatLng"
+      :selected-lat-lng="inGameState.selectedLatLng"
+      :selected-lat-lng-arr="inGameState.selectedLatLngArr"
+      :game-history="inGameState.gameHistory"
+      :distance="(distance as number)"
+      :distance-by-player-arr="inGameState.distanceByPlayerArr"
+      :round="inGameState.round"
+      :score="inGameState.score"
       :multiplayer-game-summary="state.multiplayerGameSummary"
       @onClickNextRoundButton="onClickNextRoundButton"
       @onClickViewSummaryButton="onClickViewSummaryButton"
@@ -32,38 +32,37 @@
       @endMultiplayerGame="endMultiplayerGame"
     />
     <StreetView
-      :selected-map="store.state.gameSettings.selectedMap"
-      :selected-mode="store.state.gameSettings.selectedMode"
-      :is-owner="store.state.gameSettings.isOwner"
-      :random-lat-lng="store.state.inGame.randomLatLng"
-      :round="store.state.inGame.round"
+      :selected-map="gameSettingsState.selectedMap"
+      :selected-mode="gameSettingsState.selectedMode"
+      :is-owner="gameSettingsState.isOwner"
+      :random-lat-lng="inGameState.randomLatLng"
+      :round="inGameState.round"
       @updateRandomLatLng="updateRandomLatLng"
       @savePanorama="savePanorama"
       @saveStreetView="saveStreetView"
     />
     <ScoreBoard
-      :selected-map="store.getters.selectedMapText"
-      :selected-mode="store.state.gameSettings.selectedMode"
-      :round="store.state.inGame.round"
-      :score="store.state.inGame.score"
+      :selected-map="MAP_OPTIONS.get(gameSettingsState.selectedMap) || ''"
+      :selected-mode="gameSettingsState.selectedMode"
+      :round="inGameState.round"
+      :score="inGameState.score"
       :countdown="countdown"
     />
     <RoomNumberDialog
       v-if="
-        store.state.gameSettings.selectedMode === 'multiplayer' &&
-        store.state.gameSettings.isOwner
+        gameSettingsState.selectedMode === 'multiplayer' &&
+          gameSettingsState.isOwner
       "
-      :room-number="store.state.gameSettings.roomNumber"
+      :room-number="gameSettingsState.roomNumber"
       :is-game-ready="state.isGameReady"
     />
     <Map
-      :selected-mode="store.state.gameSettings.selectedMode"
-      :is-owner="store.state.gameSettings.isOwner"
-      :random-lat-lng="store.state.inGame.randomLatLng"
-      :round="store.state.inGame.round"
-      :is-make-guess-button-clicked="
-        store.state.inGame.isMakeGuessButtonClicked
-      "
+      :device="deviceState"
+      :selected-mode="gameSettingsState.selectedMode"
+      :is-owner="gameSettingsState.isOwner"
+      :random-lat-lng="inGameState.randomLatLng"
+      :round="inGameState.round"
+      :is-make-guess-button-clicked="inGameState.isMakeGuessButtonClicked"
       @updateSelectedLatLng="updateSelectedLatLng"
       @onClickHideMapButton="onClickHideMapButton"
     />
@@ -79,8 +78,8 @@
       @click="onClickGuessButton"
     />
     <FlatButton
-      v-if="store.state.generalSettings.device <= DEVICE_TYPES.MOBLE_PORTRAIT"
-      v-show="!store.state.inGame.isMakeGuessButtonClicked"
+      v-if="deviceState <= DEVICE_TYPES.MOBLE_PORTRAIT"
+      v-show="!inGameState.isMakeGuessButtonClicked"
       :text="'MAKE GUESS'"
       :style="{
         zIndex: 1,
@@ -124,10 +123,8 @@
 </template>
 
 <script lang="ts">
-/*global google*/
 import { defineComponent, reactive, computed, onMounted } from "vue";
 
-import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import {
   get,
@@ -140,7 +137,6 @@ import {
   update,
 } from "firebase/database";
 
-import { key } from "@/store";
 import StreetView from "@/components/game/StreetView.vue";
 import Map from "@/components/game/Map.vue";
 import ScoreBoard from "@/components/game/ScoreBoard.vue";
@@ -150,8 +146,12 @@ import Overlay from "@/components/game/Overlay.vue";
 import FlatButton from "@/components/shared/FlatButton.vue";
 import IconButton from "@/components/shared/IconButton.vue";
 import { database } from "@/firebase";
-import { Summary } from "@/types";
-import { DEVICE_TYPES } from "@/constants";
+import { GameHistory, Summary } from "@/types";
+import { DEVICE_TYPES, MAP_OPTIONS } from "@/constants";
+import { storeToRefs } from "pinia";
+import { useGameSettingsStore } from "@/stores/gameSettings";
+import { useInGameStore } from "@/stores/inGame";
+import { useDeviceStore } from "@/stores/device";
 
 export default defineComponent({
   components: {
@@ -166,7 +166,32 @@ export default defineComponent({
   },
 
   setup() {
-    const store = useStore(key);
+    const deviceStore = useDeviceStore();
+    const { deviceState } = storeToRefs(deviceStore);
+
+    const gameSettingsStore = useGameSettingsStore();
+    const { gameSettingsState } = storeToRefs(gameSettingsStore);
+
+    const inGameStore = useInGameStore();
+    const { inGameState, distance } = storeToRefs(inGameStore);
+    const {
+      saveRandomLatLng,
+      saveSelectedLatLng,
+      savePanorama,
+      saveIsMakeGuessButtonClicked,
+      saveIsThisRoundReady,
+      saveIsNextRoundReady,
+      saveScore,
+      saveIsShowingResult,
+      saveIsWaitingForOtherPlayers,
+      saveHasTimerStarted,
+      updateGameHistory,
+      proceedToNextRound,
+      resetInGameState,
+      updateDistanceByPlayerArr,
+      updateSelectedLatLngArr,
+    } = inGameStore;
+
     const router = useRouter();
 
     const state = reactive<{
@@ -185,9 +210,9 @@ export default defineComponent({
 
     const isGuessButtonDisabled = computed<boolean>(
       () =>
-        store.state.inGame.selectedLatLng === null ||
-        (store.state.gameSettings.selectedMode === "multiplayer" &&
-          !store.state.inGame.isThisRoundReady)
+        inGameState.value.selectedLatLng === null ||
+        (gameSettingsState.value.selectedMode === "multiplayer" &&
+          !inGameState.value.isThisRoundReady)
     );
 
     const countdown = computed<string>(() => {
@@ -203,21 +228,11 @@ export default defineComponent({
     });
 
     const updateRandomLatLng = (latLng: google.maps.LatLng): void => {
-      store.dispatch("saveRandomLatLngAction", {
-        randomLatLng: latLng,
-      });
+      saveRandomLatLng(latLng);
     };
 
     const updateSelectedLatLng = (latLng: google.maps.LatLng): void => {
-      store.dispatch("saveSelectedLatLngAction", {
-        selectedLatLng: latLng,
-      });
-    };
-
-    const savePanorama = (panorama: google.maps.StreetViewPanorama): void => {
-      store.dispatch("savePanoramaAction", {
-        panorama: panorama,
-      });
+      saveSelectedLatLng(latLng);
     };
 
     const saveStreetView = async (
@@ -226,7 +241,7 @@ export default defineComponent({
       return await set(
         dbRef(
           database,
-          `${store.state.gameSettings.roomNumber}/streetView/round${store.state.inGame.round}`
+          `${gameSettingsState.value.roomNumber}/streetView/round${inGameState.value.round}`
         ),
         {
           lat: latLng.lat(),
@@ -236,14 +251,14 @@ export default defineComponent({
     };
 
     const startTimer = (): void => {
-      if (!store.state.inGame.isWaitingForOtherPlayers) {
+      if (!inGameState.value.isWaitingForOtherPlayers) {
         if (state.remainingTime > 0) {
           setTimeout(() => {
             state.remainingTime -= 1;
             startTimer();
           }, 1000);
         } else {
-          if (!store.state.inGame.selectedLatLng) {
+          if (!inGameState.value.selectedLatLng) {
             const latLng = new google.maps.LatLng({
               lat: 37.86926,
               lng: -122.254811,
@@ -256,54 +271,44 @@ export default defineComponent({
     };
 
     const onClickMakeGuessButton = (): void => {
-      store.dispatch("saveIsMakeGuessButtonClickedAction", {
-        isMakeGuessButtonClicked: true,
-      });
+      saveIsMakeGuessButtonClicked(true);
     };
 
     const onClickHideMapButton = (): void => {
-      store.dispatch("saveIsMakeGuessButtonClickedAction", {
-        isMakeGuessButtonClicked: false,
-      });
+      saveIsMakeGuessButtonClicked(false);
     };
 
     const onClickGuessButton = async (): Promise<void> => {
-      store.dispatch("saveScoreAction", {
-        score: store.getters.distance,
-      });
-      if (store.state.gameSettings.selectedMode !== "multiplayer") {
-        store.dispatch("saveIsShowingResultAction", {
-          isShowingResult: true,
-        });
+      saveScore(distance.value as number);
+      if (gameSettingsState.value.selectedMode !== "multiplayer") {
+        saveIsShowingResult(true);
       } else {
         // Multiplayer game
-        store.dispatch("saveIsWaitingForOtherPlayersAction", {
-          isWaitingForOtherPlayers: true,
-        });
+        saveIsWaitingForOtherPlayers(true);
         try {
           await update(
             dbRef(
               database,
-              `${store.state.gameSettings.roomNumber}/round${store.state.inGame.round}`
+              `${gameSettingsState.value.roomNumber}/round${inGameState.value.round}`
             ),
             {
-              [store.state.gameSettings.playerId]: store.getters.distance,
+              [gameSettingsState.value.playerId]: distance,
             }
           );
           await set(
             dbRef(
               database,
-              `${store.state.gameSettings.roomNumber}/guess/${store.state.gameSettings.playerId}`
+              `${gameSettingsState.value.roomNumber}/guess/${gameSettingsState.value.playerId}`
             ),
             {
-              lat: store.state.inGame.selectedLatLng?.lat(),
-              lng: store.state.inGame.selectedLatLng?.lng(),
+              lat: inGameState.value.selectedLatLng?.lat(),
+              lng: inGameState.value.selectedLatLng?.lng(),
             }
           );
           await update(
-            dbRef(database, `${store.state.gameSettings.roomNumber}/score`),
+            dbRef(database, `${gameSettingsState.value.roomNumber}/score`),
             {
-              [store.state.gameSettings.playerId]: store.state.inGame.score,
+              [gameSettingsState.value.playerId]: inGameState.value.score,
             }
           );
         } catch (err) {
@@ -313,39 +318,37 @@ export default defineComponent({
     };
 
     const onClickNextRoundButton = async (): Promise<void> => {
-      if (store.state.inGame.isMakeGuessButtonClicked) {
+      if (inGameState.value.isMakeGuessButtonClicked) {
         // Hide map for mobile devices
         onClickHideMapButton();
       }
 
-      const gameHistory = {
-        randomLatLng: store.state.inGame.randomLatLng,
-        selectedLatLng: store.state.inGame.selectedLatLng,
+      const gameHistory: GameHistory = {
+        randomLatLng: inGameState.value.randomLatLng as google.maps.LatLng,
+        selectedLatLng: inGameState.value.selectedLatLng as google.maps.LatLng,
       };
-      store.dispatch("updateGameHistoryAction", {
-        gameHistory: gameHistory,
-      });
-      store.dispatch("proceedToNextRoundAction");
+      updateGameHistory(gameHistory);
+      proceedToNextRound();
 
       // Multiplayer game
       if (
-        store.state.gameSettings.selectedMode === "multiplayer" &&
-        !store.state.gameSettings.isOwner
+        gameSettingsState.value.selectedMode === "multiplayer" &&
+        !gameSettingsState.value.isOwner
       ) {
         try {
           await set(
             dbRef(
               database,
-              `/${store.state.gameSettings.roomNumber}/round${store.state.inGame.round}`
+              `/${gameSettingsState.value.roomNumber}/round${inGameState.value.round}`
             ),
             {
-              [store.state.gameSettings.playerId]: 0,
+              [gameSettingsState.value.playerId]: 0,
             }
           );
           const snapshot = await get(
             child(
               dbRef(database),
-              `/${store.state.gameSettings.roomNumber}/streetView/round${store.state.inGame.round}`
+              `/${gameSettingsState.value.roomNumber}/streetView/round${inGameState.value.round}`
             )
           );
           const randomLat = snapshot.child("lat").val();
@@ -359,46 +362,42 @@ export default defineComponent({
     };
 
     const onClickResetLocationButton = (): void => {
-      store.state.inGame.panorama?.setPosition(store.state.inGame.randomLatLng);
+      inGameState.value.panorama?.setPosition(inGameState.value.randomLatLng);
     };
 
     const onClickZoomInButton = (): void => {
-      let current = store.state.inGame.panorama?.getZoom();
+      let current = inGameState.value.panorama?.getZoom();
       if (current) {
         current++;
-        store.state.inGame.panorama?.setZoom(current);
+        inGameState.value.panorama?.setZoom(current);
       }
     };
 
     const onClickZoomOutButton = (): void => {
-      let current = store.state.inGame.panorama?.getZoom();
+      let current = inGameState.value.panorama?.getZoom();
       if (current) {
         current--;
-        store.state.inGame.panorama?.setZoom(current);
+        inGameState.value.panorama?.setZoom(current);
       }
     };
 
     const onClickViewSummaryButton = (): void => {
-      store.dispatch("saveIsShowingSummaryAction", {
-        isShowingSummary: true,
-      });
+      saveIsShowingResult(true);
     };
 
     const onClickPlayAgainButton = (): void => {
-      store.dispatch("resetInGameStateAction");
+      resetInGameState();
     };
 
     const endMultiplayerGame = async (): Promise<void> => {
       try {
         await update(
-          dbRef(database, `/${store.state.gameSettings.roomNumber}/hasDone`),
+          dbRef(database, `/${gameSettingsState.value.roomNumber}/hasDone`),
           {
-            [store.state.gameSettings.playerId]: true,
+            [gameSettingsState.value.playerId]: true,
           }
         );
-        store.dispatch("saveIsWaitingForOtherPlayersAction", {
-          isWaitingForOtherPlayers: true,
-        });
+        saveIsWaitingForOtherPlayers(true);
       } catch (err) {
         console.log(`endMultiplayerGame error: ${err}`);
       }
@@ -412,10 +411,10 @@ export default defineComponent({
       // Multiplayer game
       state.overlayMsg = "Disconnecting from this game..";
       state.isEndingMultiplayerGame = true;
-      off(dbRef(database, `/${store.state.gameSettings.roomNumber}`));
+      off(dbRef(database, `/${gameSettingsState.value.roomNumber}`));
 
-      if (store.state.gameSettings.roomNumber !== "") {
-        remove(dbRef(database, `/${store.state.gameSettings.roomNumber}`));
+      if (gameSettingsState.value.roomNumber !== "") {
+        remove(dbRef(database, `/${gameSettingsState.value.roomNumber}`));
 
         setTimeout(() => {
           router.back();
@@ -424,10 +423,10 @@ export default defineComponent({
     };
 
     onMounted(() => {
-      const roomNumber = store.state.gameSettings.roomNumber;
-      const playerId = store.state.gameSettings.playerId;
+      const roomNumber = gameSettingsState.value.roomNumber;
+      const playerId = gameSettingsState.value.playerId;
 
-      if (store.state.gameSettings.selectedMode === "multiplayer") {
+      if (gameSettingsState.value.selectedMode === "multiplayer") {
         onValue(dbRef(database, `/${roomNumber}`), async (snapshot) => {
           try {
             if (
@@ -440,24 +439,24 @@ export default defineComponent({
               // Put the player into the current round's node
               if (
                 !snapshot
-                  .child(`round${store.state.inGame.round}`)
+                  .child(`round${inGameState.value.round}`)
                   .hasChild(playerId)
               ) {
                 await update(
                   dbRef(
                     database,
-                    `/${roomNumber}/round${store.state.inGame.round}`
+                    `/${roomNumber}/round${inGameState.value.round}`
                   ),
                   {
                     [playerId]: 0,
                   }
                 );
-                if (!store.state.gameSettings.isOwner) {
+                if (!gameSettingsState.value.isOwner) {
                   const randomLat = snapshot
-                    .child(`streetView/round${store.state.inGame.round}/lat`)
+                    .child(`streetView/round${inGameState.value.round}/lat`)
                     .val();
                   const randomLng = snapshot
-                    .child(`streetView/round${store.state.inGame.round}/lng`)
+                    .child(`streetView/round${inGameState.value.round}/lng`)
                     .val();
                   const randomLatLng = new google.maps.LatLng(
                     randomLat,
@@ -467,32 +466,25 @@ export default defineComponent({
                 }
               }
               if (
-                snapshot.child(`round${store.state.inGame.round}`).size ===
+                snapshot.child(`round${inGameState.value.round}`).size ===
                 snapshot.child("size").val()
               ) {
                 // Hide RoomNumberDialog when all players proceed to this round
                 state.isGameReady = true;
                 // Enable guess button when all players are put into the current round's node
-                store.dispatch("saveIsThisRoundReadyAction", {
-                  isThisRoundReady: true,
-                });
+                saveIsThisRoundReady(true);
+
                 // Start a timer
-                if (!store.state.inGame.hasTimerStarted) {
-                  store.dispatch("saveHasTimerStartedAction", {
-                    hasTimerStarted: true,
-                  });
+                if (!inGameState.value.hasTimerStarted) {
+                  saveHasTimerStarted(true);
+
                   state.remainingTime = snapshot.child("time").val() * 60;
                   startTimer();
                 }
               }
-              if (
-                snapshot.child("streetView").size ===
-                store.state.inGame.round + 1
-              ) {
+              if (snapshot.child("streetView").size === inGameState.value.round + 1) {
                 // Allow other players to proceed to the next round after the owner load a StreetView first
-                store.dispatch("saveIsNextRoundReadyAction", {
-                  isNextRoundReady: true,
-                });
+                saveIsNextRoundReady(true);
               }
 
               if (
@@ -509,27 +501,19 @@ export default defineComponent({
                     .val();
                   const distance = snapshot
                     .child(
-                      `round${store.state.inGame.round}/${childSnapshot.key!}`
+                      `round${inGameState.value.round}/${childSnapshot.key!}`
                     )
                     .val();
-                  store.dispatch("updateSelectedLatLngArrAction", {
-                    selectedLatLng: latlng,
-                  });
-                  store.dispatch("updateDistanceByPlayerArrAction", {
-                    distanceByPlayer: {
-                      playerName: playerName,
-                      distance: distance,
-                    },
+                  updateSelectedLatLngArr(latlng);
+                  updateDistanceByPlayerArr({
+                    playerName: playerName,
+                    distance: distance,
                   });
                 });
-                store.dispatch("saveIsWaitingForOtherPlayersAction", {
-                  isWaitingForOtherPlayers: false,
-                });
-                store.dispatch("saveIsShowingResultAction", {
-                  isShowingResult: true,
-                });
+                saveIsWaitingForOtherPlayers(false);
+                saveIsShowingResult(true);
 
-                if (store.state.inGame.round === 5) {
+                if (inGameState.value.round === 5) {
                   // Summary
                   snapshot.child("score").forEach((childSnapshot) => {
                     const playerName = snapshot
@@ -577,11 +561,15 @@ export default defineComponent({
     });
 
     return {
-      store,
+      deviceState,
+      gameSettingsState,
+      inGameState,
       state,
       isGuessButtonDisabled,
       countdown,
       DEVICE_TYPES,
+      MAP_OPTIONS,
+      distance,
       updateRandomLatLng,
       updateSelectedLatLng,
       savePanorama,

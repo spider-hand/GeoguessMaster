@@ -1,6 +1,7 @@
+import { DeviceTypes } from "@/types";
 import { DEVICE_TYPES } from "../constants";
 
-export const getDeviceType = (): number => {
+export const getDeviceType = (): DeviceTypes => {
   if (window.matchMedia("(min-width: 1200px)").matches) {
     return DEVICE_TYPES.LAPTOP;
   } else if (window.matchMedia("(min-width: 992px)").matches) {

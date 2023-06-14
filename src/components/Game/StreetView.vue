@@ -1,5 +1,8 @@
 <template>
-  <div ref="streetviewRef" :class="$style['street-view']" />
+  <div
+    ref="streetviewRef"
+    :class="$style['street-view']"
+  />
 </template>
 
 <script lang="ts">

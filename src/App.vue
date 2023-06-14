@@ -5,20 +5,20 @@
 
 <script lang="ts">
 import { defineComponent, onMounted } from "vue";
-import { useStore } from "vuex";
-import { key } from "./store";
 import { getDeviceType } from "@/utils";
+import { useDeviceStore } from "./stores/device";
 
 export default defineComponent({
   setup() {
-    const store = useStore(key);
+    const deviceStore = useDeviceStore();
+    const { saveDeviceType } = deviceStore;
 
     const onWindowResize = (): void => {
-      store.dispatch("setDeviceTypeAction", { device: getDeviceType() });
+      saveDeviceType(getDeviceType());
     };
 
     onMounted(() => {
-      store.dispatch("setDeviceTypeAction", { device: getDeviceType() });
+      saveDeviceType(getDeviceType());
       window.addEventListener("resize", onWindowResize);
     });
   },

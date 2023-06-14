@@ -5,10 +5,7 @@
       :class="$style['map']"
     />
     <IconButton
-      v-if="
-        store.state.generalSettings.device <= DEVICE_TYPES.MOBLE_PORTRAIT &&
-          isMakeGuessButtonClicked
-      "
+      v-if="device <= DEVICE_TYPES.MOBLE_PORTRAIT && isMakeGuessButtonClicked"
       :icon="'close'"
       :style="{
         zIndex: '1',
@@ -23,18 +20,20 @@
 </template>
 
 <script lang="ts">
-/*global google*/
 import { defineComponent, onMounted, ref, watch, PropType } from "vue";
-import { useStore } from "vuex";
-import { key } from "@/store";
 import { DEVICE_TYPES } from "@/constants";
 import IconButton from "@/components/shared/IconButton.vue";
+import { DeviceTypes } from "@/types";
 
 export default defineComponent({
   components: {
     IconButton,
   },
   props: {
+    device: {
+      type: Object as PropType<DeviceTypes>,
+      required: true,
+    },
     selectedMode: {
       type: String,
       required: true,
@@ -58,7 +57,6 @@ export default defineComponent({
     let map: google.maps.Map;
     const mapRef = ref<HTMLElement>();
     const markers: google.maps.Marker[] = [];
-    const store = useStore(key);
 
     watch(
       () => props.isMakeGuessButtonClicked,
@@ -126,7 +124,6 @@ export default defineComponent({
 
     return {
       mapRef,
-      store,
       DEVICE_TYPES,
       onClickHideMapButton,
     };

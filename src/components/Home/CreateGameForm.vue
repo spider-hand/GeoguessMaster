@@ -7,7 +7,7 @@
       >
         <span :class="$style['create-game-form__select-label']">Map</span>
         <span :class="$style['create-game-form__select-value']">{{
-          MAP_OPTIONS.get(store.state.gameSettings.selectedMap)
+          MAP_OPTIONS.get(gameSettingsState.selectedMap)
         }}</span>
       </button>
       <SelectBoxDialog
@@ -24,7 +24,7 @@
       >
         <span :class="$style['create-game-form__select-label']">Mode</span>
         <span :class="$style['create-game-form__select-value']">{{
-          MODE_OPTIONS.get(store.state.gameSettings.selectedMode)
+          MODE_OPTIONS.get(gameSettingsState.selectedMode)
         }}</span>
       </button>
       <SelectBoxDialog
@@ -35,12 +35,12 @@
       />
     </div>
     <IconButton
-      v-if="store.state.generalSettings.device <= DEVICE_TYPES.TABLET_PORTRAIT"
+      v-if="deviceState <= DEVICE_TYPES.TABLET_PORTRAIT"
       ref="createRoomButtonRef"
       :icon="'travel_explore'"
       :style="{ position: 'absolute', right: '12px' }"
       @click="
-        store.state.gameSettings.selectedMode === 'single'
+        gameSettingsState.selectedMode === 'single'
           ? startSinglePlayerGame()
           : openCreateRoomDialog()
       "
@@ -50,12 +50,10 @@
       ref="createRoomButtonRef"
       :style="{ position: 'absolute', right: '12px' }"
       :text="
-        store.state.gameSettings.selectedMode === 'single'
-          ? 'START'
-          : 'CREATE ROOM'
+        gameSettingsState.selectedMode === 'single' ? 'START' : 'CREATE ROOM'
       "
       @click="
-        store.state.gameSettings.selectedMode === 'single'
+        gameSettingsState.selectedMode === 'single'
           ? startSinglePlayerGame()
           : openCreateRoomDialog()
       "
@@ -63,12 +61,12 @@
     <CreateRoomDialog
       :is-showing-dialog="state.isShowingRoomCreateDialog"
       :is-room-found="state.isRoomFound"
-      :selected-size="store.state.gameSettings.selectedSize"
-      :selected-time="store.state.gameSettings.selectedTime"
-      :player-name="store.state.gameSettings.playerName"
-      :is-owner="store.state.gameSettings.isOwner"
-      :room-number="store.state.gameSettings.roomNumber"
-      :is-ready-for-multiplayer-game="store.getters.isReadyForMultiplayerGame"
+      :selected-size="gameSettingsState.selectedSize"
+      :selected-time="gameSettingsState.selectedTime"
+      :player-name="gameSettingsState.playerName"
+      :is-owner="gameSettingsState.isOwner"
+      :room-number="gameSettingsState.roomNumber"
+      :is-ready-for-multiplayer-game="isReadyForMultiplayerGame"
       @onChangeSize="onChangeSize"
       @onChangeTime="onChangeTime"
       @onChangePlayerName="onChangePlayerName"
@@ -81,7 +79,7 @@
 
 <script lang="ts">
 import { defineComponent, onMounted, reactive, ref } from "vue";
-import { useStore } from "vuex";
+import { useGameSettingsStore } from "@/stores/gameSettings";
 import { useRouter } from "vue-router";
 import {
   get,
@@ -92,7 +90,6 @@ import {
   update,
   serverTimestamp,
 } from "firebase/database";
-import { key } from "@/store";
 import { onClickOutside } from "@vueuse/core";
 import { database } from "@/firebase";
 import { DEVICE_TYPES, MAP_OPTIONS, MODE_OPTIONS } from "@/constants";
@@ -101,6 +98,9 @@ import FlatButton from "@/components/shared/FlatButton.vue";
 import IconButton from "@/components/shared/IconButton.vue";
 import SelectBoxDialog from "./SelectBoxDialog.vue";
 import { MapTypes, ModeTypes } from "@/types";
+import { storeToRefs } from "pinia";
+import { useDeviceStore } from "@/stores/device";
+import { useInGameStore } from "@/stores/inGame";
 
 export default defineComponent({
   components: {
@@ -111,6 +111,28 @@ export default defineComponent({
   },
 
   setup() {
+    const deviceStore = useDeviceStore();
+    const { deviceState } = storeToRefs(deviceStore);
+
+    const gameSettingsStore = useGameSettingsStore();
+    const { gameSettingsState, isReadyForMultiplayerGame } =
+      storeToRefs(gameSettingsStore);
+    const {
+      resetGameSettingsState,
+      changeSelectedMap,
+      changeSelectedMode,
+      changeSelectedSize,
+      changeSelectedTime,
+      changePlayerName,
+      switchIsOwner,
+      changeRoomNumber,
+      savePlayerId,
+      clickStartButton,
+    } = gameSettingsStore;
+
+    const inGameStore = useInGameStore();
+    const { resetInGameState } = inGameStore;
+
     const router = useRouter();
 
     const createRoomButtonRef = ref(null);
@@ -127,8 +149,6 @@ export default defineComponent({
         state.isShowingRoomCreateDialog = false;
       }
     });
-
-    const store = useStore(key);
 
     const state = reactive<{
       isSelectingMap: boolean;
@@ -152,16 +172,12 @@ export default defineComponent({
 
     const onChangeSelectedMap = (option: string): void => {
       state.isSelectingMap = false;
-      store.dispatch("changeSelectedMapAction", {
-        selectedMap: option as MapTypes,
-      });
+      changeSelectedMap(option as MapTypes);
     };
 
     const onChangeSelectedMode = (option: string): void => {
       state.isSelectingMode = false;
-      store.dispatch("changeSelectedModeAction", {
-        selectedMode: option as ModeTypes,
-      });
+      changeSelectedMode(option as ModeTypes);
     };
 
     const openCreateRoomDialog = (): void => {
@@ -169,33 +185,23 @@ export default defineComponent({
     };
 
     const onChangeSize = (newVal: number): void => {
-      store.dispatch("changeSelectedSizeAction", {
-        selectedSize: newVal,
-      });
+      changeSelectedSize(newVal);
     };
 
     const onChangeTime = (newVal: number): void => {
-      store.dispatch("changeSelectedTimeAction", {
-        selectedTime: newVal,
-      });
+      changeSelectedTime(newVal);
     };
 
     const onChangePlayerName = (newVal: string): void => {
-      store.dispatch("changePlayerNameAction", {
-        playerName: newVal,
-      });
+      changePlayerName(newVal);
     };
 
     const onChangeIsOwner = (newVal: boolean): void => {
-      store.dispatch("switchIsOwnerAction", {
-        isOwner: newVal,
-      });
+      switchIsOwner(newVal);
     };
 
     const onChangeRoomNumber = (newVal: string): void => {
-      store.dispatch("changeRoomNumberAction", {
-        roomNumber: newVal,
-      });
+      changeRoomNumber(newVal);
     };
 
     const startSinglePlayerGame = (): void => {
@@ -204,46 +210,40 @@ export default defineComponent({
 
     const startMultiplayerGame = async (): Promise<void> => {
       try {
-        store.dispatch("onClickStartButtonAction");
+        clickStartButton();
 
-        if (store.state.gameSettings.isOwner) {
+        if (gameSettingsState.value.isOwner) {
           let randomNumber: number;
           let snapshot: DataSnapshot;
           do {
             randomNumber = Math.floor(Math.random() * 9999);
             snapshot = await get(child(dbRef(database), `${randomNumber}`));
           } while (snapshot.exists());
-          store.dispatch("changeRoomNumberAction", {
-            roomNumber: randomNumber,
-          });
+          changeRoomNumber(randomNumber.toString());
           const playerNameRef = await push(
             dbRef(database, `${randomNumber}/playerName`),
-            store.state.gameSettings.playerName
+            gameSettingsState.value.playerName
           );
-          store.dispatch("savePlayerIdAction", {
-            playerId: playerNameRef.key,
-          });
+          savePlayerId(playerNameRef.key as string);
+
           await update(dbRef(database, `${randomNumber}`), {
             active: true,
-            size: store.state.gameSettings.selectedSize,
-            time: store.state.gameSettings.selectedTime,
+            size: gameSettingsState.value.selectedSize,
+            time: gameSettingsState.value.selectedTime,
             createdAt: serverTimestamp(),
           });
           router.push("game");
         } else {
-          const roomNumber = store.state.gameSettings.roomNumber;
+          const roomNumber = gameSettingsState.value.roomNumber;
           const snapshot = await get(child(dbRef(database), `${roomNumber}`));
           if (snapshot.exists()) {
             const playerNameRef = await push(
               dbRef(database, `${roomNumber}/playerName`),
-              store.state.gameSettings.playerName
+              gameSettingsState.value.playerName
             );
-            store.dispatch("savePlayerIdAction", {
-              playerId: playerNameRef.key,
-            });
-            store.dispatch("changeSelectedTimeAction", {
-              selectedTime: snapshot.child("time").val(),
-            });
+            savePlayerId(playerNameRef.key as string);
+            changeSelectedTime(snapshot.child("time").val());
+
             router.push("game");
           } else {
             state.isRoomFound = false;
@@ -255,17 +255,19 @@ export default defineComponent({
     };
 
     onMounted(() => {
-      store.dispatch("resetGameSettingsStateAction");
-      store.dispatch("resetInGameStateAction");
+      resetGameSettingsState();
+      resetInGameState();
     });
 
     return {
-      store,
+      gameSettingsState,
+      deviceState,
       createRoomButtonRef,
       state,
       MAP_OPTIONS,
       MODE_OPTIONS,
       DEVICE_TYPES,
+      isReadyForMultiplayerGame,
       openSelectMapDialog,
       openSelectModeDialog,
       onChangeSelectedMap,
