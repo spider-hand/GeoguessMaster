@@ -38,30 +38,26 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
-
-export default defineComponent({
-  props: {
-    selectedMap: {
-      type: String,
-      required: true,
-    },
-    selectedMode: {
-      type: String,
-      required: true,
-    },
-    round: {
-      type: Number,
-      required: true,
-    },
-    score: {
-      type: Number,
-      required: true,
-    },
-    countdown: {
-      type: String,
-    },
+<script setup lang="ts">
+defineProps({
+  selectedMap: {
+    type: String,
+    required: true,
+  },
+  selectedMode: {
+    type: String,
+    required: true,
+  },
+  round: {
+    type: Number,
+    required: true,
+  },
+  score: {
+    type: Number,
+    required: true,
+  },
+  countdown: {
+    type: String,
   },
 });
 </script>

@@ -67,18 +67,18 @@
       :is-owner="gameSettingsState.isOwner"
       :room-number="gameSettingsState.roomNumber"
       :is-ready-for-multiplayer-game="isReadyForMultiplayerGame"
-      @onChangeSize="onChangeSize"
-      @onChangeTime="onChangeTime"
-      @onChangePlayerName="onChangePlayerName"
-      @onChangeIsOwner="onChangeIsOwner"
-      @onChangeRoomNumber="onChangeRoomNumber"
+      @onChangeSize="changeSelectedSize"
+      @onChangeTime="changeSelectedTime"
+      @onChangePlayerName="changePlayerName"
+      @onChangeIsOwner="switchIsOwner"
+      @onChangeRoomNumber="changeRoomNumber"
       @onClickStartMultiplayerGameButton="startMultiplayerGame"
     />
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, onMounted, reactive, ref } from "vue";
+<script setup lang="ts">
+import { onMounted, reactive, ref } from "vue";
 import { useGameSettingsStore } from "@/stores/gameSettings";
 import { useRouter } from "vue-router";
 import {
@@ -102,186 +102,132 @@ import { storeToRefs } from "pinia";
 import { useDeviceStore } from "@/stores/device";
 import { useInGameStore } from "@/stores/inGame";
 
-export default defineComponent({
-  components: {
-    CreateRoomDialog,
-    FlatButton,
-    IconButton,
-    SelectBoxDialog,
-  },
+const deviceStore = useDeviceStore();
+const { deviceState } = storeToRefs(deviceStore);
 
-  setup() {
-    const deviceStore = useDeviceStore();
-    const { deviceState } = storeToRefs(deviceStore);
+const gameSettingsStore = useGameSettingsStore();
+const { gameSettingsState, isReadyForMultiplayerGame } =
+  storeToRefs(gameSettingsStore);
+const {
+  resetGameSettingsState,
+  changeSelectedMap,
+  changeSelectedMode,
+  changeSelectedSize,
+  changeSelectedTime,
+  changePlayerName,
+  switchIsOwner,
+  changeRoomNumber,
+  savePlayerId,
+  clickStartButton,
+} = gameSettingsStore;
 
-    const gameSettingsStore = useGameSettingsStore();
-    const { gameSettingsState, isReadyForMultiplayerGame } =
-      storeToRefs(gameSettingsStore);
-    const {
-      resetGameSettingsState,
-      changeSelectedMap,
-      changeSelectedMode,
-      changeSelectedSize,
-      changeSelectedTime,
-      changePlayerName,
-      switchIsOwner,
-      changeRoomNumber,
-      savePlayerId,
-      clickStartButton,
-    } = gameSettingsStore;
+const inGameStore = useInGameStore();
+const { resetInGameState } = inGameStore;
 
-    const inGameStore = useInGameStore();
-    const { resetInGameState } = inGameStore;
+const router = useRouter();
 
-    const router = useRouter();
+const createRoomButtonRef = ref(null);
+onClickOutside(createRoomButtonRef, (event) => {
+  let isRoomCreateDialogClicked = false;
+  const path = event.composedPath();
+  path.forEach((el) => {
+    if ((el as Element).id === "create-room-dialog") {
+      isRoomCreateDialogClicked = true;
+      return;
+    }
+  });
+  if (!isRoomCreateDialogClicked) {
+    state.isShowingRoomCreateDialog = false;
+  }
+});
 
-    const createRoomButtonRef = ref(null);
-    onClickOutside(createRoomButtonRef, (event) => {
-      let isRoomCreateDialogClicked = false;
-      const path = event.composedPath();
-      path.forEach((el) => {
-        if ((el as Element).id === "create-room-dialog") {
-          isRoomCreateDialogClicked = true;
-          return;
-        }
+const state = reactive<{
+  isSelectingMap: boolean;
+  isSelectingMode: boolean;
+  isShowingRoomCreateDialog: boolean;
+  isRoomFound: boolean;
+}>({
+  isSelectingMap: false,
+  isSelectingMode: false,
+  isShowingRoomCreateDialog: false,
+  isRoomFound: true,
+});
+
+const openSelectMapDialog = (): void => {
+  state.isSelectingMap = true;
+};
+
+const openSelectModeDialog = (): void => {
+  state.isSelectingMode = true;
+};
+
+const onChangeSelectedMap = (option: string): void => {
+  state.isSelectingMap = false;
+  changeSelectedMap(option as MapTypes);
+};
+
+const onChangeSelectedMode = (option: string): void => {
+  state.isSelectingMode = false;
+  changeSelectedMode(option as ModeTypes);
+};
+
+const openCreateRoomDialog = (): void => {
+  state.isShowingRoomCreateDialog = true;
+};
+
+const startSinglePlayerGame = (): void => {
+  router.push("game");
+};
+
+const startMultiplayerGame = async (): Promise<void> => {
+  try {
+    clickStartButton();
+
+    if (gameSettingsState.value.isOwner) {
+      let randomNumber: number;
+      let snapshot: DataSnapshot;
+      do {
+        randomNumber = Math.floor(Math.random() * 9999);
+        snapshot = await get(child(dbRef(database), `${randomNumber}`));
+      } while (snapshot.exists());
+      changeRoomNumber(randomNumber.toString());
+      const playerNameRef = await push(
+        dbRef(database, `${randomNumber}/playerName`),
+        gameSettingsState.value.playerName
+      );
+      savePlayerId(playerNameRef.key as string);
+
+      await update(dbRef(database, `${randomNumber}`), {
+        active: true,
+        size: gameSettingsState.value.selectedSize,
+        time: gameSettingsState.value.selectedTime,
+        createdAt: serverTimestamp(),
       });
-      if (!isRoomCreateDialogClicked) {
-        state.isShowingRoomCreateDialog = false;
-      }
-    });
-
-    const state = reactive<{
-      isSelectingMap: boolean;
-      isSelectingMode: boolean;
-      isShowingRoomCreateDialog: boolean;
-      isRoomFound: boolean;
-    }>({
-      isSelectingMap: false,
-      isSelectingMode: false,
-      isShowingRoomCreateDialog: false,
-      isRoomFound: true,
-    });
-
-    const openSelectMapDialog = (): void => {
-      state.isSelectingMap = true;
-    };
-
-    const openSelectModeDialog = (): void => {
-      state.isSelectingMode = true;
-    };
-
-    const onChangeSelectedMap = (option: string): void => {
-      state.isSelectingMap = false;
-      changeSelectedMap(option as MapTypes);
-    };
-
-    const onChangeSelectedMode = (option: string): void => {
-      state.isSelectingMode = false;
-      changeSelectedMode(option as ModeTypes);
-    };
-
-    const openCreateRoomDialog = (): void => {
-      state.isShowingRoomCreateDialog = true;
-    };
-
-    const onChangeSize = (newVal: number): void => {
-      changeSelectedSize(newVal);
-    };
-
-    const onChangeTime = (newVal: number): void => {
-      changeSelectedTime(newVal);
-    };
-
-    const onChangePlayerName = (newVal: string): void => {
-      changePlayerName(newVal);
-    };
-
-    const onChangeIsOwner = (newVal: boolean): void => {
-      switchIsOwner(newVal);
-    };
-
-    const onChangeRoomNumber = (newVal: string): void => {
-      changeRoomNumber(newVal);
-    };
-
-    const startSinglePlayerGame = (): void => {
       router.push("game");
-    };
+    } else {
+      const roomNumber = gameSettingsState.value.roomNumber;
+      const snapshot = await get(child(dbRef(database), `${roomNumber}`));
+      if (snapshot.exists()) {
+        const playerNameRef = await push(
+          dbRef(database, `${roomNumber}/playerName`),
+          gameSettingsState.value.playerName
+        );
+        savePlayerId(playerNameRef.key as string);
+        changeSelectedTime(snapshot.child("time").val());
 
-    const startMultiplayerGame = async (): Promise<void> => {
-      try {
-        clickStartButton();
-
-        if (gameSettingsState.value.isOwner) {
-          let randomNumber: number;
-          let snapshot: DataSnapshot;
-          do {
-            randomNumber = Math.floor(Math.random() * 9999);
-            snapshot = await get(child(dbRef(database), `${randomNumber}`));
-          } while (snapshot.exists());
-          changeRoomNumber(randomNumber.toString());
-          const playerNameRef = await push(
-            dbRef(database, `${randomNumber}/playerName`),
-            gameSettingsState.value.playerName
-          );
-          savePlayerId(playerNameRef.key as string);
-
-          await update(dbRef(database, `${randomNumber}`), {
-            active: true,
-            size: gameSettingsState.value.selectedSize,
-            time: gameSettingsState.value.selectedTime,
-            createdAt: serverTimestamp(),
-          });
-          router.push("game");
-        } else {
-          const roomNumber = gameSettingsState.value.roomNumber;
-          const snapshot = await get(child(dbRef(database), `${roomNumber}`));
-          if (snapshot.exists()) {
-            const playerNameRef = await push(
-              dbRef(database, `${roomNumber}/playerName`),
-              gameSettingsState.value.playerName
-            );
-            savePlayerId(playerNameRef.key as string);
-            changeSelectedTime(snapshot.child("time").val());
-
-            router.push("game");
-          } else {
-            state.isRoomFound = false;
-          }
-        }
-      } catch (err) {
-        console.log(`StartMultiplayerGame error: ${err}`);
+        router.push("game");
+      } else {
+        state.isRoomFound = false;
       }
-    };
+    }
+  } catch (err) {
+    console.log(`StartMultiplayerGame error: ${err}`);
+  }
+};
 
-    onMounted(() => {
-      resetGameSettingsState();
-      resetInGameState();
-    });
-
-    return {
-      gameSettingsState,
-      deviceState,
-      createRoomButtonRef,
-      state,
-      MAP_OPTIONS,
-      MODE_OPTIONS,
-      DEVICE_TYPES,
-      isReadyForMultiplayerGame,
-      openSelectMapDialog,
-      openSelectModeDialog,
-      onChangeSelectedMap,
-      onChangeSelectedMode,
-      openCreateRoomDialog,
-      onChangeSize,
-      onChangeTime,
-      onChangePlayerName,
-      onChangeIsOwner,
-      onChangeRoomNumber,
-      startSinglePlayerGame,
-      startMultiplayerGame,
-    };
-  },
+onMounted(() => {
+  resetGameSettingsState();
+  resetInGameState();
 });
 </script>
 

@@ -5,19 +5,13 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
+<script setup lang="ts">
 import Spinner from "./Spinner.vue";
 
-export default defineComponent({
-  components: {
-    Spinner,
-  },
-  props: {
-    msg: {
-      type: String,
-      required: false,
-    },
+defineProps({
+  msg: {
+    type: String,
+    required: false,
   },
 });
 </script>

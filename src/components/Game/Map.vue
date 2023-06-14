@@ -14,120 +14,108 @@
         left: '0px',
       }"
       :size="'sm'"
-      @click="onClickHideMapButton"
+      @click="$emit('onClickHideMapButton')"
     />
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, onMounted, ref, watch, PropType } from "vue";
+<script setup lang="ts">
+import { onMounted, ref, watch, PropType } from "vue";
 import { DEVICE_TYPES } from "@/constants";
 import IconButton from "@/components/shared/IconButton.vue";
 import { DeviceTypes } from "@/types";
 
-export default defineComponent({
-  components: {
-    IconButton,
+const props = defineProps({
+  device: {
+    type: Object as PropType<DeviceTypes>,
+    required: true,
   },
-  props: {
-    device: {
-      type: Object as PropType<DeviceTypes>,
-      required: true,
-    },
-    selectedMode: {
-      type: String,
-      required: true,
-    },
-    randomLatLng: {
-      type: Object as PropType<google.maps.LatLng | null>,
-      default: null,
-      required: false,
-    },
-    round: {
-      type: Number,
-      required: true,
-    },
-    isMakeGuessButtonClicked: {
-      type: Boolean,
-      required: true,
-    },
+  selectedMode: {
+    type: String,
+    required: true,
   },
+  randomLatLng: {
+    type: Object as PropType<google.maps.LatLng | null>,
+    default: null,
+    required: false,
+  },
+  round: {
+    type: Number,
+    required: true,
+  },
+  isMakeGuessButtonClicked: {
+    type: Boolean,
+    required: true,
+  },
+});
 
-  setup(props, context) {
-    let map: google.maps.Map;
-    const mapRef = ref<HTMLElement>();
-    const markers: google.maps.Marker[] = [];
+const emit = defineEmits<{
+  updateSelectedLatLng: [latLng: google.maps.LatLng];
+  onClickHideMapButton: [];
+}>();
 
-    watch(
-      () => props.isMakeGuessButtonClicked,
-      (newVal: boolean, oldVal: boolean) => {
-        if (newVal && mapRef.value) {
-          mapRef.value.style.transform = "translateY(-352px)";
-        } else if (!newVal && mapRef.value) {
-          mapRef.value.style.transform = "translateY(300px)";
-        }
-      }
-    );
+let map: google.maps.Map;
+const mapRef = ref<HTMLElement>();
+const markers: google.maps.Marker[] = [];
 
-    watch(
-      () => props.round,
-      (newVal: number, oldVal: number) => {
-        if (oldVal + 1 === newVal || (oldVal === 5 && newVal === 1)) {
-          removeMarkers();
-        }
-      }
-    );
+watch(
+  () => props.isMakeGuessButtonClicked,
+  (newVal: boolean) => {
+    if (newVal && mapRef.value) {
+      mapRef.value.style.transform = "translateY(-352px)";
+    } else if (!newVal && mapRef.value) {
+      mapRef.value.style.transform = "translateY(300px)";
+    }
+  }
+);
 
-    const removeMarkers = (): void => {
-      markers.forEach((marker, index) => {
-        marker.setMap(null);
-        markers.splice(index, 1);
+watch(
+  () => props.round,
+  (newVal: number, oldVal: number) => {
+    if (oldVal + 1 === newVal || (oldVal === 5 && newVal === 1)) {
+      removeMarkers();
+    }
+  }
+);
+
+watch(
+  () => props.randomLatLng,
+  (newVal: google.maps.LatLng | null) => {
+    if (newVal !== null) {
+      map.addListener("click", (e: any) => {
+        removeMarkers();
+        putMarker(e.latLng);
+        emit("updateSelectedLatLng", e.latLng);
       });
-    };
+    }
+  }
+);
 
-    const putMarker = (position: google.maps.LatLng): void => {
-      const marker = new google.maps.Marker({
-        position: position,
-        map: map,
-      });
-      markers.push(marker);
-    };
+const removeMarkers = (): void => {
+  markers.forEach((marker, index) => {
+    marker.setMap(null);
+    markers.splice(index, 1);
+  });
+};
 
-    const onClickHideMapButton = (): void => {
-      context.emit("onClickHideMapButton");
-    };
+const putMarker = (position: google.maps.LatLng): void => {
+  const marker = new google.maps.Marker({
+    position: position,
+    map: map,
+  });
+  markers.push(marker);
+};
 
-    watch(
-      () => props.randomLatLng,
-      (newVal: google.maps.LatLng | null) => {
-        if (newVal !== null) {
-          map.addListener("click", (e: any) => {
-            removeMarkers();
-            putMarker(e.latLng);
-            context.emit("updateSelectedLatLng", e.latLng);
-          });
-        }
-      }
-    );
-
-    onMounted(() => {
-      if (mapRef.value) {
-        map = new google.maps.Map(mapRef.value as HTMLElement, {
-          center: { lat: 37.86926, lng: -122.254811 },
-          zoom: 1,
-          fullscreenControl: false,
-          mapTypeControl: false,
-          streetViewControl: false,
-        });
-      }
+onMounted(() => {
+  if (mapRef.value) {
+    map = new google.maps.Map(mapRef.value as HTMLElement, {
+      center: { lat: 37.86926, lng: -122.254811 },
+      zoom: 1,
+      fullscreenControl: false,
+      mapTypeControl: false,
+      streetViewControl: false,
     });
-
-    return {
-      mapRef,
-      DEVICE_TYPES,
-      onClickHideMapButton,
-    };
-  },
+  }
 });
 </script>
 

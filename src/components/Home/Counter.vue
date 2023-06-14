@@ -7,7 +7,7 @@
           : $style['counter__button'],
       ]"
       :disabled="disabledDecrement"
-      @click="decrement"
+      @click="$emit('onChangeValue', count - 1)"
     >
       -
     </button>
@@ -29,62 +29,45 @@
           : $style['counter__button'],
       ]"
       :disabled="disabledIncrement"
-      @click="increment"
+      @click="$emit('onChangeValue', count + 1)"
     >
       +
     </button>
   </div>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent } from "vue";
+<script setup lang="ts">
+import { computed } from "vue";
 
-export default defineComponent({
-  props: {
-    min: {
-      type: Number,
-      required: true,
-    },
-    max: {
-      type: Number,
-      required: true,
-    },
-    count: {
-      type: Number,
-      required: true,
-    },
-    disabled: {
-      type: Boolean,
-      required: true,
-    },
+const props = defineProps({
+  min: {
+    type: Number,
+    required: true,
   },
-
-  setup(props, context) {
-    const disabledIncrement = computed<boolean>(
-      () => props.max <= props.count || props.disabled
-    );
-    const disabledDecrement = computed<boolean>(
-      () => props.min >= props.count || props.disabled
-    );
-
-    const increment = (): void => {
-      const updated = props.count + 1;
-      context.emit("onChangeValue", updated);
-    };
-
-    const decrement = (): void => {
-      const updated = props.count - 1;
-      context.emit("onChangeValue", updated);
-    };
-
-    return {
-      disabledIncrement,
-      disabledDecrement,
-      increment,
-      decrement,
-    };
+  max: {
+    type: Number,
+    required: true,
+  },
+  count: {
+    type: Number,
+    required: true,
+  },
+  disabled: {
+    type: Boolean,
+    required: true,
   },
 });
+
+defineEmits<{
+  onChangeValue: [count: number];
+}>();
+
+const disabledIncrement = computed<boolean>(
+  () => props.max <= props.count || props.disabled
+);
+const disabledDecrement = computed<boolean>(
+  () => props.min >= props.count || props.disabled
+);
 </script>
 
 <style module lang="scss">

@@ -15,19 +15,15 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
-
-export default defineComponent({
-  props: {
-    roomNumber: {
-      type: String,
-      required: true,
-    },
-    isGameReady: {
-      type: Boolean,
-      required: true,
-    },
+<script setup lang="ts">
+defineProps({
+  roomNumber: {
+    type: String,
+    required: true,
+  },
+  isGameReady: {
+    type: Boolean,
+    required: true,
   },
 });
 </script>

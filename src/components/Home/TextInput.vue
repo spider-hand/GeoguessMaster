@@ -20,7 +20,7 @@
       ]"
       :placeholder="placeholder"
       :disabled="disabled"
-      @input="onChangeValue"
+      @input="$emit('onChangeValue', state.inputValue)"
     >
     <span
       v-if="errorMsg"
@@ -32,55 +32,42 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, reactive } from "vue";
+<script setup lang="ts">
+import { reactive } from "vue";
 
-export default defineComponent({
-  props: {
-    label: {
-      type: String,
-      required: true,
-    },
-    name: {
-      type: String,
-      required: true,
-    },
-    placeholder: {
-      type: String,
-      default: "",
-      required: false,
-    },
-    inputValue: {
-      type: String,
-      required: true,
-    },
-    disabled: {
-      type: Boolean,
-      default: false,
-      required: false,
-    },
-    errorMsg: {
-      type: String,
-      required: false,
-    },
+const props = defineProps({
+  label: {
+    type: String,
+    required: true,
   },
-
-  setup(props, context) {
-    const state = reactive<{
-      inputValue: string;
-    }>({
-      inputValue: props.inputValue,
-    });
-
-    const onChangeValue = (): void => {
-      context.emit("onChangeValue", state.inputValue);
-    };
-
-    return {
-      state,
-      onChangeValue,
-    };
+  name: {
+    type: String,
+    required: true,
   },
+  placeholder: {
+    type: String,
+    default: "",
+    required: false,
+  },
+  inputValue: {
+    type: String,
+    required: true,
+  },
+  disabled: {
+    type: Boolean,
+    default: false,
+    required: false,
+  },
+  errorMsg: {
+    type: String,
+    required: false,
+  },
+});
+
+const state = reactive<{
+  inputValue: string;
+}>({
+  inputValue: props.inputValue,
 });
 </script>
 

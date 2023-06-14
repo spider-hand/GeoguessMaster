@@ -7,19 +7,15 @@
   </button>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
-
-export default defineComponent({
-  props: {
-    text: {
-      type: String,
-      required: true,
-    },
-    disabled: {
-      type: Boolean,
-      default: false,
-    },
+<script setup lang="ts">
+defineProps({
+  text: {
+    type: String,
+    required: true,
+  },
+  disabled: {
+    type: Boolean,
+    default: false,
   },
 });
 </script>

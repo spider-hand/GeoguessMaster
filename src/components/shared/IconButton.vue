@@ -7,22 +7,20 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType } from "vue";
+<script setup lang="ts">
+import { PropType } from "vue";
 
 type IconSize = "sm" | "md";
 
-export default defineComponent({
-  props: {
-    size: {
-      type: String as PropType<IconSize>,
-      default: "md",
-      required: false,
-    },
-    icon: {
-      type: String,
-      required: true,
-    },
+defineProps({
+  size: {
+    type: String as PropType<IconSize>,
+    default: "md",
+    required: false,
+  },
+  icon: {
+    type: String,
+    required: true,
   },
 });
 </script>

@@ -44,19 +44,10 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
+<script setup lang="ts">
 import Space from "@/components/shared/Space.vue";
 import AuroraBackground from "@/components/home/AuroraBackground.vue";
 import CreateGameForm from "@/components/home/CreateGameForm.vue";
-
-export default defineComponent({
-  components: {
-    Space,
-    AuroraBackground,
-    CreateGameForm,
-  },
-});
 </script>
 
 <style module lang="scss">

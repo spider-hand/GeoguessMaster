@@ -7,41 +7,33 @@
       v-for="[key, text] in options"
       :key="key"
       :class="$style['select-box-dialog__option-wrapper']"
-      @click="onChangeOption(key)"
+      @click="$emit('onChangeOption', key)"
     >
       <span :class="$style['select-box-dialog__option-text']">{{ text }}</span>
     </div>
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType, ref } from "vue";
+<script setup lang="ts">
+import { PropType, ref } from "vue";
 import { onClickOutside } from "@vueuse/core";
 
-export default defineComponent({
-  props: {
-    options: {
-      type: Object as PropType<Map<string, string>>,
-      required: true,
-    },
+defineProps({
+  options: {
+    type: Object as PropType<Map<string, string>>,
+    required: true,
   },
+});
 
-  setup(props, context) {
-    const dialogRef = ref(null);
+const emit = defineEmits<{
+  close: [];
+  onChangeOption: [val: string];
+}>();
 
-    onClickOutside(dialogRef, () => {
-      context.emit("close");
-    });
+const dialogRef = ref(null);
 
-    const onChangeOption = (option: string): void => {
-      context.emit("onChangeOption", option);
-    };
-
-    return {
-      dialogRef,
-      onChangeOption,
-    };
-  },
+onClickOutside(dialogRef, () => {
+  emit("close");
 });
 </script>
 

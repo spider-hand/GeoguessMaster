@@ -7,23 +7,19 @@
   />
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
-
-export default defineComponent({
-  props: {
-    from: {
-      type: String,
-      required: true,
-    },
-    xPercent: {
-      type: String,
-      required: true,
-    },
-    yPercent: {
-      type: String,
-      required: true,
-    },
+<script setup lang="ts">
+defineProps({
+  from: {
+    type: String,
+    required: true,
+  },
+  xPercent: {
+    type: String,
+    required: true,
+  },
+  yPercent: {
+    type: String,
+    required: true,
   },
 });
 </script>

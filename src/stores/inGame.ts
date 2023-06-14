@@ -77,6 +77,26 @@ export const useInGameStore = defineStore("inGame", () => {
     inGameState.value.panorama = val;
   };
 
+  const resetPanoramaLocation = () => {
+    if (inGameState.value.panorama !== null) {
+      inGameState.value.panorama.setPosition(inGameState.value.randomLatLng);
+    }
+  };
+
+  const zoomInPanorama = () => {
+    if (inGameState.value.panorama !== null) {
+      const current = inGameState.value.panorama.getZoom();
+      inGameState.value.panorama.setZoom(current + 1);
+    }
+  };
+
+  const zoomOutPanorama = () => {
+    if (inGameState.value.panorama !== null) {
+      const current = inGameState.value.panorama.getZoom();
+      inGameState.value.panorama.setZoom(current - 1);
+    }
+  };
+
   const updateGameHistory = (val: GameHistory) => {
     inGameState.value.gameHistory.push(val);
   };
@@ -143,6 +163,9 @@ export const useInGameStore = defineStore("inGame", () => {
     updateSelectedLatLngArr,
     resetSelectedLatLngArr,
     savePanorama,
+    resetPanoramaLocation,
+    zoomInPanorama,
+    zoomOutPanorama,
     updateGameHistory,
     updateDistanceByPlayerArr,
     resetDistanceByPlayerArr,

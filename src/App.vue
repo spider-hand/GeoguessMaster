@@ -1,27 +1,22 @@
 <template>
-  <div />
   <router-view />
 </template>
 
-<script lang="ts">
-import { defineComponent, onMounted } from "vue";
+<script setup lang="ts">
+import { onMounted } from "vue";
 import { getDeviceType } from "@/utils";
 import { useDeviceStore } from "./stores/device";
 
-export default defineComponent({
-  setup() {
-    const deviceStore = useDeviceStore();
-    const { saveDeviceType } = deviceStore;
+const deviceStore = useDeviceStore();
+const { saveDeviceType } = deviceStore;
 
-    const onWindowResize = (): void => {
-      saveDeviceType(getDeviceType());
-    };
+const onWindowResize = (): void => {
+  saveDeviceType(getDeviceType());
+};
 
-    onMounted(() => {
-      saveDeviceType(getDeviceType());
-      window.addEventListener("resize", onWindowResize);
-    });
-  },
+onMounted(() => {
+  saveDeviceType(getDeviceType());
+  window.addEventListener("resize", onWindowResize);
 });
 </script>
 

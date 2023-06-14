@@ -105,8 +105,8 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, computed } from "vue";
+<script setup lang="ts">
+import { computed } from "vue";
 
 import Counter from "@/components/home/Counter.vue";
 import Switch from "@/components/home/Switch.vue";
@@ -114,90 +114,77 @@ import TextInput from "@/components/home/TextInput.vue";
 import FlatButton from "@/components/shared/FlatButton.vue";
 import Space from "@/components/shared/Space.vue";
 
-export default defineComponent({
-
-  components: {
-    Counter,
-    Switch,
-    TextInput,
-    FlatButton,
-    Space,
+const props = defineProps({
+  isShowingDialog: {
+    type: Boolean,
+    required: true,
   },
-  props: {
-    isShowingDialog: {
-      type: Boolean,
-      required: true,
-    },
-    isRoomFound: {
-      type: Boolean,
-      required: true,
-    },
-    selectedSize: {
-      type: Number,
-      required: true,
-    },
-    selectedTime: {
-      type: Number,
-      required: true,
-    },
-    playerName: {
-      type: String,
-      required: true,
-    },
-    isOwner: {
-      type: Boolean,
-      required: true,
-    },
-    roomNumber: {
-      type: String,
-      required: true,
-    },
-    isReadyForMultiplayerGame: {
-      type: Boolean,
-      required: true,
-    },
+  isRoomFound: {
+    type: Boolean,
+    required: true,
   },
-
-  setup(props, context) {
-    const roomCannnotBeFoundError = computed<string | undefined>(() =>
-      !props.isRoomFound ? "The room cannot be found." : undefined
-    );
-
-    const onChangeSize = (newVal: number): void => {
-      context.emit("onChangeSize", newVal);
-    };
-
-    const onChangeTime = (newVal: number): void => {
-      context.emit("onChangeTime", newVal);
-    };
-
-    const onChangePlayerName = (newVal: string): void => {
-      context.emit("onChangePlayerName", newVal);
-    };
-
-    const onChangeIsOwner = (newVal: boolean): void => {
-      context.emit("onChangeIsOwner", newVal);
-    };
-
-    const onChangeRoomNumber = (newVal: string): void => {
-      context.emit("onChangeRoomNumber", newVal);
-    };
-
-    const onClickStartMultiplayerGameButton = (): void => {
-      context.emit("onClickStartMultiplayerGameButton");
-    };
-
-    return {
-      roomCannnotBeFoundError,
-      onChangeSize,
-      onChangeTime,
-      onChangePlayerName,
-      onChangeIsOwner,
-      onChangeRoomNumber,
-      onClickStartMultiplayerGameButton,
-    };
+  selectedSize: {
+    type: Number,
+    required: true,
+  },
+  selectedTime: {
+    type: Number,
+    required: true,
+  },
+  playerName: {
+    type: String,
+    required: true,
+  },
+  isOwner: {
+    type: Boolean,
+    required: true,
+  },
+  roomNumber: {
+    type: String,
+    required: true,
+  },
+  isReadyForMultiplayerGame: {
+    type: Boolean,
+    required: true,
   },
 });
+
+const emit = defineEmits<{
+  onChangeSize: [val: number];
+  onChangeTime: [val: number];
+  onChangePlayerName: [val: string];
+  onChangeIsOwner: [val: boolean];
+  onChangeRoomNumber: [val: string];
+  onClickStartMultiplayerGameButton: [];
+}>();
+
+const roomCannnotBeFoundError = computed<string | undefined>(() =>
+  !props.isRoomFound ? "The room cannot be found." : undefined
+);
+
+const onChangeSize = (newVal: number): void => {
+  emit("onChangeSize", newVal);
+};
+
+const onChangeTime = (newVal: number): void => {
+  emit("onChangeTime", newVal);
+};
+
+const onChangePlayerName = (newVal: string): void => {
+  emit("onChangePlayerName", newVal);
+};
+
+const onChangeIsOwner = (newVal: boolean): void => {
+  emit("onChangeIsOwner", newVal);
+};
+
+const onChangeRoomNumber = (newVal: string): void => {
+  emit("onChangeRoomNumber", newVal);
+};
+
+const onClickStartMultiplayerGameButton = (): void => {
+  emit("onClickStartMultiplayerGameButton");
+};
 </script>
 
 <style module lang="scss">

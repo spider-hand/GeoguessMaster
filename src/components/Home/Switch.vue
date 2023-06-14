@@ -7,7 +7,7 @@
           ? $style['switch__option--selected']
           : $style['switch__option--not-selected'],
       ]"
-      @click="onClickYes"
+      @click="$emit('onChangeValue', true)"
     >
       YES
     </button>
@@ -19,37 +19,18 @@
           ? $style['switch__option--not-selected']
           : $style['switch__option--selected'],
       ]"
-      @click="onClickNo"
+      @click="$emit('onChangeValue', false)"
     >
       NO
     </button>
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
-
-export default defineComponent({
-  props: {
-    ans: {
-      type: Boolean,
-      required: true,
-    },
-  },
-
-  setup(props, context) {
-    const onClickYes = (): void => {
-      context.emit("onChangeValue", true);
-    };
-
-    const onClickNo = (): void => {
-      context.emit("onChangeValue", false);
-    };
-
-    return {
-      onClickYes,
-      onClickNo,
-    };
+<script setup lang="ts">
+defineProps({
+  ans: {
+    type: Boolean,
+    required: true,
   },
 });
 </script>
