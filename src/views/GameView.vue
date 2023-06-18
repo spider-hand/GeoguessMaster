@@ -1,6 +1,6 @@
 <template>
   <div :class="$style['page']">
-    <Overlay
+    <MyOverlay
       v-show="
         gameSettingsState.selectedMode === 'multiplayer' &&
           (!inGameState.isThisRoundReady ||
@@ -56,7 +56,7 @@
       :room-number="gameSettingsState.roomNumber"
       :is-game-ready="state.isGameReady"
     />
-    <Map
+    <MyMap
       :device="deviceState"
       :selected-mode="gameSettingsState.selectedMode"
       :is-owner="gameSettingsState.isOwner"
@@ -137,11 +137,11 @@ import {
 } from "firebase/database";
 
 import StreetView from "@/components/game/StreetView.vue";
-import Map from "@/components/game/Map.vue";
+import MyMap from "@/components/game/MyMap.vue";
 import ScoreBoard from "@/components/game/ScoreBoard.vue";
 import ResultModal from "@/components/game/ResultModal.vue";
 import RoomNumberDialog from "@/components/game/RoomNumberDialog.vue";
-import Overlay from "@/components/game/Overlay.vue";
+import MyOverlay from "@/components/game/MyOverlay.vue";
 import FlatButton from "@/components/shared/FlatButton.vue";
 import IconButton from "@/components/shared/IconButton.vue";
 import { database } from "@/firebase";

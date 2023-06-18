@@ -10,7 +10,6 @@
       {{ label }}
     </label>
     <input
-      v-model="state.inputValue"
       type="text"
       maxlength="20"
       :name="name"
@@ -20,7 +19,7 @@
       ]"
       :placeholder="placeholder"
       :disabled="disabled"
-      @input="$emit('onChangeValue', state.inputValue)"
+      @input="e => $emit('onChangeValue', (e.target as HTMLInputElement).value)"
     >
     <span
       v-if="errorMsg"
@@ -33,9 +32,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive } from "vue";
-
-const props = defineProps({
+defineProps({
   label: {
     type: String,
     required: true,
@@ -48,10 +45,6 @@ const props = defineProps({
     type: String,
     default: "",
     required: false,
-  },
-  inputValue: {
-    type: String,
-    required: true,
   },
   disabled: {
     type: Boolean,
@@ -68,12 +61,6 @@ const props = defineProps({
 defineEmits<{
   onChangeValue: [val: string];
 }>();
-
-const state = reactive<{
-  inputValue: string;
-}>({
-  inputValue: props.inputValue,
-});
 </script>
 
 <style module lang="scss">

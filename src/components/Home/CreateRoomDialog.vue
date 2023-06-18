@@ -25,8 +25,8 @@
           2-5 people
         </div>
       </div>
-      <Space />
-      <Counter
+      <MySpace />
+      <MyCounter
         :min="2"
         :max="5"
         :count="selectedSize"
@@ -56,8 +56,8 @@
           1-10 minutes
         </span>
       </div>
-      <Space />
-      <Counter
+      <MySpace />
+      <MyCounter
         :min="1"
         :max="10"
         :count="selectedTime"
@@ -70,7 +70,6 @@
         label="Player Name"
         name="player-name"
         placeholder="Your Player Name"
-        :input-value="playerName"
         @onChangeValue="onChangePlayerName"
       />
     </div>
@@ -78,8 +77,8 @@
       <div>
         <span :class="$style['create-room-dialog__text']">Are you a host?</span>
       </div>
-      <Space />
-      <Switch
+      <MySpace />
+      <MySwitch
         :ans="isOwner"
         @onChangeValue="onChangeIsOwner"
       />
@@ -89,7 +88,6 @@
         label="Room Number"
         name="room-number"
         placeholder="Room Number"
-        :input-value="roomNumber"
         :disabled="isOwner"
         :error-msg="roomCannnotBeFoundError"
         @onChangeValue="onChangeRoomNumber"
@@ -108,11 +106,11 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
-import Counter from "@/components/home/Counter.vue";
-import Switch from "@/components/home/Switch.vue";
+import MyCounter from "@/components/home/MyCounter.vue";
+import MySwitch from "@/components/home/MySwitch.vue";
 import TextInput from "@/components/home/TextInput.vue";
 import FlatButton from "@/components/shared/FlatButton.vue";
-import Space from "@/components/shared/Space.vue";
+import MySpace from "@/components/shared/MySpace.vue";
 
 const props = defineProps({
   isShowingDialog: {

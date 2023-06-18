@@ -6,7 +6,7 @@
         :class="$style['page__logo']"
         alt="Geoguess Master Logo"
       >
-      <Space />
+      <MySpace />
       <a href="https://github.com/spider-hand/GeoguessMaster">
         <img
           src="@/assets/images/github.svg"
@@ -45,7 +45,7 @@
 </template>
 
 <script setup lang="ts">
-import Space from "@/components/shared/Space.vue";
+import MySpace from "@/components/shared/MySpace.vue";
 import AuroraBackground from "@/components/home/AuroraBackground.vue";
 import CreateGameForm from "@/components/home/CreateGameForm.vue";
 </script>
