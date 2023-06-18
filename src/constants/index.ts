@@ -1,3 +1,5 @@
+import { MapTypes, ModeTypes } from "@/types";
+
 export enum DEVICE_TYPES {
   MOBLE_PORTRAIT = 0,
   MOBILE_LANDSCAPE = 1,
@@ -6,9 +8,9 @@ export enum DEVICE_TYPES {
   LAPTOP = 4,
 }
 
-export const MAP_OPTIONS = new Map([["world", "World"]]);
+export const MAP_OPTIONS: Map<MapTypes, string> = new Map([["world", "World"]]);
 
-export const MODE_OPTIONS = new Map([
+export const MODE_OPTIONS: Map<ModeTypes, string> = new Map([
   ["single", "Single Player"],
   ["multiplayer", "With Friends"],
 ]);

@@ -6,15 +6,16 @@
 </template>
 
 <script setup lang="ts">
+import { MapTypes, ModeTypes } from "@/types";
 import { onMounted, watch, ref, PropType } from "vue";
 
 const props = defineProps({
   selectedMap: {
-    type: String,
+    type: Object as PropType<MapTypes>,
     required: true,
   },
   selectedMode: {
-    type: String,
+    type: Object as PropType<ModeTypes>,
     required: true,
   },
   isOwner: {

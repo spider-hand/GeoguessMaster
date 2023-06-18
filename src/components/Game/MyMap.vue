@@ -23,7 +23,7 @@
 import { onMounted, ref, watch, PropType } from "vue";
 import { DEVICE_TYPES } from "@/constants";
 import IconButton from "@/components/shared/IconButton.vue";
-import { DeviceTypes } from "@/types";
+import { DeviceTypes, ModeTypes } from "@/types";
 
 const props = defineProps({
   device: {
@@ -31,7 +31,7 @@ const props = defineProps({
     required: true,
   },
   selectedMode: {
-    type: String,
+    type: Object as PropType<ModeTypes>,
     required: true,
   },
   randomLatLng: {

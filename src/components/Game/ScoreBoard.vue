@@ -5,7 +5,7 @@
         Map
       </div>
       <div :class="$style['score-board__text']">
-        {{ selectedMap }}
+        {{ MAP_OPTIONS.get(selectedMap) }}
       </div>
     </div>
     <div :class="$style['score-board__wrapper']">
@@ -39,13 +39,17 @@
 </template>
 
 <script setup lang="ts">
+import { PropType } from "vue";
+import { MapTypes, ModeTypes } from "@/types";
+import { MAP_OPTIONS } from "@/constants";
+
 defineProps({
   selectedMap: {
-    type: String,
+    type: Object as PropType<MapTypes>,
     required: true,
   },
   selectedMode: {
-    type: String,
+    type: Object as PropType<ModeTypes>,
     required: true,
   },
   round: {

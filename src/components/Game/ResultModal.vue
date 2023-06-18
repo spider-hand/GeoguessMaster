@@ -97,14 +97,14 @@
 </template>
 
 <script setup lang="ts">
-import { GameHistory, Summary, DistanceByPlayer } from "@/types";
+import { GameHistory, Summary, DistanceByPlayer, ModeTypes } from "@/types";
 import { watch, onMounted, ref, PropType, computed, reactive } from "vue";
 import FlatButton from "@/components/shared/FlatButton.vue";
 import IconButton from "@/components/shared/IconButton.vue";
 
 const props = defineProps({
   selectedMode: {
-    type: String,
+    type: Object as PropType<ModeTypes>,
     required: true,
   },
   isOwner: {

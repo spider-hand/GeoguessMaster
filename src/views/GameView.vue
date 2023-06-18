@@ -42,7 +42,7 @@
       @saveStreetView="saveStreetView"
     />
     <ScoreBoard
-      :selected-map="MAP_OPTIONS.get(gameSettingsState.selectedMap) || ''"
+      :selected-map="gameSettingsState.selectedMap"
       :selected-mode="gameSettingsState.selectedMode"
       :round="inGameState.round"
       :score="inGameState.score"
@@ -146,7 +146,7 @@ import FlatButton from "@/components/shared/FlatButton.vue";
 import IconButton from "@/components/shared/IconButton.vue";
 import { database } from "@/firebase";
 import { GameHistory, Summary } from "@/types";
-import { DEVICE_TYPES, MAP_OPTIONS } from "@/constants";
+import { DEVICE_TYPES } from "@/constants";
 import { storeToRefs } from "pinia";
 import { useGameSettingsStore } from "@/stores/gameSettings";
 import { useInGameStore } from "@/stores/inGame";
@@ -445,7 +445,11 @@ onMounted(() => {
                 .child(childSnapshot.key as string)
                 .val();
               const distance = snapshot
-                .child(`round${inGameState.value.round}/${childSnapshot.key as string}`)
+                .child(
+                  `round${inGameState.value.round}/${
+                    childSnapshot.key as string
+                  }`
+                )
                 .val();
               updateSelectedLatLngArr(latlng);
               updateDistanceByPlayerArr({
