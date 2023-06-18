@@ -58,6 +58,8 @@ defineProps({
   },
   countdown: {
     type: String,
+    required: true,
+    default: "",
   },
 });
 </script>

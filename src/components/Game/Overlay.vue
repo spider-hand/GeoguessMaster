@@ -12,6 +12,7 @@ defineProps({
   msg: {
     type: String,
     required: false,
+    default: "",
   },
 });
 </script>

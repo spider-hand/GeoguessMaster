@@ -33,6 +33,10 @@ defineProps({
     required: true,
   },
 });
+
+defineEmits<{
+  onChangeValue: [val: boolean];
+}>();
 </script>
 
 <style module lang="scss">

@@ -167,7 +167,7 @@ const emit = defineEmits<{
   onClickNextRoundButton: [];
   onClickViewSummaryButton: [];
   onClickPlayAgainButton: [];
-  nClickExitButton: [];
+  onClickExitButton: [];
   endMultiplayerGame: [];
 }>();
 

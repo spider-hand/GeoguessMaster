@@ -11,7 +11,7 @@ import { onMounted, watch, ref, PropType } from "vue";
 const props = defineProps({
   selectedMap: {
     type: String,
-    requred: true,
+    required: true,
   },
   selectedMode: {
     type: String,

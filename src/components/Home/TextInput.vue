@@ -61,8 +61,13 @@ const props = defineProps({
   errorMsg: {
     type: String,
     required: false,
+    default: null,
   },
 });
+
+defineEmits<{
+  onChangeValue: [val: string];
+}>();
 
 const state = reactive<{
   inputValue: string;

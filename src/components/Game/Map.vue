@@ -82,10 +82,10 @@ watch(
   () => props.randomLatLng,
   (newVal: google.maps.LatLng | null) => {
     if (newVal !== null) {
-      map.addListener("click", (e: any) => {
+      map.addListener("click", (e: google.maps.MapMouseEvent) => {
         removeMarkers();
-        putMarker(e.latLng);
-        emit("updateSelectedLatLng", e.latLng);
+        putMarker(e.latLng as google.maps.LatLng);
+        emit("updateSelectedLatLng", e.latLng as google.maps.LatLng);
       });
     }
   }

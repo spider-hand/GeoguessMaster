@@ -442,10 +442,10 @@ onMounted(() => {
               const latlng = new google.maps.LatLng(lat, lng);
               const playerName = snapshot
                 .child("playerName")
-                .child(childSnapshot.key!)
+                .child(childSnapshot.key as string)
                 .val();
               const distance = snapshot
-                .child(`round${inGameState.value.round}/${childSnapshot.key!}`)
+                .child(`round${inGameState.value.round}/${childSnapshot.key as string}`)
                 .val();
               updateSelectedLatLngArr(latlng);
               updateDistanceByPlayerArr({
@@ -461,7 +461,7 @@ onMounted(() => {
               snapshot.child("score").forEach((childSnapshot) => {
                 const playerName = snapshot
                   .child("playerName")
-                  .child(childSnapshot.key!)
+                  .child(childSnapshot.key as string)
                   .val();
                 const score = childSnapshot.val();
                 state.multiplayerGameSummary.push({
