@@ -3,6 +3,17 @@ import vue from "@vitejs/plugin-vue";
 import { fileURLToPath, URL } from "url";
 import { ViteEjsPlugin } from "vite-plugin-ejs";
 
+// @see https://stackoverflow.com/a/67923998/11043317
+const removeDataTestAttrs = (node) => {
+  if (node.type === 1 /* NodeTypes.ELEMENT */) {
+    node.props = node.props.filter((prop) =>
+      prop.type === 6 /* NodeTypes.ATTRIBUTE */
+        ? prop.name !== "data-test"
+        : true
+    );
+  }
+};
+
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
@@ -11,7 +22,14 @@ export default defineConfig({
       // viteConfig is the current Vite resolved config
       env: viteConfig.env,
     })),
-    vue(),
+    vue({
+      template: {
+        compilerOptions: {
+          nodeTransforms:
+            process.env.NODE_ENV !== "test" ? [removeDataTestAttrs] : [],
+        },
+      },
+    }),
   ],
   resolve: {
     alias: [
@@ -30,6 +48,11 @@ export default defineConfig({
           @import "./src/assets/styles/_mixin.scss";
         `,
       },
+    },
+  },
+  build: {
+    rollupOptions: {
+      external: ["__tests__/**"],
     },
   },
 });

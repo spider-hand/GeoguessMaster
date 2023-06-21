@@ -24,6 +24,7 @@
     <span
       v-if="errorMsg"
       :class="$style['input__error']"
+      data-test="error-msg"
     >
       <span class="material-icons">error</span>
       {{ errorMsg }}

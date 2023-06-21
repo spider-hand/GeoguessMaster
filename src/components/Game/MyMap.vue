@@ -3,9 +3,11 @@
     <div
       ref="mapRef"
       :class="$style['map']"
+      data-test="my-map"
     />
     <IconButton
-      v-if="device <= DEVICE_TYPES.MOBLE_PORTRAIT && isMakeGuessButtonClicked"
+      v-if="device <= DEVICE_TYPES.MOBLE_PORTRAIT"
+      v-show="isMakeGuessButtonClicked"
       :icon="'close'"
       :style="{
         zIndex: '1',
@@ -27,11 +29,11 @@ import { DeviceTypes, ModeTypes } from "@/types";
 
 const props = defineProps({
   device: {
-    type: Object as PropType<DeviceTypes>,
+    type: Number as PropType<DeviceTypes>,
     required: true,
   },
   selectedMode: {
-    type: Object as PropType<ModeTypes>,
+    type: String as PropType<ModeTypes>,
     required: true,
   },
   randomLatLng: {

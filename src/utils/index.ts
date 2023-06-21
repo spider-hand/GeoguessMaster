@@ -14,3 +14,9 @@ export const getDeviceType = (): DeviceTypes => {
     return DEVICE_TYPES.MOBLE_PORTRAIT;
   }
 };
+
+export const getRandomLatLng = (): google.maps.LatLng => {
+  const lat = Math.random() * 170 - 85;
+  const lng = Math.random() * 360 - 180;
+  return new google.maps.LatLng(lat, lng);
+};

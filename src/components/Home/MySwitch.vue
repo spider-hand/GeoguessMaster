@@ -7,6 +7,7 @@
           ? $style['switch__option--selected']
           : $style['switch__option--not-selected'],
       ]"
+      data-test="yes-button"
       @click="$emit('onChangeValue', true)"
     >
       YES
@@ -19,6 +20,7 @@
           ? $style['switch__option--not-selected']
           : $style['switch__option--selected'],
       ]"
+      data-test="no-button"
       @click="$emit('onChangeValue', false)"
     >
       NO

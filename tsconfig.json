@@ -24,7 +24,7 @@
       "@/*": ["./src/*"]
     },
 
-    "types": ["google.maps"]
+    "types": ["google.maps", "vitest/globals"]
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],
   "references": [{ "path": "./tsconfig.node.json" }]

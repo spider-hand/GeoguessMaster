@@ -3,7 +3,7 @@
     <div :class="$style['create-game-form__section']">
       <button
         :class="$style['create-game-form__select']"
-        @click="openSelectMapDialog"
+        @click="state.isSelectingMap = true"
       >
         <span :class="$style['create-game-form__select-label']">Map</span>
         <span :class="$style['create-game-form__select-value']">{{
@@ -20,7 +20,7 @@
     <div :class="$style['create-game-form__section']">
       <button
         :class="$style['create-game-form__select']"
-        @click="openSelectModeDialog"
+        @click="state.isSelectingMode = true"
       >
         <span :class="$style['create-game-form__select-label']">Mode</span>
         <span :class="$style['create-game-form__select-value']">{{
@@ -41,8 +41,8 @@
       :style="{ position: 'absolute', right: '12px' }"
       @click="
         gameSettingsState.selectedMode === 'single'
-          ? startSinglePlayerGame()
-          : openCreateRoomDialog()
+          ? router.push('game')
+          : (state.isShowingRoomCreateDialog = true)
       "
     />
     <FlatButton
@@ -54,8 +54,8 @@
       "
       @click="
         gameSettingsState.selectedMode === 'single'
-          ? startSinglePlayerGame()
-          : openCreateRoomDialog()
+          ? router.push('game')
+          : (state.isShowingRoomCreateDialog = true)
       "
     />
     <CreateRoomDialog
@@ -153,14 +153,6 @@ const state = reactive<{
   isRoomFound: true,
 });
 
-const openSelectMapDialog = (): void => {
-  state.isSelectingMap = true;
-};
-
-const openSelectModeDialog = (): void => {
-  state.isSelectingMode = true;
-};
-
 const onChangeSelectedMap = (option: string): void => {
   state.isSelectingMap = false;
   changeSelectedMap(option as MapTypes);
@@ -169,14 +161,6 @@ const onChangeSelectedMap = (option: string): void => {
 const onChangeSelectedMode = (option: string): void => {
   state.isSelectingMode = false;
   changeSelectedMode(option as ModeTypes);
-};
-
-const openCreateRoomDialog = (): void => {
-  state.isShowingRoomCreateDialog = true;
-};
-
-const startSinglePlayerGame = (): void => {
-  router.push("game");
 };
 
 const startMultiplayerGame = async (): Promise<void> => {

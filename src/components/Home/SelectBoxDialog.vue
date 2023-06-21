@@ -7,6 +7,7 @@
       v-for="[key, text] in options"
       :key="key"
       :class="$style['select-box-dialog__option-wrapper']"
+      :data-test="key"
       @click="$emit('onChangeOption', key)"
     >
       <span :class="$style['select-box-dialog__option-text']">{{ text }}</span>

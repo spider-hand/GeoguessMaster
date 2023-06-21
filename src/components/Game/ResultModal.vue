@@ -21,7 +21,7 @@
           bottom: '12px',
           left: '12px',
         }"
-        @click="state.isMapExpanding ? shrinkMap() : expandMap()"
+        @click="state.isMapExpanding = !state.isMapExpanding"
       />
     </div>
     <div :class="$style['result-modal__footer']">
@@ -104,7 +104,7 @@ import IconButton from "@/components/shared/IconButton.vue";
 
 const props = defineProps({
   selectedMode: {
-    type: Object as PropType<ModeTypes>,
+    type: String as PropType<ModeTypes>,
     required: true,
   },
   isOwner: {
@@ -181,8 +181,7 @@ const state = reactive<{ isMapExpanding: boolean }>({
 });
 
 const sortedScore = computed(() => {
-  const copiedArray = [...props.distanceByPlayerArr];
-  return copiedArray.sort((x, y) => x.distance - y.distance);
+  return [...props.distanceByPlayerArr].sort((x, y) => x.distance - y.distance);
 });
 
 watch(
@@ -260,14 +259,6 @@ const onClickViewSummaryButton = (): void => {
     putMarker(e.selectedLatLng);
     drawPolyline(e.randomLatLng, e.selectedLatLng);
   });
-};
-
-const expandMap = (): void => {
-  state.isMapExpanding = true;
-};
-
-const shrinkMap = (): void => {
-  state.isMapExpanding = false;
 };
 
 onMounted(() => {

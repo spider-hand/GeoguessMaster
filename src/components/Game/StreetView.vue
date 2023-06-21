@@ -7,15 +7,16 @@
 
 <script setup lang="ts">
 import { MapTypes, ModeTypes } from "@/types";
+import { getRandomLatLng } from "@/utils";
 import { onMounted, watch, ref, PropType } from "vue";
 
 const props = defineProps({
   selectedMap: {
-    type: Object as PropType<MapTypes>,
+    type: String as PropType<MapTypes>,
     required: true,
   },
   selectedMode: {
-    type: Object as PropType<ModeTypes>,
+    type: String as PropType<ModeTypes>,
     required: true,
   },
   isOwner: {
@@ -84,12 +85,6 @@ const loadStreetView = (
     },
     checkStreetView
   );
-};
-
-const getRandomLatLng = (): google.maps.LatLng => {
-  const lat = Math.random() * 170 - 85;
-  const lng = Math.random() * 360 - 180;
-  return new google.maps.LatLng(lat, lng);
 };
 
 const checkStreetView = (

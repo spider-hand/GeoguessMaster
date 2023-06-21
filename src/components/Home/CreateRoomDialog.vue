@@ -31,7 +31,7 @@
         :max="5"
         :count="selectedSize"
         :disabled="!isOwner"
-        @onChangeValue="onChangeSize"
+        @onChangeValue="(val) => $emit('onChangeSize', val)"
       />
     </div>
     <div :class="$style['create-room-dialog__form']">
@@ -62,7 +62,7 @@
         :max="10"
         :count="selectedTime"
         :disabled="!isOwner"
-        @onChangeValue="onChangeTime"
+        @onChangeValue="(val) => $emit('onChangeTime', val)"
       />
     </div>
     <div :class="$style['create-room-dialog__form']">
@@ -70,7 +70,7 @@
         label="Player Name"
         name="player-name"
         placeholder="Your Player Name"
-        @onChangeValue="onChangePlayerName"
+        @onChangeValue="(val) => $emit('onChangePlayerName', val)"
       />
     </div>
     <div :class="$style['create-room-dialog__form']">
@@ -80,7 +80,7 @@
       <MySpace />
       <MySwitch
         :ans="isOwner"
-        @onChangeValue="onChangeIsOwner"
+        @onChangeValue="(val) => $emit('onChangeIsOwner', val)"
       />
     </div>
     <div :class="$style['create-room-dialog__form']">
@@ -90,14 +90,14 @@
         placeholder="Room Number"
         :disabled="isOwner"
         :error-msg="roomCannnotBeFoundError"
-        @onChangeValue="onChangeRoomNumber"
+        @onChangeValue="(val) => emit('onChangeRoomNumber', val)"
       />
     </div>
     <div :class="$style['create-room-dialog__footer']">
       <FlatButton
         :text="'START'"
         :disabled="!isReadyForMultiplayerGame"
-        @click="onClickStartMultiplayerGameButton"
+        @click="$emit('onClickStartMultiplayerGameButton')"
       />
     </div>
   </div>
@@ -159,30 +159,6 @@ const emit = defineEmits<{
 const roomCannnotBeFoundError = computed<string | undefined>(() =>
   !props.isRoomFound ? "The room cannot be found." : undefined
 );
-
-const onChangeSize = (newVal: number): void => {
-  emit("onChangeSize", newVal);
-};
-
-const onChangeTime = (newVal: number): void => {
-  emit("onChangeTime", newVal);
-};
-
-const onChangePlayerName = (newVal: string): void => {
-  emit("onChangePlayerName", newVal);
-};
-
-const onChangeIsOwner = (newVal: boolean): void => {
-  emit("onChangeIsOwner", newVal);
-};
-
-const onChangeRoomNumber = (newVal: string): void => {
-  emit("onChangeRoomNumber", newVal);
-};
-
-const onClickStartMultiplayerGameButton = (): void => {
-  emit("onClickStartMultiplayerGameButton");
-};
 </script>
 
 <style module lang="scss">

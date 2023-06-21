@@ -45,11 +45,11 @@ import { MAP_OPTIONS } from "@/constants";
 
 defineProps({
   selectedMap: {
-    type: Object as PropType<MapTypes>,
+    type: String as PropType<MapTypes>,
     required: true,
   },
   selectedMode: {
-    type: Object as PropType<ModeTypes>,
+    type: String as PropType<ModeTypes>,
     required: true,
   },
   round: {
