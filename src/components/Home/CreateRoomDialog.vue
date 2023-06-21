@@ -31,7 +31,7 @@
         :max="5"
         :count="selectedSize"
         :disabled="!isOwner"
-        @onChangeValue="(val) => $emit('onChangeSize', val)"
+        @onChangeValue="(val: number) => $emit('onChangeSize', val)"
       />
     </div>
     <div :class="$style['create-room-dialog__form']">
@@ -62,7 +62,7 @@
         :max="10"
         :count="selectedTime"
         :disabled="!isOwner"
-        @onChangeValue="(val) => $emit('onChangeTime', val)"
+        @onChangeValue="(val: number) => $emit('onChangeTime', val)"
       />
     </div>
     <div :class="$style['create-room-dialog__form']">
@@ -70,7 +70,7 @@
         label="Player Name"
         name="player-name"
         placeholder="Your Player Name"
-        @onChangeValue="(val) => $emit('onChangePlayerName', val)"
+        @onChangeValue="(val: string) => $emit('onChangePlayerName', val)"
       />
     </div>
     <div :class="$style['create-room-dialog__form']">
@@ -80,7 +80,7 @@
       <MySpace />
       <MySwitch
         :ans="isOwner"
-        @onChangeValue="(val) => $emit('onChangeIsOwner', val)"
+        @onChangeValue="(val: boolean) => $emit('onChangeIsOwner', val)"
       />
     </div>
     <div :class="$style['create-room-dialog__form']">
@@ -90,7 +90,7 @@
         placeholder="Room Number"
         :disabled="isOwner"
         :error-msg="roomCannnotBeFoundError"
-        @onChangeValue="(val) => emit('onChangeRoomNumber', val)"
+        @onChangeValue="(val: string) => emit('onChangeRoomNumber', val)"
       />
     </div>
     <div :class="$style['create-room-dialog__footer']">

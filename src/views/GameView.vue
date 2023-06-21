@@ -37,7 +37,7 @@
       :is-owner="gameSettingsState.isOwner"
       :random-lat-lng="inGameState.randomLatLng"
       :round="inGameState.round"
-      @updateRandomLatLng="(val) => saveRandomLatLng(val)"
+      @updateRandomLatLng="(val: google.maps.LatLng) => saveRandomLatLng(val)"
       @savePanorama="savePanorama"
       @saveStreetView="saveStreetView"
     />
@@ -63,7 +63,7 @@
       :random-lat-lng="inGameState.randomLatLng"
       :round="inGameState.round"
       :is-make-guess-button-clicked="inGameState.isMakeGuessButtonClicked"
-      @updateSelectedLatLng="(val) => saveSelectedLatLng(val)"
+      @updateSelectedLatLng="(val: google.maps.LatLng) => saveSelectedLatLng(val)"
       @onClickHideMapButton="saveIsMakeGuessButtonClicked(false)"
     />
     <FlatButton
