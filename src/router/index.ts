@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 
-import HomeView from "@/views/HomeView.vue";
-import GameView from "@/views/GameView.vue";
+const HomeView = () => import("@/views/HomeView.vue");
+const GameView = () => import("@/views/GameView.vue");
 
 const routes: Array<RouteRecordRaw> = [
   {
