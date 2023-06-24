@@ -101,6 +101,7 @@ import { GameHistory, Summary, DistanceByPlayer, ModeTypes } from "@/types";
 import { watch, onMounted, ref, PropType, computed, reactive } from "vue";
 import FlatButton from "@/components/shared/FlatButton.vue";
 import IconButton from "@/components/shared/IconButton.vue";
+import { Loader } from "@googlemaps/js-api-loader";
 
 const props = defineProps({
   selectedMode: {
@@ -170,6 +171,12 @@ const emit = defineEmits<{
   onClickExitButton: [];
   endMultiplayerGame: [];
 }>();
+
+const loader = new Loader({
+  apiKey: import.meta.env.VITE_API_KEY,
+  version: "weekly",
+});
+const { Map } = await loader.importLibrary("maps");
 
 let map: google.maps.Map;
 const resultMapRef = ref<HTMLElement>();
@@ -263,7 +270,7 @@ const onClickViewSummaryButton = (): void => {
 
 onMounted(() => {
   if (resultMapRef.value) {
-    map = new google.maps.Map(resultMapRef.value as HTMLElement, {
+    map = new Map(resultMapRef.value as HTMLElement, {
       center: { lat: 37.86926, lng: -122.254811 },
       zoom: 2,
       fullscreenControl: false,

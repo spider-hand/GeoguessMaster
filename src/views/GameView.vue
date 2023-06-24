@@ -9,38 +9,42 @@
       "
       :msg="state.overlayMsg"
     />
-    <ResultModal
-      v-show="inGameState.isShowingResult"
-      :selected-mode="gameSettingsState.selectedMode"
-      :is-owner="gameSettingsState.isOwner"
-      :is-showing-result="inGameState.isShowingResult"
-      :is-showing-summary="inGameState.isShowingSummary"
-      :is-next-round-ready="inGameState.isNextRoundReady"
-      :random-lat-lng="inGameState.randomLatLng"
-      :selected-lat-lng="inGameState.selectedLatLng"
-      :selected-lat-lng-arr="inGameState.selectedLatLngArr"
-      :game-history="inGameState.gameHistory"
-      :distance="(distance as number)"
-      :distance-by-player-arr="inGameState.distanceByPlayerArr"
-      :round="inGameState.round"
-      :score="inGameState.score"
-      :multiplayer-game-summary="state.multiplayerGameSummary"
-      @onClickNextRoundButton="onClickNextRoundButton"
-      @onClickViewSummaryButton="saveIsShowingSummary(true)"
-      @onClickPlayAgainButton="resetInGameState"
-      @onClickExitButton="router.back()"
-      @endMultiplayerGame="endMultiplayerGame"
-    />
-    <StreetView
-      :selected-map="gameSettingsState.selectedMap"
-      :selected-mode="gameSettingsState.selectedMode"
-      :is-owner="gameSettingsState.isOwner"
-      :random-lat-lng="inGameState.randomLatLng"
-      :round="inGameState.round"
-      @updateRandomLatLng="(val: google.maps.LatLng) => saveRandomLatLng(val)"
-      @savePanorama="savePanorama"
-      @saveStreetView="saveStreetView"
-    />
+    <Suspense>
+      <ResultModal
+        v-show="inGameState.isShowingResult"
+        :selected-mode="gameSettingsState.selectedMode"
+        :is-owner="gameSettingsState.isOwner"
+        :is-showing-result="inGameState.isShowingResult"
+        :is-showing-summary="inGameState.isShowingSummary"
+        :is-next-round-ready="inGameState.isNextRoundReady"
+        :random-lat-lng="inGameState.randomLatLng"
+        :selected-lat-lng="inGameState.selectedLatLng"
+        :selected-lat-lng-arr="inGameState.selectedLatLngArr"
+        :game-history="inGameState.gameHistory"
+        :distance="(distance as number)"
+        :distance-by-player-arr="inGameState.distanceByPlayerArr"
+        :round="inGameState.round"
+        :score="inGameState.score"
+        :multiplayer-game-summary="state.multiplayerGameSummary"
+        @onClickNextRoundButton="onClickNextRoundButton"
+        @onClickViewSummaryButton="saveIsShowingSummary(true)"
+        @onClickPlayAgainButton="resetInGameState"
+        @onClickExitButton="router.back()"
+        @endMultiplayerGame="endMultiplayerGame"
+      />
+    </Suspense>
+    <Suspense>
+      <StreetView
+        :selected-map="gameSettingsState.selectedMap"
+        :selected-mode="gameSettingsState.selectedMode"
+        :is-owner="gameSettingsState.isOwner"
+        :random-lat-lng="inGameState.randomLatLng"
+        :round="inGameState.round"
+        @updateRandomLatLng="(val: google.maps.LatLng) => saveRandomLatLng(val)"
+        @savePanorama="savePanorama"
+        @saveStreetView="saveStreetView"
+      />
+    </Suspense>
     <ScoreBoard
       :selected-map="gameSettingsState.selectedMap"
       :selected-mode="gameSettingsState.selectedMode"
@@ -56,16 +60,18 @@
       :room-number="gameSettingsState.roomNumber"
       :is-game-ready="state.isGameReady"
     />
-    <MyMap
-      :device="deviceState"
-      :selected-mode="gameSettingsState.selectedMode"
-      :is-owner="gameSettingsState.isOwner"
-      :random-lat-lng="inGameState.randomLatLng"
-      :round="inGameState.round"
-      :is-make-guess-button-clicked="inGameState.isMakeGuessButtonClicked"
-      @updateSelectedLatLng="(val: google.maps.LatLng) => saveSelectedLatLng(val)"
-      @onClickHideMapButton="saveIsMakeGuessButtonClicked(false)"
-    />
+    <Suspense>
+      <MyMap
+        :device="deviceState"
+        :selected-mode="gameSettingsState.selectedMode"
+        :is-owner="gameSettingsState.isOwner"
+        :random-lat-lng="inGameState.randomLatLng"
+        :round="inGameState.round"
+        :is-make-guess-button-clicked="inGameState.isMakeGuessButtonClicked"
+        @updateSelectedLatLng="(val: google.maps.LatLng) => saveSelectedLatLng(val)"
+        @onClickHideMapButton="saveIsMakeGuessButtonClicked(false)"
+      />
+    </Suspense>
     <FlatButton
       :text="'GUESS'"
       :style="{

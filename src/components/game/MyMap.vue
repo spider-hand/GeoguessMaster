@@ -26,6 +26,7 @@ import { onMounted, ref, watch, PropType } from "vue";
 import { DEVICE_TYPES } from "@/constants";
 import IconButton from "@/components/shared/IconButton.vue";
 import { DeviceTypes, ModeTypes } from "@/types";
+import { Loader } from "@googlemaps/js-api-loader";
 
 const props = defineProps({
   device: {
@@ -55,6 +56,12 @@ const emit = defineEmits<{
   updateSelectedLatLng: [latLng: google.maps.LatLng];
   onClickHideMapButton: [];
 }>();
+
+const loader = new Loader({
+  apiKey: import.meta.env.VITE_API_KEY,
+  version: "weekly",
+});
+const { Map } = await loader.importLibrary("maps");
 
 let map: google.maps.Map;
 const mapRef = ref<HTMLElement>();
@@ -110,7 +117,7 @@ const putMarker = (position: google.maps.LatLng): void => {
 
 onMounted(() => {
   if (mapRef.value) {
-    map = new google.maps.Map(mapRef.value as HTMLElement, {
+    map = new Map(mapRef.value as HTMLElement, {
       center: { lat: 37.86926, lng: -122.254811 },
       zoom: 1,
       fullscreenControl: false,

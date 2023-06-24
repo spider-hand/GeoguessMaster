@@ -9,6 +9,7 @@
 import { MapTypes, ModeTypes } from "@/types";
 import { getRandomLatLng } from "@/utils";
 import { onMounted, watch, ref, PropType } from "vue";
+import { Loader } from "@googlemaps/js-api-loader";
 
 const props = defineProps({
   selectedMap: {
@@ -39,6 +40,12 @@ const emit = defineEmits<{
   savePanorama: [panorama: google.maps.StreetViewPanorama];
   saveStreetView: [streetView: google.maps.LatLng];
 }>();
+
+const loader = new Loader({
+  apiKey: import.meta.env.VITE_API_KEY,
+  version: "weekly",
+});
+const { StreetViewService } = await loader.importLibrary("streetView");
 
 let panorama: google.maps.StreetViewPanorama;
 const streetviewRef = ref<HTMLElement>();
@@ -75,7 +82,7 @@ watch(
 const loadStreetView = (
   decidedLatLng: google.maps.LatLng | null = null
 ): void => {
-  const service = new google.maps.StreetViewService();
+  const service = new StreetViewService();
   service.getPanorama(
     {
       location: decidedLatLng !== null ? decidedLatLng : getRandomLatLng(),
