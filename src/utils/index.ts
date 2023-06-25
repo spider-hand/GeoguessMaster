@@ -20,3 +20,11 @@ export const getRandomLatLng = (): google.maps.LatLng => {
   const lng = Math.random() * 360 - 180;
   return new google.maps.LatLng(lat, lng);
 };
+
+// @see https://stackoverflow.com/a/71135980/11043317
+export const getIconUrl = (icon: string) => {
+  return new URL(
+    `/src/assets/images/material-symbols/${icon}.svg`,
+    import.meta.url
+  ).href;
+};

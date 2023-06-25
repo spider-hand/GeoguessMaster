@@ -4,7 +4,7 @@
     :style="{ padding: size === 24 ? '12px' : '4px' }"
   >
     <img
-      :src="`/src/assets/images/material-symbols/${icon}.svg`"
+      :src="getIconUrl(icon)"
       :width="size"
       :height="size"
       :alt="`${icon} icon`"
@@ -15,6 +15,7 @@
 
 <script setup lang="ts">
 import { PropType } from "vue";
+import { getIconUrl } from "@/utils";
 
 type IconSizeTypes = 16 | 24;
 

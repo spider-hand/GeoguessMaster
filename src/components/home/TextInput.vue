@@ -27,7 +27,7 @@
       data-test="error-msg"
     >
       <img
-        src="/src/assets/images/material-symbols/error.svg"
+        src="@/assets/images/material-symbols/error.svg"
         width="12"
         height="12"
         alt="error icon"
