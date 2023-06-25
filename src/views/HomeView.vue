@@ -5,6 +5,8 @@
         src="@/assets/images/logo.svg"
         :class="$style['page__logo']"
         alt="Geoguess Master Logo"
+        :width="deviceState >= DEVICE_TYPES.TABLET_LANDSCAPE ? 60 : 44"
+        :height="deviceState >= DEVICE_TYPES.TABLET_LANDSCAPE ? 60 : 44"
       >
       <MySpace />
       <a href="https://github.com/spider-hand/GeoguessMaster">
@@ -48,6 +50,12 @@
 import MySpace from "@/components/shared/MySpace.vue";
 import AuroraBackground from "@/components/home/AuroraBackground.vue";
 import CreateGameForm from "@/components/home/CreateGameForm.vue";
+import { useDeviceStore } from "@/stores/device";
+import { storeToRefs } from "pinia";
+import { DEVICE_TYPES } from "@/constants";
+
+const deviceStore = useDeviceStore();
+const { deviceState } = storeToRefs(deviceStore);
 </script>
 
 <style module lang="scss">
