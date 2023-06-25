@@ -15,7 +15,7 @@
         bottom: '300px',
         left: '0px',
       }"
-      :size="'sm'"
+      :size="16"
       @click="$emit('onClickHideMapButton')"
     />
   </div>

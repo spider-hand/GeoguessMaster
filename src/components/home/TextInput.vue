@@ -26,7 +26,12 @@
       :class="$style['input__error']"
       data-test="error-msg"
     >
-      <span class="material-icons">error</span>
+      <img
+        src="/src/assets/images/material-symbols/error.svg"
+        width="12"
+        height="12"
+        alt="error icon"
+      >
       {{ errorMsg }}
     </span>
   </div>
@@ -132,9 +137,5 @@ defineEmits<{
   font-size: 12px;
   font-weight: 500;
   color: var(--color-red-primary);
-
-  & > span {
-    font-size: 12px;
-  }
 }
 </style>

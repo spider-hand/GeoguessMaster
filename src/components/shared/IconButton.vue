@@ -1,22 +1,28 @@
 <template>
-  <div :class="$style[`icon-button--${size}`]">
-    <span
-      :class="$style[`icon-button__icon--${size}`]"
-      class="material-icons"
-    >{{ icon }}</span>
+  <div
+    :class="$style['icon-button']"
+    :style="{ padding: size === 24 ? '12px' : '4px' }"
+  >
+    <img
+      :src="`/src/assets/images/material-symbols/${icon}.svg`"
+      :width="size"
+      :height="size"
+      :alt="`${icon} icon`"
+      :class="$style['icon-button__icon']"
+    >
   </div>
 </template>
 
 <script setup lang="ts">
 import { PropType } from "vue";
 
-type IconSize = "sm" | "md";
+type IconSizeTypes = 16 | 24;
 
 defineProps({
   size: {
-    type: String as PropType<IconSize>,
-    default: "md",
+    type: Number as PropType<IconSizeTypes>,
     required: false,
+    default: 24,
   },
   icon: {
     type: String,
@@ -38,32 +44,6 @@ defineProps({
 
   &:active {
     transform: scale(0.95);
-  }
-
-  &--md {
-    @extend .icon-button;
-    width: 48px;
-    height: 48px;
-  }
-
-  &--sm {
-    @extend .icon-button;
-    width: 24px;
-    height: 24px;
-  }
-}
-
-.icon-button__icon {
-  color: white;
-
-  &--md {
-    @extend .icon-button__icon;
-    font-size: 24px;
-  }
-
-  &--sm {
-    @extend .icon-button__icon;
-    font-size: 12px;
   }
 }
 </style>
