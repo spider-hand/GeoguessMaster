@@ -21,6 +21,8 @@ onMounted(() => {
 </script>
 
 <style lang="scss">
+@import "./src/assets/styles/_fonts.scss";
+ 
 :root {
   --color-brand-primary: #{$color-brand-primary};
   --color-brand-light: #{$color-brand-light};
