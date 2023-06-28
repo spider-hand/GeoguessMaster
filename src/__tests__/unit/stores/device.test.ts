@@ -1,6 +1,7 @@
-import { DEVICE_TYPES } from "@/constants";
-import { useDeviceStore } from "@/stores/device";
+import { DEVICE_TYPES } from "../../../constants";
+import { useDeviceStore } from "../../../stores/device";
 import { createPinia, setActivePinia } from "pinia";
+import { describe, beforeEach, it, expect } from "vitest";
 
 describe("Device Store", () => {
   beforeEach(() => {

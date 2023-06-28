@@ -50,9 +50,4 @@ export default defineConfig({
       },
     },
   },
-  build: {
-    rollupOptions: {
-      external: ["src/__tests__/*"],
-    },
-  },
 });

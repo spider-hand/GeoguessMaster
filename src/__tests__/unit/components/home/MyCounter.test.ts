@@ -1,5 +1,6 @@
-import MyCounterVue from "@/components/home/MyCounter.vue";
+import MyCounterVue from "../../../../components/home/MyCounter.vue";
 import { VueWrapper, mount } from "@vue/test-utils";
+import { describe, afterEach, beforeEach, it, expect, test } from "vitest";
 
 describe("MyCounter", () => {
   let wrapper: VueWrapper<any>;

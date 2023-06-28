@@ -1,3 +1,5 @@
+import { vi } from "vitest";
+
 global.google = {
   maps: {
     Map: vi.fn().mockImplementation(() => {

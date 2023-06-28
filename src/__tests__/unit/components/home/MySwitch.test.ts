@@ -1,5 +1,6 @@
-import MySwitchVue from "@/components/home/MySwitch.vue";
+import MySwitchVue from "../../../../components/home/MySwitch.vue";
 import { VueWrapper, mount } from "@vue/test-utils";
+import { describe, beforeEach, afterEach, it, expect } from "vitest";
 
 describe("MySwitch", () => {
   let wrapper: VueWrapper<any>;

@@ -1,6 +1,7 @@
-import SelectBoxDialogVue from "@/components/home/SelectBoxDialog.vue";
-import { MODE_OPTIONS } from "@/constants";
+import SelectBoxDialogVue from "../../../../components/home/SelectBoxDialog.vue";
+import { MODE_OPTIONS } from "../../../../constants";
 import { mount } from "@vue/test-utils";
+import { describe, it, expect } from "vitest";
 
 describe("SelectBoxDialog", () => {
   const wrapper = mount(SelectBoxDialogVue, {

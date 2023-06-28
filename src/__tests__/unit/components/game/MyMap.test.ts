@@ -1,8 +1,9 @@
-import MyMapVue from "@/components/game/MyMap.vue";
+import MyMapVue from "../../../../components/game/MyMap.vue";
 import { VueWrapper, flushPromises, mount } from "@vue/test-utils";
-import IconButtonVue from "@/components/shared/IconButton.vue";
-import { DeviceTypes, ModeTypes } from "@/types";
+import IconButtonVue from "../../../../components/shared/IconButton.vue";
+import { DeviceTypes, ModeTypes } from "../../../../types";
 import { defineComponent } from "vue";
+import { describe, test, expect, it } from "vitest";
 
 describe("MyMap", () => {
   let wrapper: VueWrapper<any>;
