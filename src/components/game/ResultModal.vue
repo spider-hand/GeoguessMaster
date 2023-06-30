@@ -10,7 +10,7 @@
       "
     >
       <div
-        ref="resultMapRef"
+        ref="mapRef"
         :class="$style['result-modal__map']"
       />
       <IconButton
@@ -98,10 +98,11 @@
 
 <script setup lang="ts">
 import { GameHistory, Summary, DistanceByPlayer, ModeTypes } from "@/types";
-import { watch, onMounted, ref, PropType, computed, reactive } from "vue";
+import { watch, ref, PropType, computed, reactive } from "vue";
 import FlatButton from "@/components/shared/FlatButton.vue";
 import IconButton from "@/components/shared/IconButton.vue";
 import { Loader } from "@googlemaps/js-api-loader";
+import { useMap } from "@/composables/game/map";
 
 const props = defineProps({
   selectedMode: {
@@ -177,11 +178,8 @@ const loader = new Loader({
   version: "weekly",
 });
 const { Map } = await loader.importLibrary("maps");
-
-let map: google.maps.Map;
-const resultMapRef = ref<HTMLElement>();
-let markers: google.maps.Marker[] = [];
-let polylines: google.maps.Polyline[] = [];
+const mapRef = ref<HTMLElement>();
+const { removeMarkers, putMarker, drawPolyline, removePolyline } = useMap(Map, mapRef);
 
 const state = reactive<{ isMapExpanding: boolean }>({
   isMapExpanding: false,
@@ -225,40 +223,6 @@ watch(
   }
 );
 
-const putMarker = (position: google.maps.LatLng): void => {
-  const marker = new google.maps.Marker({
-    position: position,
-    map: map,
-  });
-  markers.push(marker);
-};
-
-const removeMarkers = (): void => {
-  markers.forEach((marker) => {
-    marker.setMap(null);
-  });
-  markers = [];
-};
-
-const drawPolyline = (
-  from: google.maps.LatLng,
-  to: google.maps.LatLng
-): void => {
-  const polyline = new google.maps.Polyline({
-    path: [from, to],
-    strokeColor: "hsl(0, 100%, 63%)",
-  });
-  polyline.setMap(map);
-  polylines.push(polyline);
-};
-
-const removePolyline = (): void => {
-  polylines.forEach((line) => {
-    line.setMap(null);
-  });
-  polylines = [];
-};
-
 const onClickViewSummaryButton = (): void => {
   emit("onClickViewSummaryButton");
   (props.gameHistory as Array<GameHistory>).forEach((e: GameHistory) => {
@@ -267,19 +231,6 @@ const onClickViewSummaryButton = (): void => {
     drawPolyline(e.randomLatLng, e.selectedLatLng);
   });
 };
-
-onMounted(() => {
-  if (resultMapRef.value) {
-    map = new Map(resultMapRef.value as HTMLElement, {
-      center: { lat: 37.86926, lng: -122.254811 },
-      zoom: 2,
-      fullscreenControl: false,
-      mapTypeControl: false,
-      streetViewControl: false,
-      zoomControl: false,
-    });
-  }
-});
 </script>
 
 <style module lang="scss">

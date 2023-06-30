@@ -22,11 +22,12 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch, PropType } from "vue";
+import { ref, watch, PropType } from "vue";
 import { DEVICE_TYPES } from "@/constants";
 import IconButton from "@/components/shared/IconButton.vue";
 import { DeviceTypes, ModeTypes } from "@/types";
 import { Loader } from "@googlemaps/js-api-loader";
+import { useMap } from "@/composables/game/map";
 
 const props = defineProps({
   device: {
@@ -62,10 +63,8 @@ const loader = new Loader({
   version: "weekly",
 });
 const { Map } = await loader.importLibrary("maps");
-
-let map: google.maps.Map;
 const mapRef = ref<HTMLElement>();
-const markers: google.maps.Marker[] = [];
+const { map, removeMarkers, putMarker } = useMap(Map, mapRef);
 
 watch(
   () => props.isMakeGuessButtonClicked,
@@ -90,8 +89,8 @@ watch(
 watch(
   () => props.randomLatLng,
   (newVal: google.maps.LatLng | null) => {
-    if (newVal !== null) {
-      map.addListener("click", (e: google.maps.MapMouseEvent) => {
+    if (newVal !== null && map.value !== undefined) {
+      map.value.addListener("click", (e: google.maps.MapMouseEvent) => {
         removeMarkers();
         putMarker(e.latLng as google.maps.LatLng);
         emit("updateSelectedLatLng", e.latLng as google.maps.LatLng);
@@ -99,33 +98,6 @@ watch(
     }
   }
 );
-
-const removeMarkers = (): void => {
-  markers.forEach((marker, index) => {
-    marker.setMap(null);
-    markers.splice(index, 1);
-  });
-};
-
-const putMarker = (position: google.maps.LatLng): void => {
-  const marker = new google.maps.Marker({
-    position: position,
-    map: map,
-  });
-  markers.push(marker);
-};
-
-onMounted(() => {
-  if (mapRef.value) {
-    map = new Map(mapRef.value as HTMLElement, {
-      center: { lat: 37.86926, lng: -122.254811 },
-      zoom: 1,
-      fullscreenControl: false,
-      mapTypeControl: false,
-      streetViewControl: false,
-    });
-  }
-});
 </script>
 
 <style module lang="scss">

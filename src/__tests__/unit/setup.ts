@@ -10,6 +10,11 @@ global.google = {
         setMap: vi.fn(),
       };
     }),
+    Polyline: vi.fn().mockImplementation(() => {
+      return {
+        setMap: vi.fn(),
+      };
+    }),
     LatLng: vi.fn().mockImplementation(() => {
       return {};
     }),
