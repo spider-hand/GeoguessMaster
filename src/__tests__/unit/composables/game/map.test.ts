@@ -1,29 +1,23 @@
 import { ref } from "vue";
-import { describe, expect, test, vi } from "vitest";
+import { describe, expect, test } from "vitest";
 import { useMap } from "../../../../composables/game/map";
 import * as GoogleMaps from "@googlemaps/js-api-loader";
 
-vi.spyOn(GoogleMaps, "Loader").mockImplementation(() => {
-  return {
-    importLibrary: () =>
-      vi.fn().mockResolvedValue(() => {
-        return {
-          Map: vi.fn(),
-        };
-      }),
-  } as any;
-});
-
 describe("map", async () => {
   const loader = new GoogleMaps.Loader({
-    apiKey: "",
+    apiKey: "foo",
     version: "weekly",
   });
-  const { Map } = await loader.importLibrary("maps");
+  const libraries = await Promise.all([
+    loader.importLibrary("maps"),
+    loader.importLibrary("marker"),
+  ]);
+  const { Map, Polyline } = libraries[0];
+  const { Marker } = libraries[1];
   const mapRef = ref<HTMLElement>();
 
   test("putMarker puts a marker", () => {
-    const { markers, putMarker } = useMap(Map, mapRef);
+    const { markers, putMarker } = useMap(Map, Marker, Polyline, mapRef);
     const latLng = new google.maps.LatLng(1, 1);
     putMarker(latLng);
 
@@ -31,7 +25,12 @@ describe("map", async () => {
   });
 
   test("removeMarkers removes markers", () => {
-    const { markers, putMarker, removeMarkers } = useMap(Map, mapRef);
+    const { markers, putMarker, removeMarkers } = useMap(
+      Map,
+      Marker,
+      Polyline,
+      mapRef
+    );
     const latLng = new google.maps.LatLng(1, 1);
     putMarker(latLng);
     putMarker(latLng);
@@ -44,7 +43,7 @@ describe("map", async () => {
   });
 
   test("drawPolyline draws a polyline", () => {
-    const { polylines, drawPolyline } = useMap(Map, mapRef);
+    const { polylines, drawPolyline } = useMap(Map, Marker, Polyline, mapRef);
     const from = new google.maps.LatLng(1, 1);
     const to = new google.maps.LatLng(1, 1);
     drawPolyline(from, to);
@@ -53,7 +52,12 @@ describe("map", async () => {
   });
 
   test("removePolyline removes polylines", () => {
-    const { polylines, drawPolyline, removePolyline } = useMap(Map, mapRef);
+    const { polylines, drawPolyline, removePolyline } = useMap(
+      Map,
+      Marker,
+      Polyline,
+      mapRef
+    );
     const from = new google.maps.LatLng(1, 1);
     const to = new google.maps.LatLng(1, 1);
     drawPolyline(from, to);

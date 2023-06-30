@@ -7,8 +7,8 @@
 
 <script setup lang="ts">
 import { MapTypes, ModeTypes } from "@/types";
-import { getRandomLatLng } from "@/utils";
 import { onMounted, watch, ref, PropType } from "vue";
+import { getRandomLatLng } from "@/utils";
 import { Loader } from "@googlemaps/js-api-loader";
 
 const props = defineProps({
@@ -45,7 +45,12 @@ const loader = new Loader({
   apiKey: import.meta.env.VITE_API_KEY,
   version: "weekly",
 });
-const { StreetViewService } = await loader.importLibrary("streetView");
+const libraries = await Promise.all([
+  loader.importLibrary("core"),
+  loader.importLibrary("streetView"),
+]);
+const { LatLng } = libraries[0];
+const { StreetViewService, StreetViewPanorama } = libraries[1];
 
 let panorama: google.maps.StreetViewPanorama;
 const streetviewRef = ref<HTMLElement>();
@@ -85,7 +90,8 @@ const loadStreetView = (
   const service = new StreetViewService();
   service.getPanorama(
     {
-      location: decidedLatLng !== null ? decidedLatLng : getRandomLatLng(),
+      location:
+        decidedLatLng !== null ? decidedLatLng : getRandomLatLng(LatLng),
       preference: google.maps.StreetViewPreference.NEAREST,
       radius: 100000,
       source: google.maps.StreetViewSource.OUTDOOR,
@@ -106,9 +112,7 @@ const checkStreetView = (
     data.location.latLng !== null
   ) {
     if (streetviewRef.value) {
-      panorama = new google.maps.StreetViewPanorama(
-        streetviewRef.value as HTMLElement
-      );
+      panorama = new StreetViewPanorama(streetviewRef.value as HTMLElement);
       panorama.setOptions({
         zoomControl: false,
         addressControl: false,

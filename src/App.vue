@@ -1,9 +1,11 @@
 <template>
-  <router-view />
+  <Suspense>
+    <router-view />
+  </Suspense>
 </template>
 
 <script setup lang="ts">
-import { onMounted } from "vue";
+import { Suspense, onMounted } from "vue";
 import { getDeviceType } from "@/utils";
 import { useDeviceStore } from "./stores/device";
 
@@ -22,7 +24,7 @@ onMounted(() => {
 
 <style lang="scss">
 @import "./src/assets/styles/_fonts.scss";
- 
+
 :root {
   --color-brand-primary: #{$color-brand-primary};
   --color-brand-light: #{$color-brand-light};

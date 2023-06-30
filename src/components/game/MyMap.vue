@@ -62,9 +62,14 @@ const loader = new Loader({
   apiKey: import.meta.env.VITE_API_KEY,
   version: "weekly",
 });
-const { Map } = await loader.importLibrary("maps");
+const libraries = await Promise.all([
+  loader.importLibrary("maps"),
+  loader.importLibrary("marker"),
+]);
+const { Map, Polyline } = libraries[0];
+const { Marker } = libraries[1];
 const mapRef = ref<HTMLElement>();
-const { map, removeMarkers, putMarker } = useMap(Map, mapRef);
+const { map, removeMarkers, putMarker } = useMap(Map, Marker, Polyline, mapRef);
 
 watch(
   () => props.isMakeGuessButtonClicked,

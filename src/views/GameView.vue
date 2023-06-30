@@ -157,6 +157,13 @@ import { storeToRefs } from "pinia";
 import { useGameSettingsStore } from "@/stores/gameSettings";
 import { useInGameStore } from "@/stores/inGame";
 import { useDeviceStore } from "@/stores/device";
+import { Loader } from "@googlemaps/js-api-loader";
+
+const loader = new Loader({
+  apiKey: import.meta.env.VITE_API_KEY,
+  version: "weekly",
+});
+const { LatLng } = await loader.importLibrary("core");
 
 const deviceStore = useDeviceStore();
 const { deviceState } = storeToRefs(deviceStore);
@@ -245,7 +252,7 @@ const startTimer = (): void => {
       }, 1000);
     } else {
       if (!inGameState.value.selectedLatLng) {
-        const latLng = new google.maps.LatLng({
+        const latLng = new LatLng({
           lat: 37.86926,
           lng: -122.254811,
         });
@@ -331,7 +338,7 @@ const onClickNextRoundButton = async (): Promise<void> => {
       );
       const randomLat = snapshot.child("lat").val();
       const randomLng = snapshot.child("lng").val();
-      const randomLatLng = new google.maps.LatLng(randomLat, randomLng);
+      const randomLatLng = new LatLng(randomLat, randomLng);
       saveRandomLatLng(randomLatLng);
     } catch (err) {
       console.log(`onClickNextRoundButton error: ${err}`);
@@ -400,7 +407,7 @@ onMounted(() => {
               const randomLng = snapshot
                 .child(`streetView/round${inGameState.value.round}/lng`)
                 .val();
-              const randomLatLng = new google.maps.LatLng(randomLat, randomLng);
+              const randomLatLng = new LatLng(randomLat, randomLng);
               saveRandomLatLng(randomLatLng);
             }
           }
@@ -434,7 +441,7 @@ onMounted(() => {
             snapshot.child("guess").forEach((childSnapshot) => {
               const lat = childSnapshot.child("lat").val();
               const lng = childSnapshot.child("lng").val();
-              const latlng = new google.maps.LatLng(lat, lng);
+              const latlng = new LatLng(lat, lng);
               const playerName = snapshot
                 .child("playerName")
                 .child(childSnapshot.key as string)
