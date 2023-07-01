@@ -63,18 +63,40 @@
         v-else
         :class="$style['result-modal__container']"
       >
-        <span
-          v-for="(item, index) in sortedScore"
-          :key="index"
-          :class="$style['result-modal__text']"
-          :style="{
-            marginBottom: index !== sortedScore.length - 1 ? '12px' : '24px',
-          }"
+        <div
+          v-if="!isShowingSummary"
+          :class="$style['result-modal__text-wrapper']"
         >
-          <strong>{{ item.playerName }}</strong> is
-          <strong>{{ item.distance }}</strong>km away {{ isShowingSummary ? "in total " : ""
-          }}{{ isShowingSummary && index === 0 ? "&#127941;" : "" }}
-        </span>
+          <span
+            v-for="(item, index) in sortedDistance"
+            :key="index"
+            :class="$style['result-modal__text']"
+            :style="{
+              marginBottom:
+                index !== sortedDistance.length - 1 ? '12px' : '24px',
+            }"
+          >
+            <strong>{{ item.playerName }}</strong> is
+            <strong>{{ item.distance }}</strong>km away
+          </span>
+        </div>
+        <div
+          v-else
+          :class="$style['result-modal__text-wrapper']"
+        >
+          <span
+            v-for="(item, index) in sortedScore"
+            :key="index"
+            :class="$style['result-modal__text']"
+            :style="{
+              marginBottom: index !== sortedScore.length - 1 ? '12px' : '24px',
+            }"
+          >
+            <strong>{{ item.playerName }}</strong> is
+            <strong>{{ item.score }}</strong>km away in total
+            {{ index === 0 ? "&#127941;" : "" }}
+          </span>
+        </div>
         <FlatButton
           v-if="round < 5"
           :text="'NEXT ROUND'"
@@ -195,8 +217,12 @@ const state = reactive<{ isMapExpanding: boolean }>({
   isMapExpanding: false,
 });
 
-const sortedScore = computed(() => {
+const sortedDistance = computed(() => {
   return [...props.distanceByPlayerArr].sort((x, y) => x.distance - y.distance);
+});
+
+const sortedScore = computed(() => {
+  return [...props.multiplayerGameSummary].sort((x, y) => x.score - y.score);
 });
 
 watch(
@@ -288,6 +314,11 @@ const onClickViewSummaryButton = (): void => {
 .result-modal__container {
   display: flex;
   align-items: center;
+  flex-direction: column;
+}
+
+.result-modal__text-wrapper {
+  display: flex;
   flex-direction: column;
 }
 

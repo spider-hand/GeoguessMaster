@@ -14,17 +14,17 @@ export type DeviceTypes =
   | TabletLandscape
   | Laptop;
 
-export type GameHistory = {
+export interface GameHistory {
   randomLatLng: google.maps.LatLng;
   selectedLatLng: google.maps.LatLng;
-};
+}
 
-export type Summary = {
+export interface Summary {
   playerName: string;
   score: number;
-};
+}
 
-export type DistanceByPlayer = {
+export interface DistanceByPlayer {
   playerName: string;
   distance: number;
-};
+}
