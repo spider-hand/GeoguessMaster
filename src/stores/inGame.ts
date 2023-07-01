@@ -98,11 +98,14 @@ export const useInGameStore = defineStore("inGame", () => {
   };
 
   const updateGameHistory = (val: GameHistory) => {
-    inGameState.value.gameHistory.push(val);
+    inGameState.value.gameHistory = [...inGameState.value.gameHistory, val];
   };
 
   const updateDistanceByPlayerArr = (val: DistanceByPlayer) => {
-    inGameState.value.distanceByPlayerArr.push(val);
+    inGameState.value.distanceByPlayerArr = [
+      ...inGameState.value.distanceByPlayerArr,
+      val,
+    ];
   };
 
   const resetDistanceByPlayerArr = () => {

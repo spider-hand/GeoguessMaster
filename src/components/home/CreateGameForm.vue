@@ -78,7 +78,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, ref } from "vue";
+import { reactive, ref } from "vue";
 import { useGameSettingsStore } from "@/stores/gameSettings";
 import { useRouter } from "vue-router";
 import {
@@ -100,7 +100,6 @@ import SelectBoxDialog from "./SelectBoxDialog.vue";
 import { MapTypes, ModeTypes } from "@/types";
 import { storeToRefs } from "pinia";
 import { useDeviceStore } from "@/stores/device";
-import { useInGameStore } from "@/stores/inGame";
 
 const deviceStore = useDeviceStore();
 const { deviceState } = storeToRefs(deviceStore);
@@ -109,7 +108,6 @@ const gameSettingsStore = useGameSettingsStore();
 const { gameSettingsState, isReadyForMultiplayerGame } =
   storeToRefs(gameSettingsStore);
 const {
-  resetGameSettingsState,
   changeSelectedMap,
   changeSelectedMode,
   changeSelectedSize,
@@ -120,9 +118,6 @@ const {
   savePlayerId,
   clickStartButton,
 } = gameSettingsStore;
-
-const inGameStore = useInGameStore();
-const { resetInGameState } = inGameStore;
 
 const router = useRouter();
 
@@ -208,11 +203,6 @@ const startMultiplayerGame = async (): Promise<void> => {
     console.log(`StartMultiplayerGame error: ${err}`);
   }
 };
-
-onMounted(() => {
-  resetGameSettingsState();
-  resetInGameState();
-});
 </script>
 
 <style module lang="scss">
