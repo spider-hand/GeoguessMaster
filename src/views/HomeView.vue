@@ -8,7 +8,6 @@
         :width="deviceState >= DEVICE_TYPES.TABLET_LANDSCAPE ? 60 : 44"
         :height="deviceState >= DEVICE_TYPES.TABLET_LANDSCAPE ? 60 : 44"
       >
-      <SpaceComponent />
       <a href="https://github.com/spider-hand/GeoguessMaster">
         <img
           src="@/assets/images/github.svg"
@@ -47,7 +46,6 @@
 </template>
 
 <script setup lang="ts">
-import SpaceComponent from "@/components/shared/SpaceComponent.vue";
 import AuroraBackgroundComponent from "@/components/home/AuroraBackgroundComponent.vue";
 import CreateGameFormComponent from "@/components/home/CreateGameFormComponent.vue";
 import { useDeviceStore } from "@/stores/device";

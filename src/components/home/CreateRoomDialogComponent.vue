@@ -25,7 +25,6 @@
           2-5 people
         </div>
       </div>
-      <SpaceComponent />
       <CounterComponent
         :min="2"
         :max="5"
@@ -56,7 +55,6 @@
           1-10 minutes
         </span>
       </div>
-      <SpaceComponent />
       <CounterComponent
         :min="1"
         :max="10"
@@ -77,7 +75,6 @@
       <div>
         <span :class="$style['create-room-dialog__text']">Are you a host?</span>
       </div>
-      <SpaceComponent />
       <SwitchComponent
         :ans="isOwner"
         @onChangeValue="(val: boolean) => $emit('onChangeIsOwner', val)"
@@ -109,7 +106,6 @@ import CounterComponent from "./CounterComponent.vue";
 import SwitchComponent from "./SwitchComponent.vue";
 import TextInputComponent from "./TextInputComponent.vue";
 import FlatButtonComponent from "../shared/FlatButtonComponent.vue";
-import SpaceComponent from "../shared/SpaceComponent.vue";
 
 const props = defineProps({
   isShowingDialog: {
@@ -183,6 +179,7 @@ const roomCannnotBeFoundError = computed<string | undefined>(() =>
 .create-room-dialog__form {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   flex-direction: row;
   width: 100%;
   height: 48px;
