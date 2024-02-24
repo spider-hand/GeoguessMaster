@@ -4,12 +4,7 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 
 export const useDeviceStore = defineStore("device", () => {
-  const defaultState = DEVICE_TYPES.MOBLE_PORTRAIT;
-  const deviceState = ref<DeviceTypes>(defaultState);
+  const deviceState = ref<DeviceTypes>(DEVICE_TYPES.MOBLE_PORTRAIT);
 
-  const saveDeviceType = (val: DeviceTypes) => {
-    deviceState.value = val;
-  };
-
-  return { deviceState, saveDeviceType };
+  return { deviceState };
 });

@@ -67,11 +67,11 @@
       :is-owner="gameSettingsState.isOwner"
       :room-number="gameSettingsState.roomNumber"
       :is-ready-for-multiplayer-game="isReadyForMultiplayerGame"
-      @onChangeSize="changeSelectedSize"
-      @onChangeTime="changeSelectedTime"
-      @onChangePlayerName="changePlayerName"
-      @onChangeIsOwner="switchIsOwner"
-      @onChangeRoomNumber="changeRoomNumber"
+      @onChangeSize="(val) => (gameSettingsState.selectedSize = val)"
+      @onChangeTime="(val) => (gameSettingsState.selectedTime = val)"
+      @onChangePlayerName="(val) => (gameSettingsState.playerName = val)"
+      @onChangeIsOwner="(val) => (gameSettingsState.isOwner = val)"
+      @onChangeRoomNumber="(val) => (gameSettingsState.roomNumber = val)"
       @onClickStartMultiplayerGameButton="startMultiplayerGame"
     />
   </div>
@@ -107,17 +107,6 @@ const { deviceState } = storeToRefs(deviceStore);
 const gameSettingsStore = useGameSettingsStore();
 const { gameSettingsState, isReadyForMultiplayerGame } =
   storeToRefs(gameSettingsStore);
-const {
-  changeSelectedMap,
-  changeSelectedMode,
-  changeSelectedSize,
-  changeSelectedTime,
-  changePlayerName,
-  switchIsOwner,
-  changeRoomNumber,
-  savePlayerId,
-  clickStartButton,
-} = gameSettingsStore;
 
 const router = useRouter();
 
@@ -150,17 +139,17 @@ const state = reactive<{
 
 const onChangeSelectedMap = (option: string): void => {
   state.isSelectingMap = false;
-  changeSelectedMap(option as MapTypes);
+  gameSettingsState.value.selectedMap = option as MapTypes;
 };
 
 const onChangeSelectedMode = (option: string): void => {
   state.isSelectingMode = false;
-  changeSelectedMode(option as ModeTypes);
+  gameSettingsState.value.selectedMode = option as ModeTypes;
 };
 
 const startMultiplayerGame = async (): Promise<void> => {
   try {
-    clickStartButton();
+    gameSettingsState.value.isStartingGame = true;
 
     if (gameSettingsState.value.isOwner) {
       let randomNumber: number;
@@ -169,12 +158,14 @@ const startMultiplayerGame = async (): Promise<void> => {
         randomNumber = Math.floor(Math.random() * 9999);
         snapshot = await get(child(dbRef(database), `${randomNumber}`));
       } while (snapshot.exists());
-      changeRoomNumber(randomNumber.toString());
+      gameSettingsState.value.roomNumber = randomNumber.toString();
+
       const playerNameRef = await push(
         dbRef(database, `${randomNumber}/playerName`),
         gameSettingsState.value.playerName
       );
-      savePlayerId(playerNameRef.key as string);
+
+      gameSettingsState.value.playerId = playerNameRef.key as string;
 
       await update(dbRef(database, `${randomNumber}`), {
         active: true,
@@ -191,8 +182,8 @@ const startMultiplayerGame = async (): Promise<void> => {
           dbRef(database, `${roomNumber}/playerName`),
           gameSettingsState.value.playerName
         );
-        savePlayerId(playerNameRef.key as string);
-        changeSelectedTime(snapshot.child("time").val());
+        gameSettingsState.value.playerId = playerNameRef.key as string;
+        gameSettingsState.value.selectedTime = snapshot.child("time").val();
 
         router.push("game");
       } else {

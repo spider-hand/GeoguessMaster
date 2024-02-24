@@ -27,8 +27,8 @@
         :score="inGameState.score"
         :multiplayer-game-summary="state.multiplayerGameSummary"
         @onClickNextRoundButton="onClickNextRoundButton"
-        @onClickViewSummaryButton="saveIsShowingSummary(true)"
-        @onClickPlayAgainButton="resetInGameState"
+        @onClickViewSummaryButton="inGameState.isShowingSummary = true"
+        @onClickPlayAgainButton="inGameStore.$reset()"
         @onClickExitButton="router.back()"
         @endMultiplayerGame="endMultiplayerGame"
       />
@@ -40,8 +40,8 @@
         :is-owner="gameSettingsState.isOwner"
         :random-lat-lng="inGameState.randomLatLng"
         :round="inGameState.round"
-        @updateRandomLatLng="(val: google.maps.LatLng) => saveRandomLatLng(val)"
-        @savePanorama="savePanorama"
+        @updateRandomLatLng="(val: google.maps.LatLng) => inGameState.randomLatLng = val"
+        @savePanorama="(val: google.maps.StreetViewPanorama) => inGameState.panorama = val"
         @saveStreetView="saveStreetView"
       />
     </Suspense>
@@ -68,8 +68,8 @@
         :random-lat-lng="inGameState.randomLatLng"
         :round="inGameState.round"
         :is-make-guess-button-clicked="inGameState.isMakeGuessButtonClicked"
-        @updateSelectedLatLng="(val: google.maps.LatLng) => saveSelectedLatLng(val)"
-        @onClickHideMapButton="saveIsMakeGuessButtonClicked(false)"
+        @updateSelectedLatLng="(val: google.maps.LatLng) => inGameState.selectedLatLng = val"
+        @onClickHideMapButton="inGameState.isMakeGuessButtonClicked = false"
       />
     </Suspense>
     <FlatButton
@@ -93,7 +93,7 @@
         bottom: '12px',
         left: '12px',
       }"
-      @click="saveIsMakeGuessButtonClicked(true)"
+      @click="inGameState.isMakeGuessButtonClicked = true"
     />
     <IconButton
       :icon="'my_location'"
@@ -103,7 +103,7 @@
         right: '12px',
         bottom: '228px',
       }"
-      @click="resetPanoramaLocation"
+      @click="inGameState.panorama?.setPosition(inGameState.randomLatLng)"
     />
     <IconButton
       :icon="'zoom_in'"
@@ -113,7 +113,7 @@
         right: '12px',
         bottom: '164px',
       }"
-      @click="zoomInPanorama"
+      @click="inGameState.panorama?.setZoom(inGameState.panorama.getZoom() + 1)"
     />
     <IconButton
       :icon="'zoom_out'"
@@ -123,7 +123,7 @@
         right: '12px',
         bottom: '100px',
       }"
-      @click="zoomOutPanorama"
+      @click="inGameState.panorama?.setZoom(inGameState.panorama.getZoom() - 1)"
     />
   </div>
 </template>
@@ -173,27 +173,6 @@ const { gameSettingsState } = storeToRefs(gameSettingsStore);
 
 const inGameStore = useInGameStore();
 const { inGameState, distance } = storeToRefs(inGameStore);
-const {
-  saveRandomLatLng,
-  saveSelectedLatLng,
-  savePanorama,
-  resetPanoramaLocation,
-  zoomInPanorama,
-  zoomOutPanorama,
-  saveIsMakeGuessButtonClicked,
-  saveIsThisRoundReady,
-  saveIsNextRoundReady,
-  saveScore,
-  saveIsShowingResult,
-  saveIsShowingSummary,
-  saveIsWaitingForOtherPlayers,
-  saveHasTimerStarted,
-  updateGameHistory,
-  proceedToNextRound,
-  resetInGameState,
-  updateDistanceByPlayerArr,
-  updateSelectedLatLngArr,
-} = inGameStore;
 
 const router = useRouter();
 
@@ -256,7 +235,7 @@ const startTimer = (): void => {
           lat: 37.86926,
           lng: -122.254811,
         });
-        saveSelectedLatLng(latLng);
+        inGameState.value.selectedLatLng = latLng;
       }
       onClickGuessButton();
     }
@@ -264,12 +243,12 @@ const startTimer = (): void => {
 };
 
 const onClickGuessButton = async (): Promise<void> => {
-  saveScore(distance.value as number);
+  inGameState.value.score += distance.value as number;
   if (gameSettingsState.value.selectedMode !== "multiplayer") {
-    saveIsShowingResult(true);
+    inGameState.value.isShowingResult = true;
   } else {
-    // Multiplayer game
-    saveIsWaitingForOtherPlayers(true);
+    inGameState.value.isWaitingForOtherPlayers = true;
+
     try {
       await update(
         dbRef(
@@ -305,17 +284,26 @@ const onClickGuessButton = async (): Promise<void> => {
 const onClickNextRoundButton = async (): Promise<void> => {
   if (inGameState.value.isMakeGuessButtonClicked) {
     // Hide map for mobile devices
-    saveIsMakeGuessButtonClicked(false);
+    inGameState.value.isMakeGuessButtonClicked = false;
   }
 
   const gameHistory: GameHistory = {
     randomLatLng: inGameState.value.randomLatLng as google.maps.LatLng,
     selectedLatLng: inGameState.value.selectedLatLng as google.maps.LatLng,
   };
-  updateGameHistory(gameHistory);
-  proceedToNextRound();
+  inGameState.value.gameHistory.push(gameHistory);
 
-  // Multiplayer game
+  inGameState.value.round += 1;
+  inGameState.value.isThisRoundReady = false;
+  inGameState.value.isNextRoundReady = false;
+  inGameState.value.hasTimerStarted = false;
+  inGameState.value.isShowingResult = false;
+  inGameState.value.isMakeGuessButtonClicked = false;
+  inGameState.value.randomLatLng = null;
+  inGameState.value.selectedLatLng = null;
+  inGameState.value.selectedLatLngArr = [];
+  inGameState.value.distanceByPlayerArr = [];
+
   if (
     gameSettingsState.value.selectedMode === "multiplayer" &&
     !gameSettingsState.value.isOwner
@@ -339,7 +327,7 @@ const onClickNextRoundButton = async (): Promise<void> => {
       const randomLat = snapshot.child("lat").val();
       const randomLng = snapshot.child("lng").val();
       const randomLatLng = new LatLng(randomLat, randomLng);
-      saveRandomLatLng(randomLatLng);
+      inGameState.value.randomLatLng = randomLatLng;
     } catch (err) {
       console.log(`onClickNextRoundButton error: ${err}`);
     }
@@ -354,7 +342,7 @@ const endMultiplayerGame = async (): Promise<void> => {
         [gameSettingsState.value.playerId]: true,
       }
     );
-    saveIsWaitingForOtherPlayers(true);
+    inGameState.value.isWaitingForOtherPlayers = true;
   } catch (err) {
     console.log(`endMultiplayerGame error: ${err}`);
   }
@@ -408,7 +396,7 @@ onMounted(() => {
                 .child(`streetView/round${inGameState.value.round}/lng`)
                 .val();
               const randomLatLng = new LatLng(randomLat, randomLng);
-              saveRandomLatLng(randomLatLng);
+              inGameState.value.randomLatLng = randomLatLng;
             }
           }
           if (
@@ -418,11 +406,11 @@ onMounted(() => {
             // Hide RoomNumberDialog when all players proceed to this round
             state.isGameReady = true;
             // Enable guess button when all players are put into the current round's node
-            saveIsThisRoundReady(true);
+            inGameState.value.isThisRoundReady = true;
 
             // Start a timer
             if (!inGameState.value.hasTimerStarted) {
-              saveHasTimerStarted(true);
+              inGameState.value.hasTimerStarted = true;
 
               state.remainingTime = snapshot.child("time").val() * 60;
               startTimer();
@@ -433,7 +421,7 @@ onMounted(() => {
             inGameState.value.round + 1
           ) {
             // Allow other players to proceed to the next round after the owner load a StreetView first
-            saveIsNextRoundReady(true);
+            inGameState.value.isNextRoundReady = true;
           }
 
           if (snapshot.child("guess").size === snapshot.child("size").val()) {
@@ -453,14 +441,14 @@ onMounted(() => {
                   }`
                 )
                 .val();
-              updateSelectedLatLngArr(latlng);
-              updateDistanceByPlayerArr({
+              inGameState.value.selectedLatLngArr.push(latlng);
+              inGameState.value.distanceByPlayerArr.push({
                 playerName: playerName,
                 distance: distance,
               });
             });
-            saveIsWaitingForOtherPlayers(false);
-            saveIsShowingResult(true);
+            inGameState.value.isWaitingForOtherPlayers = false;
+            inGameState.value.isShowingResult = true;
 
             if (inGameState.value.round === 5) {
               // Summary

@@ -8,16 +8,17 @@
 import { Suspense, onMounted } from "vue";
 import { getDeviceType } from "@/utils";
 import { useDeviceStore } from "./stores/device";
+import { storeToRefs } from "pinia";
 
 const deviceStore = useDeviceStore();
-const { saveDeviceType } = deviceStore;
+const { deviceState } = storeToRefs(deviceStore);
 
 const onWindowResize = (): void => {
-  saveDeviceType(getDeviceType());
+  deviceState.value = getDeviceType();
 };
 
 onMounted(() => {
-  saveDeviceType(getDeviceType());
+  deviceState.value = getDeviceType();
   window.addEventListener("resize", onWindowResize);
 });
 </script>

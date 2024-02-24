@@ -30,10 +30,10 @@ const router = createRouter({
 router.beforeEach((to) => {
   if (to.path === "/") {
     const gameSettingsStore = useGameSettingsStore();
-    gameSettingsStore.resetGameSettingsState();
+    gameSettingsStore.$reset();
 
     const inGameStore = useInGameStore();
-    inGameStore.resetInGameState();
+    inGameStore.$reset();
   }
 });
 
