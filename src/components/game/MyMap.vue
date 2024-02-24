@@ -26,8 +26,7 @@ import { ref, watch, PropType } from "vue";
 import { DEVICE_TYPES } from "@/constants";
 import IconButton from "@/components/shared/IconButton.vue";
 import { DeviceTypes, ModeTypes } from "@/types";
-import { Loader } from "@googlemaps/js-api-loader";
-import { useMap } from "@/composables/game/map";
+import { useMap } from "@/composables/game/useMap";
 
 const props = defineProps({
   device: {
@@ -58,18 +57,8 @@ const emit = defineEmits<{
   onClickHideMapButton: [];
 }>();
 
-const loader = new Loader({
-  apiKey: import.meta.env.VITE_API_KEY,
-  version: "weekly",
-});
-const libraries = await Promise.all([
-  loader.importLibrary("maps"),
-  loader.importLibrary("marker"),
-]);
-const { Map, Polyline } = libraries[0];
-const { Marker } = libraries[1];
 const mapRef = ref<HTMLElement>();
-const { map, removeMarkers, putMarker } = useMap(Map, Marker, Polyline, mapRef);
+const { map, removeMarkers, putMarker } = useMap(mapRef);
 
 watch(
   () => props.isMakeGuessButtonClicked,
@@ -130,3 +119,4 @@ watch(
   }
 }
 </style>
+@/composables/game/useMap

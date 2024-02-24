@@ -10,40 +10,44 @@
       :msg="state.overlayMsg"
     />
     <Suspense>
-      <ResultModal
-        v-show="inGameState.isShowingResult"
-        :selected-mode="gameSettingsState.selectedMode"
-        :is-owner="gameSettingsState.isOwner"
-        :is-showing-result="inGameState.isShowingResult"
-        :is-showing-summary="inGameState.isShowingSummary"
-        :is-next-round-ready="inGameState.isNextRoundReady"
-        :random-lat-lng="inGameState.randomLatLng"
-        :selected-lat-lng="inGameState.selectedLatLng"
-        :selected-lat-lng-arr="inGameState.selectedLatLngArr"
-        :game-history="inGameState.gameHistory"
-        :distance="(distance as number)"
-        :distance-by-player-arr="inGameState.distanceByPlayerArr"
-        :round="inGameState.round"
-        :score="inGameState.score"
-        :multiplayer-game-summary="state.multiplayerGameSummary"
-        @onClickNextRoundButton="onClickNextRoundButton"
-        @onClickViewSummaryButton="inGameState.isShowingSummary = true"
-        @onClickPlayAgainButton="inGameStore.$reset()"
-        @onClickExitButton="router.back()"
-        @endMultiplayerGame="endMultiplayerGame"
-      />
+      <MapWrapperComponent>
+        <ResultModal
+          v-show="inGameState.isShowingResult"
+          :selected-mode="gameSettingsState.selectedMode"
+          :is-owner="gameSettingsState.isOwner"
+          :is-showing-result="inGameState.isShowingResult"
+          :is-showing-summary="inGameState.isShowingSummary"
+          :is-next-round-ready="inGameState.isNextRoundReady"
+          :random-lat-lng="inGameState.randomLatLng"
+          :selected-lat-lng="inGameState.selectedLatLng"
+          :selected-lat-lng-arr="inGameState.selectedLatLngArr"
+          :game-history="inGameState.gameHistory"
+          :distance="(distance as number)"
+          :distance-by-player-arr="inGameState.distanceByPlayerArr"
+          :round="inGameState.round"
+          :score="inGameState.score"
+          :multiplayer-game-summary="state.multiplayerGameSummary"
+          @onClickNextRoundButton="onClickNextRoundButton"
+          @onClickViewSummaryButton="inGameState.isShowingSummary = true"
+          @onClickPlayAgainButton="inGameStore.$reset()"
+          @onClickExitButton="router.back()"
+          @endMultiplayerGame="endMultiplayerGame"
+        />
+      </MapWrapperComponent>
     </Suspense>
     <Suspense>
-      <StreetView
-        :selected-map="gameSettingsState.selectedMap"
-        :selected-mode="gameSettingsState.selectedMode"
-        :is-owner="gameSettingsState.isOwner"
-        :random-lat-lng="inGameState.randomLatLng"
-        :round="inGameState.round"
-        @updateRandomLatLng="(val: google.maps.LatLng) => inGameState.randomLatLng = val"
-        @savePanorama="(val: google.maps.StreetViewPanorama) => inGameState.panorama = val"
-        @saveStreetView="saveStreetView"
-      />
+      <StreetViewWrapperComponent>
+        <StreetView
+          :selected-map="gameSettingsState.selectedMap"
+          :selected-mode="gameSettingsState.selectedMode"
+          :is-owner="gameSettingsState.isOwner"
+          :random-lat-lng="inGameState.randomLatLng"
+          :round="inGameState.round"
+          @updateRandomLatLng="(val: google.maps.LatLng) => inGameState.randomLatLng = val"
+          @savePanorama="(val: google.maps.StreetViewPanorama) => inGameState.panorama = val"
+          @saveStreetView="saveStreetView"
+        />
+      </StreetViewWrapperComponent>
     </Suspense>
     <ScoreBoard
       :selected-map="gameSettingsState.selectedMap"
@@ -61,16 +65,18 @@
       :is-game-ready="state.isGameReady"
     />
     <Suspense>
-      <MyMap
-        :device="deviceState"
-        :selected-mode="gameSettingsState.selectedMode"
-        :is-owner="gameSettingsState.isOwner"
-        :random-lat-lng="inGameState.randomLatLng"
-        :round="inGameState.round"
-        :is-make-guess-button-clicked="inGameState.isMakeGuessButtonClicked"
-        @updateSelectedLatLng="(val: google.maps.LatLng) => inGameState.selectedLatLng = val"
-        @onClickHideMapButton="inGameState.isMakeGuessButtonClicked = false"
-      />
+      <MapWrapperComponent>
+        <MyMap
+          :device="deviceState"
+          :selected-mode="gameSettingsState.selectedMode"
+          :is-owner="gameSettingsState.isOwner"
+          :random-lat-lng="inGameState.randomLatLng"
+          :round="inGameState.round"
+          :is-make-guess-button-clicked="inGameState.isMakeGuessButtonClicked"
+          @updateSelectedLatLng="(val: google.maps.LatLng) => inGameState.selectedLatLng = val"
+          @onClickHideMapButton="inGameState.isMakeGuessButtonClicked = false"
+        />
+      </MapWrapperComponent>
     </Suspense>
     <FlatButton
       :text="'GUESS'"
@@ -157,13 +163,8 @@ import { storeToRefs } from "pinia";
 import { useGameSettingsStore } from "@/stores/gameSettings";
 import { useInGameStore } from "@/stores/inGame";
 import { useDeviceStore } from "@/stores/device";
-import { Loader } from "@googlemaps/js-api-loader";
-
-const loader = new Loader({
-  apiKey: import.meta.env.VITE_API_KEY,
-  version: "weekly",
-});
-const { LatLng } = await loader.importLibrary("core");
+import StreetViewWrapperComponent from "@/components/game/StreetViewWrapperComponent.vue";
+import MapWrapperComponent from "@/components/game/MapWrapperComponent.vue";
 
 const deviceStore = useDeviceStore();
 const { deviceState } = storeToRefs(deviceStore);
@@ -231,7 +232,7 @@ const startTimer = (): void => {
       }, 1000);
     } else {
       if (!inGameState.value.selectedLatLng) {
-        const latLng = new LatLng({
+        const latLng = new google.maps.LatLng({
           lat: 37.86926,
           lng: -122.254811,
         });
@@ -326,7 +327,7 @@ const onClickNextRoundButton = async (): Promise<void> => {
       );
       const randomLat = snapshot.child("lat").val();
       const randomLng = snapshot.child("lng").val();
-      const randomLatLng = new LatLng(randomLat, randomLng);
+      const randomLatLng = new google.maps.LatLng(randomLat, randomLng);
       inGameState.value.randomLatLng = randomLatLng;
     } catch (err) {
       console.log(`onClickNextRoundButton error: ${err}`);
@@ -395,7 +396,7 @@ onMounted(() => {
               const randomLng = snapshot
                 .child(`streetView/round${inGameState.value.round}/lng`)
                 .val();
-              const randomLatLng = new LatLng(randomLat, randomLng);
+              const randomLatLng = new google.maps.LatLng(randomLat, randomLng);
               inGameState.value.randomLatLng = randomLatLng;
             }
           }
@@ -429,7 +430,7 @@ onMounted(() => {
             snapshot.child("guess").forEach((childSnapshot) => {
               const lat = childSnapshot.child("lat").val();
               const lng = childSnapshot.child("lng").val();
-              const latlng = new LatLng(lat, lng);
+              const latlng = new google.maps.LatLng(lat, lng);
               const playerName = snapshot
                 .child("playerName")
                 .child(childSnapshot.key as string)
