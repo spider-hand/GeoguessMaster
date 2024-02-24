@@ -38,13 +38,13 @@
     <Suspense>
       <StreetViewWrapperComponent>
         <StreetViewComponent
+          ref="streetViewRef"
           :selected-map="gameSettingsState.selectedMap"
           :selected-mode="gameSettingsState.selectedMode"
           :is-owner="gameSettingsState.isOwner"
           :random-lat-lng="inGameState.randomLatLng"
           :round="inGameState.round"
           @updateRandomLatLng="(val: google.maps.LatLng) => inGameState.randomLatLng = val"
-          @savePanorama="(val: google.maps.StreetViewPanorama) => inGameState.panorama = val"
           @saveStreetView="saveStreetView"
         />
       </StreetViewWrapperComponent>
@@ -109,7 +109,7 @@
         right: '12px',
         bottom: '228px',
       }"
-      @click="inGameState.panorama?.setPosition(inGameState.randomLatLng)"
+      @click="streetViewRef?.resetStreetView"
     />
     <IconButtonComponent
       :icon="'zoom_in'"
@@ -119,7 +119,7 @@
         right: '12px',
         bottom: '164px',
       }"
-      @click="inGameState.panorama?.setZoom(inGameState.panorama.getZoom() + 1)"
+      @click="streetViewRef?.zoomIn"
     />
     <IconButtonComponent
       :icon="'zoom_out'"
@@ -129,13 +129,13 @@
         right: '12px',
         bottom: '100px',
       }"
-      @click="inGameState.panorama?.setZoom(inGameState.panorama.getZoom() - 1)"
+      @click="streetViewRef?.zoomOut"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import { reactive, computed, onMounted } from "vue";
+import { reactive, computed, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import {
   get,
@@ -173,6 +173,10 @@ const { gameSettingsState } = storeToRefs(gameSettingsStore);
 
 const inGameStore = useInGameStore();
 const { inGameState, distance } = storeToRefs(inGameStore);
+
+const streetViewRef = ref<InstanceType<typeof StreetViewComponent> | null>(
+  null
+);
 
 const router = useRouter();
 

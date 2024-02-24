@@ -6,7 +6,6 @@ interface InGameState {
   randomLatLng: google.maps.LatLng | null;
   selectedLatLng: google.maps.LatLng | null;
   selectedLatLngArr: Array<google.maps.LatLng>;
-  panorama: google.maps.StreetViewPanorama | null;
   gameHistory: Array<GameHistory>;
   distanceByPlayerArr: Array<DistanceByPlayer>;
   score: number;
@@ -25,7 +24,6 @@ export const useInGameStore = defineStore("inGame", () => {
     randomLatLng: null,
     selectedLatLng: null,
     selectedLatLngArr: [],
-    panorama: null,
     gameHistory: [],
     distanceByPlayerArr: [],
     score: 0,

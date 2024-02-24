@@ -9,6 +9,7 @@
 import { MapTypes, ModeTypes } from "@/types";
 import { onMounted, watch, ref, PropType } from "vue";
 import { getRandomLatLng } from "@/utils";
+import useStreetView from "@/composables/game/useStreetView";
 
 const props = defineProps({
   selectedMap: {
@@ -36,12 +37,12 @@ const props = defineProps({
 
 const emit = defineEmits<{
   updateRandomLatLng: [latLng: google.maps.LatLng];
-  savePanorama: [panorama: google.maps.StreetViewPanorama];
   saveStreetView: [streetView: google.maps.LatLng];
 }>();
 
-let panorama: google.maps.StreetViewPanorama;
+const panorama = ref<google.maps.StreetViewPanorama | null>(null);
 const streetviewRef = ref<HTMLElement>();
+const { zoomIn, zoomOut } = useStreetView(panorama);
 
 watch(
   () => props.round,
@@ -78,8 +79,7 @@ const loadStreetView = (
   const service = new google.maps.StreetViewService();
   service.getPanorama(
     {
-      location:
-        decidedLatLng !== null ? decidedLatLng : getRandomLatLng(),
+      location: decidedLatLng !== null ? decidedLatLng : getRandomLatLng(),
       preference: google.maps.StreetViewPreference.NEAREST,
       radius: 100000,
       source: google.maps.StreetViewSource.OUTDOOR,
@@ -100,8 +100,10 @@ const checkStreetView = (
     data.location.latLng !== null
   ) {
     if (streetviewRef.value) {
-      panorama = new google.maps.StreetViewPanorama(streetviewRef.value as HTMLElement);
-      panorama.setOptions({
+      panorama.value = new google.maps.StreetViewPanorama(
+        streetviewRef.value as HTMLElement
+      );
+      panorama.value.setOptions({
         zoomControl: false,
         addressControl: false,
         fullscreenControl: false,
@@ -109,13 +111,12 @@ const checkStreetView = (
         motionTrackingControl: false,
         showRoadLabels: false,
       });
-      panorama.setPano(data.location.pano);
-      panorama.setPov({
+      panorama.value.setPano(data.location.pano);
+      panorama.value.setPov({
         heading: 270,
         pitch: 0,
       });
       emit("updateRandomLatLng", data.location.latLng);
-      emit("savePanorama", panorama);
 
       if (props.selectedMode === "multiplayer" && props.isOwner) {
         emit("saveStreetView", data.location.latLng);
@@ -123,6 +124,12 @@ const checkStreetView = (
     }
   } else {
     loadStreetView();
+  }
+};
+
+const resetStreetView = () => {
+  if (props.randomLatLng !== null) {
+    panorama.value?.setPosition(props.randomLatLng);
   }
 };
 
@@ -136,6 +143,8 @@ onMounted(() => {
     }
   }
 });
+
+defineExpose({ zoomIn, zoomOut, resetStreetView });
 </script>
 
 <style module lang="scss">
