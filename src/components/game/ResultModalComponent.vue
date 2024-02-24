@@ -13,7 +13,7 @@
         ref="mapRef"
         :class="$style['result-modal__map']"
       />
-      <IconButton
+      <IconButtonComponent
         :icon="state.isMapExpanding ? 'expand_less' : 'expand_more'"
         :style="{
           zIndex: 1,
@@ -35,13 +35,13 @@
           :style="{ marginBottom: '24px' }"
         >You are <strong>{{ isShowingSummary ? score : distance }}</strong>km away {{ isShowingSummary ? "in total " : ""
         }}{{ isShowingSummary ? "&#127881;" : "&#128640;" }}</span>
-        <FlatButton
+        <FlatButtonComponent
           v-if="round < 5"
           :text="'NEXT ROUND'"
           @click="$emit('onClickNextRoundButton')"
         />
         <div v-else>
-          <FlatButton
+          <FlatButtonComponent
             v-if="isShowingSummary"
             :text="'PLAY AGAIN'"
             :style="{
@@ -49,7 +49,7 @@
             }"
             @click="$emit('onClickPlayAgainButton')"
           />
-          <FlatButton
+          <FlatButtonComponent
             :text="isShowingSummary ? 'EXIT' : 'VIEW SUMMARY'"
             @click="
               isShowingSummary
@@ -97,14 +97,14 @@
             {{ index === 0 ? "&#127941;" : "" }}
           </span>
         </div>
-        <FlatButton
+        <FlatButtonComponent
           v-if="round < 5"
           :text="'NEXT ROUND'"
           :disabled="!isOwner && !isNextRoundReady"
           @click="$emit('onClickNextRoundButton')"
         />
         <div v-else>
-          <FlatButton
+          <FlatButtonComponent
             :text="isShowingSummary ? 'EXIT' : 'VIEW SUMMARY'"
             @click="
               isShowingSummary
@@ -121,8 +121,8 @@
 <script setup lang="ts">
 import { GameHistory, Summary, DistanceByPlayer, ModeTypes } from "@/types";
 import { watch, ref, PropType, computed, reactive } from "vue";
-import FlatButton from "@/components/shared/FlatButton.vue";
-import IconButton from "@/components/shared/IconButton.vue";
+import FlatButtonComponent from "../shared/FlatButtonComponent.vue";
+import IconButtonComponent from "../shared/IconButtonComponent.vue";
 import { useMap } from "@/composables/game/useMap";
 
 const props = defineProps({

@@ -1,6 +1,6 @@
 <template>
   <div :class="$style['page']">
-    <MyOverlay
+    <OverlayComponent
       v-show="
         gameSettingsState.selectedMode === 'multiplayer' &&
           (!inGameState.isThisRoundReady ||
@@ -11,7 +11,7 @@
     />
     <Suspense>
       <MapWrapperComponent>
-        <ResultModal
+        <ResultModalComponent
           v-show="inGameState.isShowingResult"
           :selected-mode="gameSettingsState.selectedMode"
           :is-owner="gameSettingsState.isOwner"
@@ -37,7 +37,7 @@
     </Suspense>
     <Suspense>
       <StreetViewWrapperComponent>
-        <StreetView
+        <StreetViewComponent
           :selected-map="gameSettingsState.selectedMap"
           :selected-mode="gameSettingsState.selectedMode"
           :is-owner="gameSettingsState.isOwner"
@@ -49,14 +49,14 @@
         />
       </StreetViewWrapperComponent>
     </Suspense>
-    <ScoreBoard
+    <ScoreBoardComponent
       :selected-map="gameSettingsState.selectedMap"
       :selected-mode="gameSettingsState.selectedMode"
       :round="inGameState.round"
       :score="inGameState.score"
       :countdown="countdown"
     />
-    <RoomNumberDialog
+    <RoomNumberDialogComponent
       v-if="
         gameSettingsState.selectedMode === 'multiplayer' &&
           gameSettingsState.isOwner
@@ -66,7 +66,7 @@
     />
     <Suspense>
       <MapWrapperComponent>
-        <MyMap
+        <MapComponent
           :device="deviceState"
           :selected-mode="gameSettingsState.selectedMode"
           :is-owner="gameSettingsState.isOwner"
@@ -78,7 +78,7 @@
         />
       </MapWrapperComponent>
     </Suspense>
-    <FlatButton
+    <FlatButtonComponent
       :text="'GUESS'"
       :style="{
         zIndex: 1,
@@ -89,7 +89,7 @@
       :disabled="isGuessButtonDisabled"
       @click="onClickGuessButton"
     />
-    <FlatButton
+    <FlatButtonComponent
       v-if="deviceState <= DEVICE_TYPES.MOBLE_PORTRAIT"
       v-show="!inGameState.isMakeGuessButtonClicked"
       :text="'MAKE GUESS'"
@@ -101,7 +101,7 @@
       }"
       @click="inGameState.isMakeGuessButtonClicked = true"
     />
-    <IconButton
+    <IconButtonComponent
       :icon="'my_location'"
       :style="{
         zIndex: 1,
@@ -111,7 +111,7 @@
       }"
       @click="inGameState.panorama?.setPosition(inGameState.randomLatLng)"
     />
-    <IconButton
+    <IconButtonComponent
       :icon="'zoom_in'"
       :style="{
         zIndex: 1,
@@ -121,7 +121,7 @@
       }"
       @click="inGameState.panorama?.setZoom(inGameState.panorama.getZoom() + 1)"
     />
-    <IconButton
+    <IconButtonComponent
       :icon="'zoom_out'"
       :style="{
         zIndex: 1,
@@ -147,15 +147,14 @@ import {
   child,
   update,
 } from "firebase/database";
-
-import StreetView from "@/components/game/StreetView.vue";
-import MyMap from "@/components/game/MyMap.vue";
-import ScoreBoard from "@/components/game/ScoreBoard.vue";
-import ResultModal from "@/components/game/ResultModal.vue";
-import RoomNumberDialog from "@/components/game/RoomNumberDialog.vue";
-import MyOverlay from "@/components/game/MyOverlay.vue";
-import FlatButton from "@/components/shared/FlatButton.vue";
-import IconButton from "@/components/shared/IconButton.vue";
+import StreetViewComponent from "@/components/game/StreetViewComponent.vue";
+import MapComponent from "@/components/game/MapComponent.vue";
+import ScoreBoardComponent from "@/components/game/ScoreBoardComponent.vue";
+import ResultModalComponent from "@/components/game/ResultModalComponent.vue";
+import RoomNumberDialogComponent from "@/components/game/RoomNumberDialogComponent.vue";
+import OverlayComponent from "@/components/game/OverlayComponent.vue";
+import FlatButtonComponent from "@/components/shared/FlatButtonComponent.vue";
+import IconButtonComponent from "@/components/shared/IconButtonComponent.vue";
 import { database } from "@/firebase";
 import { GameHistory, Summary } from "@/types";
 import { DEVICE_TYPES } from "@/constants";

@@ -1,12 +1,12 @@
 <template>
   <div :class="$style['overlay']">
     <span :class="$style['overlay__text']">{{ msg }}</span>
-    <MySpinner />
+    <SpinnerComponent />
   </div>
 </template>
 
 <script setup lang="ts">
-import MySpinner from "./MySpinner.vue";
+import SpinnerComponent from "./SpinnerComponent.vue";
 
 defineProps({
   msg: {

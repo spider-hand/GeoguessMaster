@@ -1,11 +1,9 @@
 <template>
-  <Suspense>
-    <router-view />
-  </Suspense>
+  <router-view />
 </template>
 
 <script setup lang="ts">
-import { Suspense, onMounted } from "vue";
+import { onMounted } from "vue";
 import { getDeviceType } from "@/utils";
 import { useDeviceStore } from "./stores/device";
 import { storeToRefs } from "pinia";

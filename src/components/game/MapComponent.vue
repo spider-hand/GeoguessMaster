@@ -5,7 +5,7 @@
       :class="$style['map']"
       data-test="my-map"
     />
-    <IconButton
+    <IconButtonComponent
       v-if="device <= DEVICE_TYPES.MOBLE_PORTRAIT"
       v-show="isMakeGuessButtonClicked"
       :icon="'close'"
@@ -24,7 +24,7 @@
 <script setup lang="ts">
 import { ref, watch, PropType } from "vue";
 import { DEVICE_TYPES } from "@/constants";
-import IconButton from "@/components/shared/IconButton.vue";
+import IconButtonComponent from "../shared/IconButtonComponent.vue";
 import { DeviceTypes, ModeTypes } from "@/types";
 import { useMap } from "@/composables/game/useMap";
 

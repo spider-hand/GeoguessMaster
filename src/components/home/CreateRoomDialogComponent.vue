@@ -25,8 +25,8 @@
           2-5 people
         </div>
       </div>
-      <MySpace />
-      <MyCounter
+      <SpaceComponent />
+      <CounterComponent
         :min="2"
         :max="5"
         :count="selectedSize"
@@ -56,8 +56,8 @@
           1-10 minutes
         </span>
       </div>
-      <MySpace />
-      <MyCounter
+      <SpaceComponent />
+      <CounterComponent
         :min="1"
         :max="10"
         :count="selectedTime"
@@ -66,7 +66,7 @@
       />
     </div>
     <div :class="$style['create-room-dialog__form']">
-      <TextInput
+      <TextInputComponent
         label="Player Name"
         name="player-name"
         placeholder="Your Player Name"
@@ -77,14 +77,14 @@
       <div>
         <span :class="$style['create-room-dialog__text']">Are you a host?</span>
       </div>
-      <MySpace />
-      <MySwitch
+      <SpaceComponent />
+      <SwitchComponent
         :ans="isOwner"
         @onChangeValue="(val: boolean) => $emit('onChangeIsOwner', val)"
       />
     </div>
     <div :class="$style['create-room-dialog__form']">
-      <TextInput
+      <TextInputComponent
         label="Room Number"
         name="room-number"
         placeholder="Room Number"
@@ -94,7 +94,7 @@
       />
     </div>
     <div :class="$style['create-room-dialog__footer']">
-      <FlatButton
+      <FlatButtonComponent
         :text="'START'"
         :disabled="!isReadyForMultiplayerGame"
         @click="$emit('onClickStartMultiplayerGameButton')"
@@ -105,12 +105,11 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-
-import MyCounter from "@/components/home/MyCounter.vue";
-import MySwitch from "@/components/home/MySwitch.vue";
-import TextInput from "@/components/home/TextInput.vue";
-import FlatButton from "@/components/shared/FlatButton.vue";
-import MySpace from "@/components/shared/MySpace.vue";
+import CounterComponent from "./CounterComponent.vue";
+import SwitchComponent from "./SwitchComponent.vue";
+import TextInputComponent from "./TextInputComponent.vue";
+import FlatButtonComponent from "../shared/FlatButtonComponent.vue";
+import SpaceComponent from "../shared/SpaceComponent.vue";
 
 const props = defineProps({
   isShowingDialog: {

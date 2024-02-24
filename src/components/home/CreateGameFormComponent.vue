@@ -10,7 +10,7 @@
           MAP_OPTIONS.get(gameSettingsState.selectedMap)
         }}</span>
       </button>
-      <SelectBoxDialog
+      <SelectBoxDialogComponent
         v-show="state.isSelectingMap"
         :options="MAP_OPTIONS"
         @onChangeOption="onChangeSelectedMap"
@@ -27,14 +27,14 @@
           MODE_OPTIONS.get(gameSettingsState.selectedMode)
         }}</span>
       </button>
-      <SelectBoxDialog
+      <SelectBoxDialogComponent
         v-show="state.isSelectingMode"
         :options="MODE_OPTIONS"
         @onChangeOption="onChangeSelectedMode"
         @close="state.isSelectingMode = false"
       />
     </div>
-    <IconButton
+    <IconButtonComponent
       v-if="deviceState <= DEVICE_TYPES.TABLET_PORTRAIT"
       ref="createRoomButtonRef"
       :icon="'travel_explore'"
@@ -45,7 +45,7 @@
           : (state.isShowingRoomCreateDialog = true)
       "
     />
-    <FlatButton
+    <FlatButtonComponent
       v-else
       ref="createRoomButtonRef"
       :style="{ position: 'absolute', right: '12px' }"
@@ -58,7 +58,7 @@
           : (state.isShowingRoomCreateDialog = true)
       "
     />
-    <CreateRoomDialog
+    <CreateRoomDialogComponent
       :is-showing-dialog="state.isShowingRoomCreateDialog"
       :is-room-found="state.isRoomFound"
       :selected-size="gameSettingsState.selectedSize"
@@ -93,10 +93,10 @@ import {
 import { onClickOutside } from "@vueuse/core";
 import { database } from "@/firebase";
 import { DEVICE_TYPES, MAP_OPTIONS, MODE_OPTIONS } from "@/constants";
-import CreateRoomDialog from "./CreateRoomDialog.vue";
-import FlatButton from "@/components/shared/FlatButton.vue";
-import IconButton from "@/components/shared/IconButton.vue";
-import SelectBoxDialog from "./SelectBoxDialog.vue";
+import CreateRoomDialogComponent from "./CreateRoomDialogComponent.vue";
+import FlatButtonComponent from "../shared/FlatButtonComponent.vue";
+import IconButtonComponent from "../shared/IconButtonComponent.vue";
+import SelectBoxDialogComponent from "./SelectBoxDialogComponent.vue";
 import { MapTypes, ModeTypes } from "@/types";
 import { storeToRefs } from "pinia";
 import { useDeviceStore } from "@/stores/device";

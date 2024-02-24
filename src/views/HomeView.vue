@@ -8,7 +8,7 @@
         :width="deviceState >= DEVICE_TYPES.TABLET_LANDSCAPE ? 60 : 44"
         :height="deviceState >= DEVICE_TYPES.TABLET_LANDSCAPE ? 60 : 44"
       >
-      <MySpace />
+      <SpaceComponent />
       <a href="https://github.com/spider-hand/GeoguessMaster">
         <img
           src="@/assets/images/github.svg"
@@ -17,18 +17,18 @@
         >
       </a>
     </header>
-    <AuroraBackground
+    <AuroraBackgroundComponent
       :from="'var(--color-brand-light)'"
       :x-percent="'40'"
       :y-percent="'90'"
     />
-    <AuroraBackground
+    <AuroraBackgroundComponent
       :from="'var(--color-tone-light)'"
       :x-percent="'90'"
       :y-percent="'30'"
     />
     <div :class="$style['page__container']">
-      <CreateGameForm />
+      <CreateGameFormComponent />
       <span :class="$style['page__title']">Let's explore the world &#128526;</span>
     </div>
     <footer :class="$style['page__footer']">
@@ -47,9 +47,9 @@
 </template>
 
 <script setup lang="ts">
-import MySpace from "@/components/shared/MySpace.vue";
-import AuroraBackground from "@/components/home/AuroraBackground.vue";
-import CreateGameForm from "@/components/home/CreateGameForm.vue";
+import SpaceComponent from "@/components/shared/SpaceComponent.vue";
+import AuroraBackgroundComponent from "@/components/home/AuroraBackgroundComponent.vue";
+import CreateGameFormComponent from "@/components/home/CreateGameFormComponent.vue";
 import { useDeviceStore } from "@/stores/device";
 import { storeToRefs } from "pinia";
 import { DEVICE_TYPES } from "@/constants";
