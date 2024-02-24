@@ -7,28 +7,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, PropType } from "vue";
-import { DeviceTypes, ModeTypes } from "@/types";
+import { ref } from "vue";
 import { useMap } from "@/composables/game/useMap";
 
-const props = defineProps({
-  device: {
-    type: Number as PropType<DeviceTypes>,
-    required: true,
-  },
-  selectedMode: {
-    type: String as PropType<ModeTypes>,
-    required: true,
-  },
-  randomLatLng: {
-    type: Object as PropType<google.maps.LatLng | null>,
-    default: null,
-    required: false,
-  },
-  round: {
-    type: Number,
-    required: true,
-  },
+defineProps({
   isVisible: {
     type: Boolean,
     required: true,
@@ -42,27 +24,19 @@ const emit = defineEmits<{
 const mapRef = ref<HTMLElement>();
 const { map, removeMarkers, putMarker } = useMap(mapRef);
 
-watch(
-  () => props.round,
-  (newVal: number, oldVal: number) => {
-    if (oldVal + 1 === newVal || (oldVal === 5 && newVal === 1)) {
-      removeMarkers();
-    }
-  }
-);
+const attachListener = (): void => {
+  map.value?.addListener("click", (e: google.maps.MapMouseEvent) => {
+    removeMarkers();
+    putMarker(e.latLng as google.maps.LatLng);
+    emit("updateSelectedLatLng", e.latLng as google.maps.LatLng);
+  });
+};
 
-watch(
-  () => props.randomLatLng,
-  (newVal: google.maps.LatLng | null) => {
-    if (newVal !== null && map.value !== undefined) {
-      map.value.addListener("click", (e: google.maps.MapMouseEvent) => {
-        removeMarkers();
-        putMarker(e.latLng as google.maps.LatLng);
-        emit("updateSelectedLatLng", e.latLng as google.maps.LatLng);
-      });
-    }
-  }
-);
+const removeListener = (): void => {
+  google.maps.event.clearListeners(map.value as google.maps.Map, "click");
+};
+
+defineExpose({ attachListener, removeListener, removeMarkers });
 </script>
 
 <style module lang="scss">

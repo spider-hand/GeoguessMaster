@@ -44,7 +44,7 @@
           :is-owner="gameSettingsState.isOwner"
           :random-lat-lng="inGameState.randomLatLng"
           :round="inGameState.round"
-          @updateRandomLatLng="(val: google.maps.LatLng) => inGameState.randomLatLng = val"
+          @updateRandomLatLng="saveRandomLatLng"
           @saveStreetView="saveStreetView"
         />
       </StreetViewWrapperComponent>
@@ -70,11 +70,7 @@
     <Suspense>
       <MapWrapperComponent>
         <MapComponent
-          :device="deviceState"
-          :selected-mode="gameSettingsState.selectedMode"
-          :is-owner="gameSettingsState.isOwner"
-          :random-lat-lng="inGameState.randomLatLng"
-          :round="inGameState.round"
+          ref="mapRef"
           :is-visible="inGameState.isMapVisible"
           @updateSelectedLatLng="(val: google.maps.LatLng) => inGameState.selectedLatLng = val"
         />
@@ -182,16 +178,15 @@ import MapWrapperComponent from "@/components/game/MapWrapperComponent.vue";
 
 const deviceStore = useDeviceStore();
 const { deviceState } = storeToRefs(deviceStore);
-
 const gameSettingsStore = useGameSettingsStore();
 const { gameSettingsState } = storeToRefs(gameSettingsStore);
-
 const inGameStore = useInGameStore();
 const { inGameState, distance } = storeToRefs(inGameStore);
 
 const scoreBoardRef = ref<InstanceType<typeof ScoreBoardComponent> | null>(
   null
 );
+const mapRef = ref<InstanceType<typeof MapComponent> | null>(null);
 const streetViewRef = ref<InstanceType<typeof StreetViewComponent> | null>(
   null
 );
@@ -216,6 +211,13 @@ const isGuessButtonDisabled = computed<boolean>(
     (gameSettingsState.value.selectedMode === "multiplayer" &&
       !inGameState.value.isThisRoundReady)
 );
+
+const saveRandomLatLng = (latLng: google.maps.LatLng) => {
+  if (gameSettingsState.value.selectedMode === "single") {
+    mapRef.value?.attachListener();
+  }
+  inGameState.value.randomLatLng = latLng;
+};
 
 const saveStreetView = async (latLng: google.maps.LatLng): Promise<void> => {
   return await set(
@@ -243,6 +245,8 @@ const onCountdownFinished = () => {
 
 const onClickGuessButton = async (): Promise<void> => {
   inGameState.value.score += distance.value as number;
+  mapRef.value?.removeListener();
+
   if (gameSettingsState.value.selectedMode !== "multiplayer") {
     inGameState.value.isShowingResult = true;
   } else {
@@ -287,7 +291,7 @@ const onClickNextRoundButton = async (): Promise<void> => {
     selectedLatLng: inGameState.value.selectedLatLng as google.maps.LatLng,
   };
   inGameState.value.gameHistory.push(gameHistory);
-  inGameState.value.round += 1;
+  inGameState.value.round++;
   inGameState.value.isThisRoundReady = false;
   inGameState.value.isNextRoundReady = false;
   inGameState.value.hasTimerStarted = false;
@@ -297,6 +301,8 @@ const onClickNextRoundButton = async (): Promise<void> => {
   inGameState.value.selectedLatLng = null;
   inGameState.value.selectedLatLngArr = [];
   inGameState.value.distanceByPlayerArr = [];
+
+  mapRef.value?.removeMarkers();
 
   if (
     gameSettingsState.value.selectedMode === "multiplayer" &&
@@ -410,6 +416,7 @@ onMounted(() => {
 
               await nextTick();
 
+              mapRef.value?.attachListener();
               scoreBoardRef.value?.startCountdown();
             }
           }
@@ -448,7 +455,6 @@ onMounted(() => {
             inGameState.value.isShowingResult = true;
 
             if (inGameState.value.round === 5) {
-              // Summary
               snapshot.child("score").forEach((childSnapshot) => {
                 const playerName = snapshot
                   .child("playerName")
