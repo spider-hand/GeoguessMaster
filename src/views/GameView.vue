@@ -75,12 +75,24 @@
           :is-owner="gameSettingsState.isOwner"
           :random-lat-lng="inGameState.randomLatLng"
           :round="inGameState.round"
-          :is-make-guess-button-clicked="inGameState.isMakeGuessButtonClicked"
+          :is-visible="inGameState.isMapVisible"
           @updateSelectedLatLng="(val: google.maps.LatLng) => inGameState.selectedLatLng = val"
-          @onClickHideMapButton="inGameState.isMakeGuessButtonClicked = false"
         />
       </MapWrapperComponent>
     </Suspense>
+    <IconButtonComponent
+      v-if="deviceState <= DEVICE_TYPES.MOBLE_PORTRAIT"
+      v-show="inGameState.isMapVisible"
+      :icon="'close'"
+      :style="{
+        zIndex: '1',
+        position: 'absolute',
+        bottom: '280px',
+        left: '20px',
+      }"
+      :size="16"
+      @click="inGameState.isMapVisible = false"
+    />
     <FlatButtonComponent
       :text="'GUESS'"
       :style="{
@@ -94,7 +106,7 @@
     />
     <FlatButtonComponent
       v-if="deviceState <= DEVICE_TYPES.MOBLE_PORTRAIT"
-      v-show="!inGameState.isMakeGuessButtonClicked"
+      v-show="!inGameState.isMapVisible"
       :text="'MAKE GUESS'"
       :style="{
         zIndex: 1,
@@ -102,7 +114,7 @@
         bottom: '12px',
         left: '12px',
       }"
-      @click="inGameState.isMakeGuessButtonClicked = true"
+      @click="inGameState.isMapVisible = true"
     />
     <IconButtonComponent
       :icon="'my_location'"
@@ -270,10 +282,6 @@ const onClickGuessButton = async (): Promise<void> => {
 };
 
 const onClickNextRoundButton = async (): Promise<void> => {
-  if (inGameState.value.isMakeGuessButtonClicked) {
-    inGameState.value.isMakeGuessButtonClicked = false;
-  }
-
   const gameHistory: GameHistory = {
     randomLatLng: inGameState.value.randomLatLng as google.maps.LatLng,
     selectedLatLng: inGameState.value.selectedLatLng as google.maps.LatLng,
@@ -284,7 +292,7 @@ const onClickNextRoundButton = async (): Promise<void> => {
   inGameState.value.isNextRoundReady = false;
   inGameState.value.hasTimerStarted = false;
   inGameState.value.isShowingResult = false;
-  inGameState.value.isMakeGuessButtonClicked = false;
+  inGameState.value.isMapVisible = false;
   inGameState.value.randomLatLng = null;
   inGameState.value.selectedLatLng = null;
   inGameState.value.selectedLatLngArr = [];

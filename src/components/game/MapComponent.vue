@@ -1,30 +1,13 @@
 <template>
-  <div>
-    <div
-      ref="mapRef"
-      :class="$style['map']"
-      data-test="my-map"
-    />
-    <IconButtonComponent
-      v-if="device <= DEVICE_TYPES.MOBLE_PORTRAIT"
-      v-show="isMakeGuessButtonClicked"
-      :icon="'close'"
-      :style="{
-        zIndex: '1',
-        position: 'absolute',
-        bottom: '300px',
-        left: '0px',
-      }"
-      :size="16"
-      @click="$emit('onClickHideMapButton')"
-    />
-  </div>
+  <div
+    ref="mapRef"
+    :class="[$style['map'], isVisible && $style['map--visible']]"
+    data-test="my-map"
+  />
 </template>
 
 <script setup lang="ts">
 import { ref, watch, PropType } from "vue";
-import { DEVICE_TYPES } from "@/constants";
-import IconButtonComponent from "../shared/IconButtonComponent.vue";
 import { DeviceTypes, ModeTypes } from "@/types";
 import { useMap } from "@/composables/game/useMap";
 
@@ -46,7 +29,7 @@ const props = defineProps({
     type: Number,
     required: true,
   },
-  isMakeGuessButtonClicked: {
+  isVisible: {
     type: Boolean,
     required: true,
   },
@@ -54,22 +37,10 @@ const props = defineProps({
 
 const emit = defineEmits<{
   updateSelectedLatLng: [latLng: google.maps.LatLng];
-  onClickHideMapButton: [];
 }>();
 
 const mapRef = ref<HTMLElement>();
 const { map, removeMarkers, putMarker } = useMap(mapRef);
-
-watch(
-  () => props.isMakeGuessButtonClicked,
-  (newVal: boolean) => {
-    if (newVal && mapRef.value) {
-      mapRef.value.style.transform = "translateY(-352px)";
-    } else if (!newVal && mapRef.value) {
-      mapRef.value.style.transform = "translateY(300px)";
-    }
-  }
-);
 
 watch(
   () => props.round,
@@ -96,8 +67,8 @@ watch(
 
 <style module lang="scss">
 .map {
+  transform: translateY(300px);
   transform-origin: bottom left;
-  transform: scale(0.75);
   transition: transform 1s;
   z-index: 1;
   opacity: 1;
@@ -107,16 +78,20 @@ watch(
   width: 320px;
   height: 240px;
 
-  &:hover {
-    transform: scale(1);
-    opacity: 1;
+  &--visible {
+    transform: translateY(-352px);
   }
 
   @media #{$mobile-landscape} {
     bottom: 72px;
     opacity: 0.7;
     transition: transform 0.3s;
+    transform: scale(0.75);
+
+    &:hover {
+      transform: scale(1);
+      opacity: 1;
+    }
   }
 }
 </style>
-@/composables/game/useMap

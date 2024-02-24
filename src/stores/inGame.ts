@@ -17,7 +17,7 @@ interface InGameState {
   isWaitingForOtherPlayers: boolean;
   isShowingResult: boolean;
   isShowingSummary: boolean;
-  isMakeGuessButtonClicked: boolean;
+  isMapVisible: boolean;
 }
 
 export const useInGameStore = defineStore("inGame", () => {
@@ -36,7 +36,7 @@ export const useInGameStore = defineStore("inGame", () => {
     isWaitingForOtherPlayers: false,
     isShowingResult: false,
     isShowingSummary: false,
-    isMakeGuessButtonClicked: false,
+    isMapVisible: false,
   });
 
   const distance = computed<number | null>(() => {
