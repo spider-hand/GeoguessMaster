@@ -39,11 +39,12 @@
 </template>
 
 <script setup lang="ts">
-import { PropType } from "vue";
+import { PropType, watch } from "vue";
 import { MapTypes, ModeTypes } from "@/types";
 import { MAP_OPTIONS } from "@/constants";
+import useCountdown from "@/composables/game/useCountdown";
 
-defineProps({
+const props = defineProps({
   selectedMap: {
     type: String as PropType<MapTypes>,
     required: true,
@@ -60,12 +61,29 @@ defineProps({
     type: Number,
     required: true,
   },
-  countdown: {
-    type: String,
+  timePerRound: {
+    type: Number,
     required: true,
-    default: "",
   },
 });
+
+const { startCountdown, stopCountdown, remainingTime, countdown } =
+  useCountdown(props.timePerRound);
+
+const emit = defineEmits<{
+  onCountdownFinish: [];
+}>();
+
+watch(
+  () => remainingTime.value,
+  (newVal) => {
+    if (newVal === 0) {
+      emit("onCountdownFinish");
+    }
+  }
+);
+
+defineExpose({ startCountdown, stopCountdown });
 </script>
 
 <style module lang="scss">

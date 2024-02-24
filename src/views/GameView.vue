@@ -50,11 +50,14 @@
       </StreetViewWrapperComponent>
     </Suspense>
     <ScoreBoardComponent
+      ref="scoreBoardRef"
+      :key="`${inGameState.timePerRound}#${inGameState.round}`"
       :selected-map="gameSettingsState.selectedMap"
       :selected-mode="gameSettingsState.selectedMode"
       :round="inGameState.round"
       :score="inGameState.score"
-      :countdown="countdown"
+      :time-per-round="inGameState.timePerRound"
+      @on-countdown-finish="onCountdownFinished"
     />
     <RoomNumberDialogComponent
       v-if="
@@ -135,7 +138,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, computed, onMounted, ref } from "vue";
+import { reactive, computed, onMounted, ref, nextTick } from "vue";
 import { useRouter } from "vue-router";
 import {
   get,
@@ -174,6 +177,9 @@ const { gameSettingsState } = storeToRefs(gameSettingsStore);
 const inGameStore = useInGameStore();
 const { inGameState, distance } = storeToRefs(inGameStore);
 
+const scoreBoardRef = ref<InstanceType<typeof ScoreBoardComponent> | null>(
+  null
+);
 const streetViewRef = ref<InstanceType<typeof StreetViewComponent> | null>(
   null
 );
@@ -183,13 +189,11 @@ const router = useRouter();
 const state = reactive<{
   isGameReady: boolean;
   isEndingMultiplayerGame: boolean;
-  remainingTime: number;
   multiplayerGameSummary: Array<Summary>;
   overlayMsg: string;
 }>({
   isGameReady: false,
   isEndingMultiplayerGame: false,
-  remainingTime: 0,
   multiplayerGameSummary: [],
   overlayMsg: "Waiting for other players to get ready..",
 });
@@ -200,18 +204,6 @@ const isGuessButtonDisabled = computed<boolean>(
     (gameSettingsState.value.selectedMode === "multiplayer" &&
       !inGameState.value.isThisRoundReady)
 );
-
-const countdown = computed<string>(() => {
-  let min: string | number = Math.floor(state.remainingTime / 60);
-  let sec: string | number = state.remainingTime % 60;
-  if (min < 10) {
-    min = `0${min}`;
-  }
-  if (sec < 10) {
-    sec = `0${sec}`;
-  }
-  return `${min}:${sec}`;
-});
 
 const saveStreetView = async (latLng: google.maps.LatLng): Promise<void> => {
   return await set(
@@ -226,24 +218,15 @@ const saveStreetView = async (latLng: google.maps.LatLng): Promise<void> => {
   );
 };
 
-const startTimer = (): void => {
-  if (!inGameState.value.isWaitingForOtherPlayers) {
-    if (state.remainingTime > 0) {
-      setTimeout(() => {
-        state.remainingTime -= 1;
-        startTimer();
-      }, 1000);
-    } else {
-      if (!inGameState.value.selectedLatLng) {
-        const latLng = new google.maps.LatLng({
-          lat: 37.86926,
-          lng: -122.254811,
-        });
-        inGameState.value.selectedLatLng = latLng;
-      }
-      onClickGuessButton();
-    }
+const onCountdownFinished = () => {
+  if (!inGameState.value.selectedLatLng) {
+    const latLng = new google.maps.LatLng({
+      lat: 37.86926,
+      lng: -122.254811,
+    });
+    inGameState.value.selectedLatLng = latLng;
   }
+  onClickGuessButton();
 };
 
 const onClickGuessButton = async (): Promise<void> => {
@@ -252,6 +235,7 @@ const onClickGuessButton = async (): Promise<void> => {
     inGameState.value.isShowingResult = true;
   } else {
     inGameState.value.isWaitingForOtherPlayers = true;
+    scoreBoardRef.value?.stopCountdown();
 
     try {
       await update(
@@ -287,7 +271,6 @@ const onClickGuessButton = async (): Promise<void> => {
 
 const onClickNextRoundButton = async (): Promise<void> => {
   if (inGameState.value.isMakeGuessButtonClicked) {
-    // Hide map for mobile devices
     inGameState.value.isMakeGuessButtonClicked = false;
   }
 
@@ -296,7 +279,6 @@ const onClickNextRoundButton = async (): Promise<void> => {
     selectedLatLng: inGameState.value.selectedLatLng as google.maps.LatLng,
   };
   inGameState.value.gameHistory.push(gameHistory);
-
   inGameState.value.round += 1;
   inGameState.value.isThisRoundReady = false;
   inGameState.value.isNextRoundReady = false;
@@ -353,7 +335,6 @@ const endMultiplayerGame = async (): Promise<void> => {
 };
 
 const onEndMultiplayerGame = (): void => {
-  // Multiplayer game
   state.overlayMsg = "Disconnecting from this game..";
   state.isEndingMultiplayerGame = true;
   off(dbRef(database, `/${gameSettingsState.value.roomNumber}`));
@@ -412,12 +393,16 @@ onMounted(() => {
             // Enable guess button when all players are put into the current round's node
             inGameState.value.isThisRoundReady = true;
 
-            // Start a timer
-            if (!inGameState.value.hasTimerStarted) {
+            if (
+              !inGameState.value.hasTimerStarted &&
+              !inGameState.value.isWaitingForOtherPlayers
+            ) {
+              inGameState.value.timePerRound = snapshot.child("time").val();
               inGameState.value.hasTimerStarted = true;
 
-              state.remainingTime = snapshot.child("time").val() * 60;
-              startTimer();
+              await nextTick();
+
+              scoreBoardRef.value?.startCountdown();
             }
           }
           if (

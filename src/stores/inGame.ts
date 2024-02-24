@@ -10,6 +10,7 @@ interface InGameState {
   distanceByPlayerArr: Array<DistanceByPlayer>;
   score: number;
   round: number;
+  timePerRound: number;
   hasTimerStarted: boolean;
   isThisRoundReady: boolean;
   isNextRoundReady: boolean;
@@ -28,6 +29,7 @@ export const useInGameStore = defineStore("inGame", () => {
     distanceByPlayerArr: [],
     score: 0,
     round: 1,
+    timePerRound: 5,
     hasTimerStarted: false,
     isThisRoundReady: false,
     isNextRoundReady: false,
