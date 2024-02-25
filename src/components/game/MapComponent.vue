@@ -1,18 +1,49 @@
 <template>
   <div
     ref="mapRef"
-    :class="[$style['map'], isVisible && $style['map--visible']]"
+    :class="[
+      $style['map'],
+      isVisible && $style['map--visible'],
+      isShowingResult && $style['map--with-result'],
+    ]"
     data-test="my-map"
   />
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, PropType } from "vue";
 import { useMap } from "@/composables/game/useMap";
+import { GameHistory, ModeTypes } from "@/types";
 
-defineProps({
+const props = defineProps({
   isVisible: {
     type: Boolean,
+    required: true,
+  },
+  isShowingResult: {
+    type: Boolean,
+    required: true,
+  },
+  selectedMode: {
+    type: String as PropType<ModeTypes>,
+    required: true,
+  },
+  randomLatLng: {
+    type: Object as PropType<google.maps.LatLng | null>,
+    default: null,
+    required: false,
+  },
+  selectedLatLng: {
+    type: Object as PropType<google.maps.LatLng | null>,
+    default: null,
+    required: false,
+  },
+  selectedLatLngArr: {
+    type: Array<google.maps.LatLng>,
+    required: true,
+  },
+  gameHistory: {
+    type: Array<GameHistory>,
     required: true,
   },
 });
@@ -22,7 +53,8 @@ const emit = defineEmits<{
 }>();
 
 const mapRef = ref<HTMLElement>();
-const { map, removeMarkers, putMarker } = useMap(mapRef);
+const { map, removeMarkers, removePolyline, putMarker, drawPolyline } =
+  useMap(mapRef);
 
 const attachListener = (): void => {
   map.value?.addListener("click", (e: google.maps.MapMouseEvent) => {
@@ -36,7 +68,43 @@ const removeListener = (): void => {
   google.maps.event.clearListeners(map.value as google.maps.Map, "click");
 };
 
-defineExpose({ attachListener, removeListener, removeMarkers });
+const showResult = (): void => {
+  if (
+    props.selectedMode === "single" &&
+    props.randomLatLng !== null &&
+    props.selectedLatLng !== null
+  ) {
+    putMarker(props.randomLatLng);
+    putMarker(props.selectedLatLng);
+    drawPolyline(props.randomLatLng, props.selectedLatLng);
+  } else if (
+    props.selectedMode === "multiplayer" &&
+    props.randomLatLng !== null
+  ) {
+    putMarker(props.randomLatLng);
+    props.selectedLatLngArr.forEach((latLng) => {
+      putMarker(latLng);
+      drawPolyline(props.randomLatLng as google.maps.LatLng, latLng);
+    });
+  }
+};
+
+const showSummary = (): void => {
+  props.gameHistory.forEach((e) => {
+    putMarker(e.randomLatLng);
+    putMarker(e.selectedLatLng);
+    drawPolyline(e.randomLatLng, e.selectedLatLng);
+  });
+};
+
+defineExpose({
+  attachListener,
+  removeListener,
+  removeMarkers,
+  removePolyline,
+  showResult,
+  showSummary,
+});
 </script>
 
 <style module lang="scss">
@@ -44,7 +112,7 @@ defineExpose({ attachListener, removeListener, removeMarkers });
   transform: translateY(300px);
   transform-origin: bottom left;
   transition: transform 1s;
-  z-index: 1;
+  z-index: 3;
   opacity: 1;
   position: absolute;
   bottom: -280px;
@@ -54,6 +122,15 @@ defineExpose({ attachListener, removeListener, removeMarkers });
 
   &--visible {
     transform: translateY(-352px);
+  }
+
+  &--with-result {
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: calc(100% - 240px);
+    transition-duration: 0s;
+    transform: translateY(0);
   }
 
   @media #{$mobile-landscape} {

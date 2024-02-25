@@ -9,32 +9,23 @@
       "
       :msg="message"
     />
-    <Suspense>
-      <MapWrapperComponent>
-        <ResultModalComponent
-          v-show="inGameState.isShowingResult"
-          :selected-mode="gameSettingsState.selectedMode"
-          :is-owner="gameSettingsState.isOwner"
-          :is-showing-result="inGameState.isShowingResult"
-          :is-showing-summary="inGameState.isShowingSummary"
-          :is-next-round-ready="inGameState.isNextRoundReady"
-          :random-lat-lng="inGameState.randomLatLng"
-          :selected-lat-lng="inGameState.selectedLatLng"
-          :selected-lat-lng-arr="inGameState.selectedLatLngArr"
-          :game-history="inGameState.gameHistory"
-          :distance="(distance as number)"
-          :distance-by-player-arr="inGameState.distanceByPlayerArr"
-          :round="inGameState.round"
-          :score="inGameState.score"
-          :multiplayer-game-summary="inGameState.multiplayerGameSummary"
-          @onClickNextRoundButton="onClickNextRoundButton"
-          @onClickViewSummaryButton="inGameState.isShowingSummary = true"
-          @onClickPlayAgainButton="inGameStore.$reset()"
-          @onClickExitButton="router.back()"
-          @endMultiplayerGame="endMultiplayerGame"
-        />
-      </MapWrapperComponent>
-    </Suspense>
+    <ResultModalComponent
+      v-show="inGameState.isShowingResult"
+      :selected-mode="gameSettingsState.selectedMode"
+      :is-owner="gameSettingsState.isOwner"
+      :is-showing-summary="inGameState.isShowingSummary"
+      :is-next-round-ready="inGameState.isNextRoundReady"
+      :distance="(distance as number)"
+      :distance-by-player-arr="sortedDistance"
+      :round="inGameState.round"
+      :score="inGameState.score"
+      :multiplayer-game-summary="sortedScore"
+      @onClickNextRoundButton="onClickNextRoundButton"
+      @onClickViewSummaryButton="onClickViewSummaryButton"
+      @onClickPlayAgainButton="onClickPlayAgainButton"
+      @onClickExitButton="router.back()"
+      @endMultiplayerGame="endMultiplayerGame"
+    />
     <Suspense>
       <StreetViewWrapperComponent>
         <StreetViewComponent
@@ -72,16 +63,22 @@
         <MapComponent
           ref="mapRef"
           :is-visible="inGameState.isMapVisible"
+          :is-showing-result="inGameState.isShowingResult"
+          :selected-mode="gameSettingsState.selectedMode"
+          :random-lat-lng="inGameState.randomLatLng"
+          :selected-lat-lng="inGameState.selectedLatLng"
+          :selected-lat-lng-arr="inGameState.selectedLatLngArr"
+          :game-history="inGameState.gameHistory"
           @updateSelectedLatLng="(val: google.maps.LatLng) => inGameState.selectedLatLng = val"
         />
       </MapWrapperComponent>
     </Suspense>
     <IconButtonComponent
       v-if="deviceState <= DEVICE_TYPES.MOBLE_PORTRAIT"
-      v-show="inGameState.isMapVisible"
+      v-show="inGameState.isMapVisible && !inGameState.isShowingResult"
       :icon="'close'"
       :style="{
-        zIndex: '1',
+        zIndex: '3',
         position: 'absolute',
         bottom: '280px',
         left: '20px',
@@ -181,7 +178,8 @@ const { deviceState } = storeToRefs(deviceStore);
 const gameSettingsStore = useGameSettingsStore();
 const { gameSettingsState } = storeToRefs(gameSettingsStore);
 const inGameStore = useInGameStore();
-const { inGameState, distance, message } = storeToRefs(inGameStore);
+const { inGameState, distance, sortedDistance, sortedScore, message } =
+  storeToRefs(inGameStore);
 
 const scoreBoardRef = ref<InstanceType<typeof ScoreBoardComponent> | null>(
   null
@@ -237,6 +235,7 @@ const onClickGuessButton = async (): Promise<void> => {
 
   if (gameSettingsState.value.selectedMode !== "multiplayer") {
     inGameState.value.isShowingResult = true;
+    mapRef.value?.showResult();
   } else {
     inGameState.value.isWaitingForOtherPlayers = true;
     scoreBoardRef.value?.stopCountdown();
@@ -291,6 +290,7 @@ const onClickNextRoundButton = async (): Promise<void> => {
   inGameState.value.distanceByPlayerArr = [];
 
   mapRef.value?.removeMarkers();
+  mapRef.value?.removePolyline();
 
   if (
     gameSettingsState.value.selectedMode === "multiplayer" &&
@@ -325,6 +325,11 @@ const onClickNextRoundButton = async (): Promise<void> => {
   }
 };
 
+const onClickViewSummaryButton = () => {
+  inGameState.value.isShowingSummary = true;
+  mapRef.value?.showSummary();
+};
+
 const endMultiplayerGame = async (): Promise<void> => {
   try {
     await update(
@@ -337,6 +342,13 @@ const endMultiplayerGame = async (): Promise<void> => {
   } catch (err) {
     console.log(`endMultiplayerGame error: ${err}`);
   }
+};
+
+const onClickPlayAgainButton = (): void => {
+  inGameStore.$reset();
+  mapRef.value?.removeMarkers();
+  mapRef.value?.removePolyline();
+  streetViewRef.value?.loadStreetView();
 };
 
 const onEndMultiplayerGame = (): void => {
@@ -444,6 +456,7 @@ onMounted(() => {
             });
             inGameState.value.isWaitingForOtherPlayers = false;
             inGameState.value.isShowingResult = true;
+            mapRef.value?.showResult();
 
             if (inGameState.value.round === 5) {
               snapshot.child("score").forEach((childSnapshot) => {

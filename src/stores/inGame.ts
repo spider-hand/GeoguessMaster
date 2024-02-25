@@ -58,6 +58,18 @@ export const useInGameStore = defineStore("inGame", () => {
     }
   });
 
+  const sortedDistance = computed<Array<DistanceByPlayer>>(() => {
+    return [...inGameState.value.distanceByPlayerArr].sort(
+      (x, y) => x.distance - y.distance
+    );
+  });
+
+  const sortedScore = computed<Array<Summary>>(() => {
+    return [...inGameState.value.multiplayerGameSummary].sort(
+      (x, y) => x.score - y.score
+    );
+  });
+
   const message = computed<string>(() => {
     if (inGameState.value.isEndingMultiplayerGame) {
       return "Disconnecting from this game..";
@@ -73,6 +85,8 @@ export const useInGameStore = defineStore("inGame", () => {
   return {
     inGameState,
     distance,
+    sortedDistance,
+    sortedScore,
     message,
   };
 });
