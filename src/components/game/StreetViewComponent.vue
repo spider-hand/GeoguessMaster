@@ -7,7 +7,7 @@
 
 <script setup lang="ts">
 import { MapTypes, ModeTypes } from "@/types";
-import { onMounted, watch, ref, PropType } from "vue";
+import { onMounted, ref, PropType } from "vue";
 import { getRandomLatLng } from "@/utils";
 import useStreetView from "@/composables/game/useStreetView";
 
@@ -43,35 +43,6 @@ const emit = defineEmits<{
 const panorama = ref<google.maps.StreetViewPanorama | null>(null);
 const streetviewRef = ref<HTMLElement>();
 const { zoomIn, zoomOut } = useStreetView(panorama);
-
-watch(
-  () => props.round,
-  (newVal: number, oldVal: number) => {
-    if (oldVal + 1 === newVal || (oldVal === 5 && newVal === 1)) {
-      if (
-        props.selectedMode !== "multiplayer" ||
-        (props.selectedMode === "multiplayer" && props.isOwner)
-      ) {
-        loadStreetView();
-      }
-    }
-  }
-);
-
-watch(
-  () => props.randomLatLng,
-  (newVal: google.maps.LatLng | null, oldVal: google.maps.LatLng | null) => {
-    if (
-      oldVal === null &&
-      newVal &&
-      props.selectedMode === "multiplayer" &&
-      !props.isOwner
-    ) {
-      // Load a decided street view the owner loaded earlier in multiplayer game
-      loadStreetView(newVal);
-    }
-  }
-);
 
 const loadStreetView = (
   decidedLatLng: google.maps.LatLng | null = null
@@ -136,15 +107,12 @@ const resetStreetView = () => {
 onMounted(() => {
   if (props.selectedMode !== "multiplayer") {
     loadStreetView();
-  } else {
-    // Multiplayer mode
-    if (props.isOwner) {
-      loadStreetView();
-    }
+  } else if (props.isOwner) {
+    loadStreetView();
   }
 });
 
-defineExpose({ zoomIn, zoomOut, resetStreetView });
+defineExpose({ zoomIn, zoomOut, resetStreetView, loadStreetView });
 </script>
 
 <style module lang="scss">

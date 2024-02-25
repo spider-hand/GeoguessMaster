@@ -328,9 +328,12 @@ const onClickNextRoundButton = async (): Promise<void> => {
       const randomLng = snapshot.child("lng").val();
       const randomLatLng = new google.maps.LatLng(randomLat, randomLng);
       inGameState.value.randomLatLng = randomLatLng;
+      streetViewRef.value?.loadStreetView(inGameState.value.randomLatLng);
     } catch (err) {
       console.log(`onClickNextRoundButton error: ${err}`);
     }
+  } else {
+    streetViewRef.value?.loadStreetView();
   }
 };
 
@@ -396,6 +399,7 @@ onMounted(() => {
                 .val();
               const randomLatLng = new google.maps.LatLng(randomLat, randomLng);
               inGameState.value.randomLatLng = randomLatLng;
+              streetViewRef.value?.loadStreetView(inGameState.value.randomLatLng);
             }
           }
           if (
