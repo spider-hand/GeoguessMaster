@@ -5,9 +5,9 @@
         gameSettingsState.selectedMode === 'multiplayer' &&
           (!inGameState.isThisRoundReady ||
             inGameState.isWaitingForOtherPlayers ||
-            state.isEndingMultiplayerGame)
+            inGameState.isEndingMultiplayerGame)
       "
-      :msg="state.overlayMsg"
+      :msg="message"
     />
     <Suspense>
       <MapWrapperComponent>
@@ -26,7 +26,7 @@
           :distance-by-player-arr="inGameState.distanceByPlayerArr"
           :round="inGameState.round"
           :score="inGameState.score"
-          :multiplayer-game-summary="state.multiplayerGameSummary"
+          :multiplayer-game-summary="inGameState.multiplayerGameSummary"
           @onClickNextRoundButton="onClickNextRoundButton"
           @onClickViewSummaryButton="inGameState.isShowingSummary = true"
           @onClickPlayAgainButton="inGameStore.$reset()"
@@ -65,7 +65,7 @@
           gameSettingsState.isOwner
       "
       :room-number="gameSettingsState.roomNumber"
-      :is-game-ready="state.isGameReady"
+      :is-game-ready="inGameState.isMultiplayerGameReady"
     />
     <Suspense>
       <MapWrapperComponent>
@@ -146,7 +146,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, computed, onMounted, ref, nextTick } from "vue";
+import { computed, onMounted, ref, nextTick } from "vue";
 import { useRouter } from "vue-router";
 import {
   get,
@@ -167,7 +167,7 @@ import OverlayComponent from "@/components/game/OverlayComponent.vue";
 import FlatButtonComponent from "@/components/shared/FlatButtonComponent.vue";
 import IconButtonComponent from "@/components/shared/IconButtonComponent.vue";
 import { database } from "@/firebase";
-import { GameHistory, Summary } from "@/types";
+import { GameHistory } from "@/types";
 import { DEVICE_TYPES } from "@/constants";
 import { storeToRefs } from "pinia";
 import { useGameSettingsStore } from "@/stores/gameSettings";
@@ -181,7 +181,7 @@ const { deviceState } = storeToRefs(deviceStore);
 const gameSettingsStore = useGameSettingsStore();
 const { gameSettingsState } = storeToRefs(gameSettingsStore);
 const inGameStore = useInGameStore();
-const { inGameState, distance } = storeToRefs(inGameStore);
+const { inGameState, distance, message } = storeToRefs(inGameStore);
 
 const scoreBoardRef = ref<InstanceType<typeof ScoreBoardComponent> | null>(
   null
@@ -192,18 +192,6 @@ const streetViewRef = ref<InstanceType<typeof StreetViewComponent> | null>(
 );
 
 const router = useRouter();
-
-const state = reactive<{
-  isGameReady: boolean;
-  isEndingMultiplayerGame: boolean;
-  multiplayerGameSummary: Array<Summary>;
-  overlayMsg: string;
-}>({
-  isGameReady: false,
-  isEndingMultiplayerGame: false,
-  multiplayerGameSummary: [],
-  overlayMsg: "Waiting for other players to get ready..",
-});
 
 const isGuessButtonDisabled = computed<boolean>(
   () =>
@@ -352,8 +340,7 @@ const endMultiplayerGame = async (): Promise<void> => {
 };
 
 const onEndMultiplayerGame = (): void => {
-  state.overlayMsg = "Disconnecting from this game..";
-  state.isEndingMultiplayerGame = true;
+  inGameState.value.isEndingMultiplayerGame = true;
   off(dbRef(database, `/${gameSettingsState.value.roomNumber}`));
 
   if (gameSettingsState.value.roomNumber !== "") {
@@ -399,16 +386,16 @@ onMounted(() => {
                 .val();
               const randomLatLng = new google.maps.LatLng(randomLat, randomLng);
               inGameState.value.randomLatLng = randomLatLng;
-              streetViewRef.value?.loadStreetView(inGameState.value.randomLatLng);
+              streetViewRef.value?.loadStreetView(
+                inGameState.value.randomLatLng
+              );
             }
           }
           if (
             snapshot.child(`round${inGameState.value.round}`).size ===
             snapshot.child("size").val()
           ) {
-            // Hide RoomNumberDialog when all players proceed to this round
-            state.isGameReady = true;
-            // Enable guess button when all players are put into the current round's node
+            inGameState.value.isMultiplayerGameReady = true;
             inGameState.value.isThisRoundReady = true;
 
             if (
@@ -465,7 +452,7 @@ onMounted(() => {
                   .child(childSnapshot.key as string)
                   .val();
                 const score = childSnapshot.val();
-                state.multiplayerGameSummary.push({
+                inGameState.value.multiplayerGameSummary.push({
                   playerName: playerName,
                   score: score,
                 });

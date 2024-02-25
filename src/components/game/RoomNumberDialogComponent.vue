@@ -45,7 +45,6 @@ defineProps({
   background: var(--color-brand-gradient);
 
   &--animated {
-    @extend .room-number-dialog;
     transform: translateY(-200px);
   }
 }

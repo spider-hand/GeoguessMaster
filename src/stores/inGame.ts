@@ -1,4 +1,4 @@
-import { DistanceByPlayer, GameHistory } from "@/types";
+import { DistanceByPlayer, GameHistory, Summary } from "@/types";
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 
@@ -8,15 +8,18 @@ interface InGameState {
   selectedLatLngArr: Array<google.maps.LatLng>;
   gameHistory: Array<GameHistory>;
   distanceByPlayerArr: Array<DistanceByPlayer>;
+  multiplayerGameSummary: Array<Summary>;
   score: number;
   round: number;
   timePerRound: number;
   hasTimerStarted: boolean;
+  isMultiplayerGameReady: boolean;
   isThisRoundReady: boolean;
   isNextRoundReady: boolean;
   isWaitingForOtherPlayers: boolean;
   isShowingResult: boolean;
   isShowingSummary: boolean;
+  isEndingMultiplayerGame: boolean;
   isMapVisible: boolean;
 }
 
@@ -27,15 +30,18 @@ export const useInGameStore = defineStore("inGame", () => {
     selectedLatLngArr: [],
     gameHistory: [],
     distanceByPlayerArr: [],
+    multiplayerGameSummary: [],
     score: 0,
     round: 1,
     timePerRound: 5,
     hasTimerStarted: false,
+    isMultiplayerGameReady: false,
     isThisRoundReady: false,
     isNextRoundReady: false,
     isWaitingForOtherPlayers: false,
     isShowingResult: false,
     isShowingSummary: false,
+    isEndingMultiplayerGame: false,
     isMapVisible: false,
   });
 
@@ -52,8 +58,21 @@ export const useInGameStore = defineStore("inGame", () => {
     }
   });
 
+  const message = computed<string>(() => {
+    if (inGameState.value.isEndingMultiplayerGame) {
+      return "Disconnecting from this game..";
+    } else if (inGameState.value.isWaitingForOtherPlayers) {
+      return "Waiting for other players to make a guess..";
+    } else if (!inGameState.value.isThisRoundReady) {
+      return "Waiting for other players to get ready..";
+    } else {
+      return "";
+    }
+  });
+
   return {
     inGameState,
     distance,
+    message,
   };
 });
