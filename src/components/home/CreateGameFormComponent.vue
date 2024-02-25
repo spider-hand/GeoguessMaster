@@ -3,7 +3,7 @@
     <div :class="$style['create-game-form__section']">
       <button
         :class="$style['create-game-form__select']"
-        @click="state.isSelectingMap = true"
+        @click="isSelectingMap = true"
       >
         <span :class="$style['create-game-form__select-label']">Map</span>
         <span :class="$style['create-game-form__select-value']">{{
@@ -11,16 +11,16 @@
         }}</span>
       </button>
       <SelectBoxDialogComponent
-        v-show="state.isSelectingMap"
+        v-show="isSelectingMap"
         :options="MAP_OPTIONS"
         @onChangeOption="onChangeSelectedMap"
-        @close="state.isSelectingMap = false"
+        @close="isSelectingMap = false"
       />
     </div>
     <div :class="$style['create-game-form__section']">
       <button
         :class="$style['create-game-form__select']"
-        @click="state.isSelectingMode = true"
+        @click="isSelectingMode = true"
       >
         <span :class="$style['create-game-form__select-label']">Mode</span>
         <span :class="$style['create-game-form__select-value']">{{
@@ -28,10 +28,10 @@
         }}</span>
       </button>
       <SelectBoxDialogComponent
-        v-show="state.isSelectingMode"
+        v-show="isSelectingMode"
         :options="MODE_OPTIONS"
         @onChangeOption="onChangeSelectedMode"
-        @close="state.isSelectingMode = false"
+        @close="isSelectingMode = false"
       />
     </div>
     <IconButtonComponent
@@ -42,7 +42,7 @@
       @click="
         gameSettingsState.selectedMode === 'single'
           ? router.push('game')
-          : (state.isShowingRoomCreateDialog = true)
+          : (isShowingRoomCreateDialog = true)
       "
     />
     <FlatButtonComponent
@@ -55,12 +55,12 @@
       @click="
         gameSettingsState.selectedMode === 'single'
           ? router.push('game')
-          : (state.isShowingRoomCreateDialog = true)
+          : (isShowingRoomCreateDialog = true)
       "
     />
     <CreateRoomDialogComponent
-      :is-showing-dialog="state.isShowingRoomCreateDialog"
-      :is-room-found="state.isRoomFound"
+      :is-showing-dialog="isShowingRoomCreateDialog"
+      :is-room-found="isRoomFound"
       :selected-size="gameSettingsState.selectedSize"
       :selected-time="gameSettingsState.selectedTime"
       :player-name="gameSettingsState.playerName"
@@ -78,7 +78,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from "vue";
+import { ref } from "vue";
 import { useGameSettingsStore } from "@/stores/gameSettings";
 import { useRouter } from "vue-router";
 import {
@@ -121,29 +121,22 @@ onClickOutside(createRoomButtonRef, (event) => {
     }
   });
   if (!isRoomCreateDialogClicked) {
-    state.isShowingRoomCreateDialog = false;
+    isShowingRoomCreateDialog.value = false;
   }
 });
 
-const state = reactive<{
-  isSelectingMap: boolean;
-  isSelectingMode: boolean;
-  isShowingRoomCreateDialog: boolean;
-  isRoomFound: boolean;
-}>({
-  isSelectingMap: false,
-  isSelectingMode: false,
-  isShowingRoomCreateDialog: false,
-  isRoomFound: true,
-});
+const isSelectingMap = ref(false);
+const isSelectingMode = ref(false);
+const isShowingRoomCreateDialog = ref(false);
+const isRoomFound = ref(true);
 
 const onChangeSelectedMap = (option: string): void => {
-  state.isSelectingMap = false;
+  isSelectingMap.value = false;
   gameSettingsState.value.selectedMap = option as MapTypes;
 };
 
 const onChangeSelectedMode = (option: string): void => {
-  state.isSelectingMode = false;
+  isSelectingMode.value = false;
   gameSettingsState.value.selectedMode = option as ModeTypes;
 };
 
@@ -187,7 +180,7 @@ const startMultiplayerGame = async (): Promise<void> => {
 
         router.push("game");
       } else {
-        state.isRoomFound = false;
+        isRoomFound.value = false;
       }
     }
   } catch (err) {
