@@ -8,18 +8,16 @@
       <div>
         <div
           :class="[
-            !isOwner
-              ? $style['create-room-dialog__text--disabled']
-              : $style['create-room-dialog__text'],
+            $style['create-room-dialog__text'],
+            !isOwner && $style['create-room-dialog__text--disabled'],
           ]"
         >
           Size
         </div>
         <div
           :class="[
-            !isOwner
-              ? $style['create-room-dialog__helper-text--disabled']
-              : $style['create-room-dialog__helper-text'],
+            $style['create-room-dialog__helper-text'],
+            !isOwner && $style['create-room-dialog__helper-text--disabled'],
           ]"
         >
           2-5 people
@@ -37,9 +35,8 @@
       <div>
         <span
           :class="[
-            !isOwner
-              ? $style['create-room-dialog__text--disabled']
-              : $style['create-room-dialog__text'],
+            $style['create-room-dialog__text'],
+            !isOwner && $style['create-room-dialog__text--disabled'],
           ]"
         >
           Time per round
@@ -47,9 +44,8 @@
         <br>
         <span
           :class="[
-            !isOwner
-              ? $style['create-room-dialog__helper-text--disabled']
-              : $style['create-room-dialog__helper-text'],
+            $style['create-room-dialog__helper-text'],
+            !isOwner && $style['create-room-dialog__helper-text--disabled'],
           ]"
         >
           1-10 minutes
@@ -191,7 +187,6 @@ const roomCannnotBeFoundError = computed<string | undefined>(() =>
   color: var(--color-surface-primary);
 
   &--disabled {
-    @extend .create-room-dialog__text;
     color: var(--color-surface-light);
   }
 }
@@ -201,7 +196,6 @@ const roomCannnotBeFoundError = computed<string | undefined>(() =>
   color: var(--color-surface-secondary);
 
   &--disabled {
-    @extend .create-room-dialog__helper-text;
     color: var(--color-surface-light);
   }
 }

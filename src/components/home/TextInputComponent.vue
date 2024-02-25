@@ -3,7 +3,9 @@
     <label
       :for="name"
       :class="[
-        disabled ? $style['input__label--disabled'] : $style['input__label'],
+        $style['input__label'],
+        ,
+        disabled && $style['input__label--disabled'],
         errorMsg && $style['input__label--error'],
       ]"
     >
@@ -14,7 +16,8 @@
       maxlength="20"
       :name="name"
       :class="[
-        disabled ? $style['text-input--disabled'] : $style['text-input'],
+        $style['text-input'],
+        disabled && $style['text-input--disabled'],
         errorMsg && $style['text-input--error'],
       ]"
       :placeholder="placeholder"
@@ -82,12 +85,10 @@ defineEmits<{
   color: var(--color-surface-secondary);
 
   &--disabled {
-    @extend .input__label;
     color: var(--color-surface-light) !important;
   }
 
   &--error {
-    @extend .input__label;
     color: var(--color-red-primary);
   }
 }
@@ -111,7 +112,6 @@ defineEmits<{
   }
 
   &--disabled {
-    @extend .text-input;
     border-bottom-color: var(--color-surface-light) !important;
     color: var(--color-surface-light) !important;
 
@@ -121,7 +121,6 @@ defineEmits<{
   }
 
   &--error {
-    @extend .text-input;
     border-bottom-color: var(--color-red-primary);
     color: var(--color-red-primary);
 

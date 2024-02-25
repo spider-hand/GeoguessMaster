@@ -2,9 +2,8 @@
   <div :class="$style['counter']">
     <button
       :class="[
-        disabledDecrement
-          ? $style['counter__button--disabled']
-          : $style['counter__button'],
+        $style['counter__button'],
+        disabledDecrement && $style['counter__button--disabled'],
       ]"
       :disabled="disabledDecrement"
       data-test="decrement-button"
@@ -15,9 +14,8 @@
     <div :class="$style['counter__text-wrapper']">
       <span
         :class="[
-          disabled
-            ? $style['counter__text--disabled']
-            : $style['counter__text'],
+          $style['counter__text'],
+          disabled && $style['counter__text--disabled'],
         ]"
         data-test="count-text"
       >
@@ -26,9 +24,8 @@
     </div>
     <button
       :class="[
-        disabledIncrement
-          ? $style['counter__button--disabled']
-          : $style['counter__button'],
+        $style['counter__button'],
+        disabledIncrement && $style['counter__button--disabled'],
       ]"
       :disabled="disabledIncrement"
       data-test="increment-button"
@@ -94,7 +91,6 @@ const disabledDecrement = computed<boolean>(
   cursor: pointer;
 
   &--disabled {
-    @extend .counter__button;
     border-color: var(--color-surface-light);
     color: var(--color-surface-light);
     cursor: not-allowed;
@@ -113,7 +109,6 @@ const disabledDecrement = computed<boolean>(
   color: var(--color-surface-primary);
 
   &--disabled {
-    @extend .counter__text;
     color: var(--color-surface-light);
   }
 }

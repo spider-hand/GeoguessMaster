@@ -2,6 +2,7 @@
   <div :class="$style['switch']">
     <button
       :class="[
+        $style['switch__option'],
         $style['switch__option--left'],
         ans
           ? $style['switch__option--selected']
@@ -15,6 +16,7 @@
     <div style="flex-grow: 1" />
     <button
       :class="[
+        $style['switch__option'],
         $style['switch__option--right'],
         ans
           ? $style['switch__option--not-selected']
@@ -69,22 +71,18 @@ defineEmits<{
   cursor: pointer;
 
   &--left {
-    @extend .switch__option;
     left: 4px;
   }
 
   &--right {
-    @extend .switch__option;
     right: 4px;
   }
 
   &--selected {
-    @extend .switch__option;
     background-color: white;
   }
 
   &--not-selected {
-    @extend .switch__option;
     background-color: var(--color-surface-light);
   }
 }
