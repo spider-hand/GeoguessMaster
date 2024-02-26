@@ -94,7 +94,11 @@
         bottom: '12px',
         left: '12px',
       }"
-      :disabled="isGuessButtonDisabled"
+      :disabled="
+        inGameState.selectedLatLng === null ||
+          (gameSettingsState.selectedMode === 'multiplayer' &&
+            !inGameState.isThisRoundReady)
+      "
       @click="onClickGuessButton"
     />
     <FlatButtonComponent
@@ -143,17 +147,18 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, nextTick } from "vue";
+import { onMounted, onUnmounted, ref, nextTick } from "vue";
 import { useRouter } from "vue-router";
 import {
   get,
   set,
   ref as dbRef,
   onValue,
-  off,
   remove,
   child,
   update,
+  onDisconnect,
+  Unsubscribe,
 } from "firebase/database";
 import StreetViewComponent from "@/components/game/StreetViewComponent.vue";
 import MapComponent from "@/components/game/MapComponent.vue";
@@ -164,7 +169,6 @@ import OverlayComponent from "@/components/game/OverlayComponent.vue";
 import FlatButtonComponent from "@/components/shared/FlatButtonComponent.vue";
 import IconButtonComponent from "@/components/shared/IconButtonComponent.vue";
 import { database } from "@/firebase";
-import { GameHistory } from "@/types";
 import { DEVICE_TYPES } from "@/constants";
 import { storeToRefs } from "pinia";
 import { useGameSettingsStore } from "@/stores/gameSettings";
@@ -191,12 +195,8 @@ const streetViewRef = ref<InstanceType<typeof StreetViewComponent> | null>(
 
 const router = useRouter();
 
-const isGuessButtonDisabled = computed<boolean>(
-  () =>
-    inGameState.value.selectedLatLng === null ||
-    (gameSettingsState.value.selectedMode === "multiplayer" &&
-      !inGameState.value.isThisRoundReady)
-);
+const roomRef = dbRef(database, `/${gameSettingsState.value.roomNumber}`);
+const unsubscribeArr = ref<Unsubscribe[]>([]);
 
 const saveRandomLatLng = (latLng: google.maps.LatLng) => {
   if (gameSettingsState.value.selectedMode === "single") {
@@ -206,16 +206,161 @@ const saveRandomLatLng = (latLng: google.maps.LatLng) => {
 };
 
 const saveStreetView = async (latLng: google.maps.LatLng): Promise<void> => {
-  return await set(
-    dbRef(
-      database,
-      `${gameSettingsState.value.roomNumber}/streetView/round${inGameState.value.round}`
-    ),
-    {
+  try {
+    await set(child(roomRef, `streetView/round${inGameState.value.round}`), {
       lat: latLng.lat(),
       lng: latLng.lng(),
+    });
+  } catch (err) {
+    console.log(`saveStreetView error: ${err}`);
+  }
+};
+
+const listenRoomStatus = () => {
+  const unsubscribeRoomStatusVal = onValue(
+    child(roomRef, "active"),
+    async (snapshot) => {
+      if (!snapshot.val()) {
+        unsubscribeRoomStatusVal();
+        onEndMultiplayerGame();
+      }
     }
   );
+  unsubscribeArr.value.push(unsubscribeRoomStatusVal);
+};
+
+const listenCurrentRound = () => {
+  const unsubscribeCurrentRound = onValue(
+    child(roomRef, `round${inGameState.value.round}`),
+    async (snapshot) => {
+      // TODO:
+      if (snapshot.size === 2) {
+        inGameState.value.isMultiplayerGameReady = true;
+        inGameState.value.isThisRoundReady = true;
+
+        if (
+          !inGameState.value.hasTimerStarted &&
+          !inGameState.value.isWaitingForOtherPlayers
+        ) {
+          // TODO:
+          inGameState.value.timePerRound = 1;
+          inGameState.value.hasTimerStarted = true;
+
+          await nextTick();
+
+          mapRef.value?.attachListener();
+          scoreBoardRef.value?.startCountdown();
+        }
+        unsubscribeCurrentRound();
+      }
+    }
+  );
+  unsubscribeArr.value.push(unsubscribeCurrentRound);
+};
+
+const joinCurrentRound = async (): Promise<void> => {
+  try {
+    const snapshot = await get(
+      child(roomRef, `streetView/round${inGameState.value.round}`)
+    );
+
+    if (!snapshot.hasChild(gameSettingsState.value.playerId)) {
+      await update(child(roomRef, `round${inGameState.value.round}`), {
+        [gameSettingsState.value.playerId]: 0,
+      });
+    }
+  } catch (err) {
+    console.log(`joinCurrentRound error: ${err}`);
+  }
+};
+
+const retrieveCurrentRoundStreetView = async (): Promise<void> => {
+  try {
+    const snapshot = await get(
+      child(roomRef, `streetView/round${inGameState.value.round}`)
+    );
+    const lat = snapshot.child("lat").val();
+    const lng = snapshot.child("lng").val();
+    const randomLatLng = new google.maps.LatLng(lat, lng);
+    inGameState.value.randomLatLng = randomLatLng;
+    streetViewRef.value?.loadStreetView(inGameState.value.randomLatLng);
+  } catch (err) {
+    console.log(`retrieveCurrentRoundStreetView error: ${err}`);
+  }
+};
+
+const listenGuesses = () => {
+  const unsubscribeGuesses = onValue(
+    child(roomRef, "guess"),
+    async (snapshot) => {
+      // TODO:
+      if (snapshot.size === 2) {
+        snapshot.forEach((childSnapshot) => {
+          const lat = childSnapshot.child("lat").val();
+          const lng = childSnapshot.child("lng").val();
+          const latlng = new google.maps.LatLng(lat, lng);
+
+          // TODO:
+          const playerName = "Test";
+          const distance = 10000;
+
+          inGameState.value.selectedLatLngArr.push(latlng);
+          inGameState.value.distanceByPlayerArr.push({
+            playerName: playerName,
+            distance: distance,
+          });
+        });
+        inGameState.value.isWaitingForOtherPlayers = false;
+        inGameState.value.isShowingResult = true;
+        mapRef.value?.showResult();
+        listenNextStreetView();
+
+        if (inGameState.value.round === 5) {
+          const scoreSnapshot = await get(child(roomRef, "score"));
+          scoreSnapshot.forEach((scoreChildSnapshot) => {
+            // TODO:
+            const playerName = "Test";
+            const score = scoreChildSnapshot.val();
+            inGameState.value.multiplayerGameSummary.push({
+              playerName: playerName,
+              score: score,
+            });
+          });
+
+          listenPlayerStatus();
+        }
+
+        remove(child(roomRef, "guess"));
+      }
+    }
+  );
+  unsubscribeArr.value.push(unsubscribeGuesses);
+};
+
+const listenFirstStreetView = () => {
+  const unsubscribeFirstStreetView = onValue(
+    child(roomRef, "streetView/round1"),
+    async (snapshot) => {
+      if (snapshot.exists()) {
+        await retrieveCurrentRoundStreetView();
+        unsubscribeFirstStreetView();
+      }
+    }
+  );
+  unsubscribeArr.value.push(unsubscribeFirstStreetView);
+};
+
+const listenNextStreetView = () => {
+  const unsubscribeNextStreetView = onValue(
+    child(roomRef, `streetView/round${inGameState.value.round + 1}`),
+    async (snapshot) => {
+      if (snapshot.exists()) {
+        inGameState.value.isNextRoundReady = true;
+        unsubscribeNextStreetView();
+      }
+    }
+  );
+  unsubscribeArr.value.push(unsubscribeNextStreetView);
 };
 
 const onCountdownFinished = () => {
@@ -230,98 +375,70 @@ const onCountdownFinished = () => {
 };
 
 const onClickGuessButton = async (): Promise<void> => {
-  inGameState.value.score += distance.value as number;
-  mapRef.value?.removeListener();
+  try {
+    inGameState.value.score += distance.value as number;
+    mapRef.value?.removeListener();
 
-  if (gameSettingsState.value.selectedMode !== "multiplayer") {
-    inGameState.value.isShowingResult = true;
-    mapRef.value?.showResult();
-  } else {
-    inGameState.value.isWaitingForOtherPlayers = true;
-    scoreBoardRef.value?.stopCountdown();
+    if (gameSettingsState.value.selectedMode !== "multiplayer") {
+      inGameState.value.isShowingResult = true;
+      mapRef.value?.showResult();
+    } else {
+      inGameState.value.isWaitingForOtherPlayers = true;
+      scoreBoardRef.value?.stopCountdown();
 
-    try {
-      await update(
-        dbRef(
-          database,
-          `${gameSettingsState.value.roomNumber}/round${inGameState.value.round}`
-        ),
-        {
-          [gameSettingsState.value.playerId]: distance.value,
-        }
-      );
-      await set(
-        dbRef(
-          database,
-          `${gameSettingsState.value.roomNumber}/guess/${gameSettingsState.value.playerId}`
-        ),
-        {
-          lat: inGameState.value.selectedLatLng?.lat(),
-          lng: inGameState.value.selectedLatLng?.lng(),
-        }
-      );
-      await update(
-        dbRef(database, `${gameSettingsState.value.roomNumber}/score`),
-        {
-          [gameSettingsState.value.playerId]: inGameState.value.score,
-        }
-      );
-    } catch (err) {
-      console.log(`onClickGuessButton error: ${err}`);
+      await update(child(roomRef, `round${inGameState.value.round}`), {
+        [gameSettingsState.value.playerId]: distance.value,
+      });
+      await set(child(roomRef, `guess/${gameSettingsState.value.playerId}`), {
+        lat: inGameState.value.selectedLatLng?.lat(),
+        lng: inGameState.value.selectedLatLng?.lng(),
+      });
+      await update(child(roomRef, "score"), {
+        [gameSettingsState.value.playerId]: inGameState.value.score,
+      });
     }
+  } catch (err) {
+    console.log(`onClickGuessButton error: ${err}`);
   }
 };
 
 const onClickNextRoundButton = async (): Promise<void> => {
-  const gameHistory: GameHistory = {
-    randomLatLng: inGameState.value.randomLatLng as google.maps.LatLng,
-    selectedLatLng: inGameState.value.selectedLatLng as google.maps.LatLng,
-  };
-  inGameState.value.gameHistory.push(gameHistory);
-  inGameState.value.round++;
-  inGameState.value.isThisRoundReady = false;
-  inGameState.value.isNextRoundReady = false;
-  inGameState.value.hasTimerStarted = false;
-  inGameState.value.isShowingResult = false;
-  inGameState.value.isMapVisible = false;
-  inGameState.value.randomLatLng = null;
-  inGameState.value.selectedLatLng = null;
-  inGameState.value.selectedLatLngArr = [];
-  inGameState.value.distanceByPlayerArr = [];
+  try {
+    const gameHistory = {
+      randomLatLng: inGameState.value.randomLatLng as google.maps.LatLng,
+      selectedLatLng: inGameState.value.selectedLatLng as google.maps.LatLng,
+    };
+    inGameState.value.gameHistory.push(gameHistory);
+    inGameState.value.round++;
+    inGameState.value.isThisRoundReady = false;
+    inGameState.value.isNextRoundReady = false;
+    inGameState.value.hasTimerStarted = false;
+    inGameState.value.isShowingResult = false;
+    inGameState.value.isMapVisible = false;
+    inGameState.value.randomLatLng = null;
+    inGameState.value.selectedLatLng = null;
+    inGameState.value.selectedLatLngArr = [];
+    inGameState.value.distanceByPlayerArr = [];
 
-  mapRef.value?.removeMarkers();
-  mapRef.value?.removePolyline();
+    mapRef.value?.removeMarkers();
+    mapRef.value?.removePolyline();
 
-  if (
-    gameSettingsState.value.selectedMode === "multiplayer" &&
-    !gameSettingsState.value.isOwner
-  ) {
-    try {
-      await set(
-        dbRef(
-          database,
-          `/${gameSettingsState.value.roomNumber}/round${inGameState.value.round}`
-        ),
-        {
-          [gameSettingsState.value.playerId]: 0,
-        }
-      );
-      const snapshot = await get(
-        child(
-          dbRef(database),
-          `/${gameSettingsState.value.roomNumber}/streetView/round${inGameState.value.round}`
-        )
-      );
-      const randomLat = snapshot.child("lat").val();
-      const randomLng = snapshot.child("lng").val();
-      const randomLatLng = new google.maps.LatLng(randomLat, randomLng);
-      inGameState.value.randomLatLng = randomLatLng;
-      streetViewRef.value?.loadStreetView(inGameState.value.randomLatLng);
-    } catch (err) {
-      console.log(`onClickNextRoundButton error: ${err}`);
+    if (
+      gameSettingsState.value.selectedMode === "multiplayer" &&
+      !gameSettingsState.value.isOwner
+    ) {
+      listenCurrentRound();
+      await joinCurrentRound();
+      await retrieveCurrentRoundStreetView();
+    } else if (gameSettingsState.value.selectedMode === "multiplayer") {
+      listenCurrentRound();
+      await joinCurrentRound();
+      streetViewRef.value?.loadStreetView();
+    } else {
+      streetViewRef.value?.loadStreetView();
     }
-  } else {
-    streetViewRef.value?.loadStreetView();
+  } catch (err) {
+    console.log(`onClickNextButton error: ${err}`);
   }
 };
 
@@ -330,14 +447,26 @@ const onClickViewSummaryButton = () => {
   mapRef.value?.showSummary();
 };
 
+const listenPlayerStatus = () => {
+  const unsubscribePlayerStatus = onValue(
+    child(roomRef, "hasDone"),
+    async (snapshot) => {
+      // TODO:
+      if (snapshot.size === 2) {
+        await update(roomRef, {
+          active: false,
+        });
+      }
+    }
+  );
+  unsubscribeArr.value.push(unsubscribePlayerStatus);
+};
+
 const endMultiplayerGame = async (): Promise<void> => {
   try {
-    await update(
-      dbRef(database, `/${gameSettingsState.value.roomNumber}/hasDone`),
-      {
-        [gameSettingsState.value.playerId]: true,
-      }
-    );
+    await update(child(roomRef, "hasDone"), {
+      [gameSettingsState.value.playerId]: true,
+    });
     inGameState.value.isWaitingForOtherPlayers = true;
   } catch (err) {
     console.log(`endMultiplayerGame error: ${err}`);
@@ -353,10 +482,9 @@ const onClickPlayAgainButton = (): void => {
 
 const onEndMultiplayerGame = (): void => {
   inGameState.value.isEndingMultiplayerGame = true;
-  off(dbRef(database, `/${gameSettingsState.value.roomNumber}`));
 
   if (gameSettingsState.value.roomNumber !== "") {
-    remove(dbRef(database, `/${gameSettingsState.value.roomNumber}`));
+    remove(roomRef);
 
     setTimeout(() => {
       router.back();
@@ -364,142 +492,27 @@ const onEndMultiplayerGame = (): void => {
   }
 };
 
-onMounted(() => {
-  const { roomNumber, playerId } = gameSettingsState.value;
-
+onMounted(async () => {
   if (gameSettingsState.value.selectedMode === "multiplayer") {
-    onValue(dbRef(database, `/${roomNumber}`), async (snapshot) => {
-      try {
-        if (
-          !snapshot.child("active").exists() ||
-          !snapshot.child("active").val()
-        ) {
-          // Exit the game when the game finished
-          onEndMultiplayerGame();
-        } else {
-          // Put the player into the current round's node
-          if (
-            !snapshot
-              .child(`round${inGameState.value.round}`)
-              .hasChild(playerId)
-          ) {
-            await update(
-              dbRef(database, `/${roomNumber}/round${inGameState.value.round}`),
-              {
-                [playerId]: 0,
-              }
-            );
-            if (!gameSettingsState.value.isOwner) {
-              const randomLat = snapshot
-                .child(`streetView/round${inGameState.value.round}/lat`)
-                .val();
-              const randomLng = snapshot
-                .child(`streetView/round${inGameState.value.round}/lng`)
-                .val();
-              const randomLatLng = new google.maps.LatLng(randomLat, randomLng);
-              inGameState.value.randomLatLng = randomLatLng;
-              streetViewRef.value?.loadStreetView(
-                inGameState.value.randomLatLng
-              );
-            }
-          }
-          if (
-            snapshot.child(`round${inGameState.value.round}`).size ===
-            snapshot.child("size").val()
-          ) {
-            inGameState.value.isMultiplayerGameReady = true;
-            inGameState.value.isThisRoundReady = true;
+    listenRoomStatus();
+    listenGuesses();
+    listenCurrentRound();
 
-            if (
-              !inGameState.value.hasTimerStarted &&
-              !inGameState.value.isWaitingForOtherPlayers
-            ) {
-              inGameState.value.timePerRound = snapshot.child("time").val();
-              inGameState.value.hasTimerStarted = true;
+    if (!gameSettingsState.value.isOwner) {
+      listenFirstStreetView();
+    }
 
-              await nextTick();
+    await joinCurrentRound();
 
-              mapRef.value?.attachListener();
-              scoreBoardRef.value?.startCountdown();
-            }
-          }
-          if (
-            snapshot.child("streetView").size ===
-            inGameState.value.round + 1
-          ) {
-            // Allow other players to proceed to the next round after the owner load a StreetView first
-            inGameState.value.isNextRoundReady = true;
-          }
-
-          if (snapshot.child("guess").size === snapshot.child("size").val()) {
-            // Show the result when all players finished guessing locations
-            snapshot.child("guess").forEach((childSnapshot) => {
-              const lat = childSnapshot.child("lat").val();
-              const lng = childSnapshot.child("lng").val();
-              const latlng = new google.maps.LatLng(lat, lng);
-              const playerName = snapshot
-                .child("playerName")
-                .child(childSnapshot.key as string)
-                .val();
-              const distance = snapshot
-                .child(
-                  `round${inGameState.value.round}/${
-                    childSnapshot.key as string
-                  }`
-                )
-                .val();
-              inGameState.value.selectedLatLngArr.push(latlng);
-              inGameState.value.distanceByPlayerArr.push({
-                playerName: playerName,
-                distance: distance,
-              });
-            });
-            inGameState.value.isWaitingForOtherPlayers = false;
-            inGameState.value.isShowingResult = true;
-            mapRef.value?.showResult();
-
-            if (inGameState.value.round === 5) {
-              snapshot.child("score").forEach((childSnapshot) => {
-                const playerName = snapshot
-                  .child("playerName")
-                  .child(childSnapshot.key as string)
-                  .val();
-                const score = childSnapshot.val();
-                inGameState.value.multiplayerGameSummary.push({
-                  playerName: playerName,
-                  score: score,
-                });
-              });
-            }
-            // Remove guess node every time the round is done
-            remove(dbRef(database, `/${roomNumber}/guess`));
-          }
-
-          if (snapshot.child("hasDone").size === snapshot.child("size").val()) {
-            update(dbRef(database, `${roomNumber}`), {
-              active: false,
-            });
-          }
-          // Disconnect the game when the player pressed the back button
-          window.addEventListener("popstate", () => {
-            update(dbRef(database, `${roomNumber}`), {
-              active: false,
-            });
-            off(dbRef(database, `${roomNumber}`));
-          });
-          // Disconnect the game when the player refreshed the window
-          window.addEventListener("beforeunload", () => {
-            update(dbRef(database, `${roomNumber}`), {
-              active: false,
-            });
-            off(dbRef(database, `${roomNumber}`));
-          });
-        }
-      } catch (err) {
-        console.log(`onValue error: ${err}`);
-      }
-    });
+    onDisconnect(child(roomRef, "active")).set(false);
   }
+});
+
+onUnmounted(async () => {
+  unsubscribeArr.value.forEach((unsubscribe) => {
+    unsubscribe();
+  });
+  await set(child(roomRef, "active"), false);
 });
 </script>
 
