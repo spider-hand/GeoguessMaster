@@ -557,7 +557,7 @@ onMounted(async () => {
 });
 
 onUnmounted(async () => {
-  if (gameSettingsState.value.selectedMode === "multiplayer") {
+  if (roomRef !== undefined) {
     unsubscribeArr.value.forEach((unsubscribe) => {
       unsubscribe();
     });
