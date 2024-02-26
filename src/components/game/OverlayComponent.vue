@@ -1,12 +1,12 @@
 <template>
   <div :class="$style['overlay']">
     <span :class="$style['overlay__text']">{{ msg }}</span>
-    <MySpinner />
+    <SpinnerComponent />
   </div>
 </template>
 
 <script setup lang="ts">
-import MySpinner from "./MySpinner.vue";
+import SpinnerComponent from "./SpinnerComponent.vue";
 
 defineProps({
   msg: {
@@ -19,23 +19,23 @@ defineProps({
 
 <style module lang="scss">
 .overlay {
-  @include pagePadding;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  z-index: 4;
-  box-sizing: border-box;
+  @include page-padding;
+
   position: absolute;
   top: 0;
   left: 0;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgb(0 0 0 / 50%);
+  gap: 24px;
 }
 
 .overlay__text {
-  margin-bottom: 24px;
   font-size: 24px;
   font-weight: 500;
   color: white;

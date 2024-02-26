@@ -2,25 +2,26 @@
   <div :class="$style['switch']">
     <button
       :class="[
+        $style['switch__option'],
         $style['switch__option--left'],
         ans
           ? $style['switch__option--selected']
           : $style['switch__option--not-selected'],
       ]"
-      data-test="yes-button"
+      data-testid="yes-button"
       @click="$emit('onChangeValue', true)"
     >
       YES
     </button>
-    <div style="flex-grow: 1" />
     <button
       :class="[
+        $style['switch__option'],
         $style['switch__option--right'],
         ans
           ? $style['switch__option--not-selected']
           : $style['switch__option--selected'],
       ]"
-      data-test="no-button"
+      data-testid="no-button"
       @click="$emit('onChangeValue', false)"
     >
       NO
@@ -43,48 +44,44 @@ defineEmits<{
 
 <style module lang="scss">
 .switch {
+  position: relative;
   display: flex;
   flex-direction: row;
   align-items: center;
-  position: relative;
-  border-radius: 100px;
-  height: 36px;
+  justify-content: space-between;
   width: 150px;
+  height: 36px;
   background-color: var(--color-surface-light);
+  border-radius: 100px;
 }
 
 .switch__option {
+  position: absolute;
   display: flex;
   align-items: center;
   justify-content: center;
-  position: absolute;
-  box-sizing: border-box;
-  border: none;
-  border-radius: 24px;
-  padding: 4px 24px;
   height: 28px;
+  padding: 4px 24px;
   font-size: 12px;
   font-weight: 500;
   color: var(--color-surface-primary);
   cursor: pointer;
+  border: none;
+  border-radius: 24px;
 
   &--left {
-    @extend .switch__option;
     left: 4px;
   }
 
   &--right {
-    @extend .switch__option;
     right: 4px;
   }
 
   &--selected {
-    @extend .switch__option;
     background-color: white;
   }
 
   &--not-selected {
-    @extend .switch__option;
     background-color: var(--color-surface-light);
   }
 }

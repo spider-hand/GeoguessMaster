@@ -2,12 +2,11 @@
   <div :class="$style['counter']">
     <button
       :class="[
-        disabledDecrement
-          ? $style['counter__button--disabled']
-          : $style['counter__button'],
+        $style['counter__button'],
+        disabledDecrement && $style['counter__button--disabled'],
       ]"
       :disabled="disabledDecrement"
-      data-test="decrement-button"
+      data-testid="decrement-button"
       @click="$emit('onChangeValue', count - 1)"
     >
       -
@@ -15,23 +14,21 @@
     <div :class="$style['counter__text-wrapper']">
       <span
         :class="[
-          disabled
-            ? $style['counter__text--disabled']
-            : $style['counter__text'],
+          $style['counter__text'],
+          disabled && $style['counter__text--disabled'],
         ]"
-        data-test="count-text"
+        data-testid="count-text"
       >
         {{ count }}
       </span>
     </div>
     <button
       :class="[
-        disabledIncrement
-          ? $style['counter__button--disabled']
-          : $style['counter__button'],
+        $style['counter__button'],
+        disabledIncrement && $style['counter__button--disabled'],
       ]"
       :disabled="disabledIncrement"
-      data-test="increment-button"
+      data-testid="increment-button"
       @click="$emit('onChangeValue', count + 1)"
     >
       +
@@ -75,29 +72,27 @@ const disabledDecrement = computed<boolean>(
 
 <style module lang="scss">
 .counter {
-  display: flex;
-  justify-content: right;
-  flex-direction: row;
   position: relative;
+  display: flex;
+  flex-direction: row;
+  justify-content: right;
   width: 150px;
 }
 
 .counter__button {
-  border-radius: 18px;
-  box-sizing: border-box;
   width: 36px;
   height: 36px;
-  background-color: white;
   font-size: 20px;
-  border: 2px solid var(--color-surface-secondary);
   color: var(--color-surface-secondary);
   cursor: pointer;
+  background-color: white;
+  border: 2px solid var(--color-surface-secondary);
+  border-radius: 18px;
 
   &--disabled {
-    @extend .counter__button;
-    border-color: var(--color-surface-light);
     color: var(--color-surface-light);
     cursor: not-allowed;
+    border-color: var(--color-surface-light);
   }
 }
 
@@ -113,7 +108,6 @@ const disabledDecrement = computed<boolean>(
   color: var(--color-surface-primary);
 
   &--disabled {
-    @extend .counter__text;
     color: var(--color-surface-light);
   }
 }

@@ -1,78 +1,92 @@
 <template>
   <div :class="$style['page']">
-    <MyOverlay
+    <OverlayComponent
       v-show="
         gameSettingsState.selectedMode === 'multiplayer' &&
           (!inGameState.isThisRoundReady ||
             inGameState.isWaitingForOtherPlayers ||
-            state.isEndingMultiplayerGame)
+            inGameState.isEndingMultiplayerGame)
       "
-      :msg="state.overlayMsg"
+      :msg="message"
+    />
+    <ResultModalComponent
+      v-show="inGameState.isShowingResult"
+      :selected-mode="gameSettingsState.selectedMode"
+      :is-owner="gameSettingsState.isOwner"
+      :is-showing-summary="inGameState.isShowingSummary"
+      :is-next-round-ready="inGameState.isNextRoundReady"
+      :distance="(distance as number)"
+      :distance-by-player-arr="sortedDistance"
+      :round="inGameState.round"
+      :score="inGameState.score"
+      :multiplayer-game-summary="sortedScore"
+      @onClickNextRoundButton="onClickNextRoundButton"
+      @onClickViewSummaryButton="onClickViewSummaryButton"
+      @onClickPlayAgainButton="onClickPlayAgainButton"
+      @onClickExitButton="router.back()"
+      @endMultiplayerGame="endMultiplayerGame"
     />
     <Suspense>
-      <ResultModal
-        v-show="inGameState.isShowingResult"
-        :selected-mode="gameSettingsState.selectedMode"
-        :is-owner="gameSettingsState.isOwner"
-        :is-showing-result="inGameState.isShowingResult"
-        :is-showing-summary="inGameState.isShowingSummary"
-        :is-next-round-ready="inGameState.isNextRoundReady"
-        :random-lat-lng="inGameState.randomLatLng"
-        :selected-lat-lng="inGameState.selectedLatLng"
-        :selected-lat-lng-arr="inGameState.selectedLatLngArr"
-        :game-history="inGameState.gameHistory"
-        :distance="(distance as number)"
-        :distance-by-player-arr="inGameState.distanceByPlayerArr"
-        :round="inGameState.round"
-        :score="inGameState.score"
-        :multiplayer-game-summary="state.multiplayerGameSummary"
-        @onClickNextRoundButton="onClickNextRoundButton"
-        @onClickViewSummaryButton="saveIsShowingSummary(true)"
-        @onClickPlayAgainButton="resetInGameState"
-        @onClickExitButton="router.back()"
-        @endMultiplayerGame="endMultiplayerGame"
-      />
+      <StreetViewWrapperComponent>
+        <StreetViewComponent
+          ref="streetViewRef"
+          :selected-map="gameSettingsState.selectedMap"
+          :selected-mode="gameSettingsState.selectedMode"
+          :is-owner="gameSettingsState.isOwner"
+          :random-lat-lng="inGameState.randomLatLng"
+          :round="inGameState.round"
+          @updateRandomLatLng="saveRandomLatLng"
+          @saveStreetView="saveStreetView"
+        />
+      </StreetViewWrapperComponent>
     </Suspense>
-    <Suspense>
-      <StreetView
-        :selected-map="gameSettingsState.selectedMap"
-        :selected-mode="gameSettingsState.selectedMode"
-        :is-owner="gameSettingsState.isOwner"
-        :random-lat-lng="inGameState.randomLatLng"
-        :round="inGameState.round"
-        @updateRandomLatLng="(val: google.maps.LatLng) => saveRandomLatLng(val)"
-        @savePanorama="savePanorama"
-        @saveStreetView="saveStreetView"
-      />
-    </Suspense>
-    <ScoreBoard
+    <ScoreBoardComponent
+      ref="scoreBoardRef"
+      :key="`${inGameState.timePerRound}#${inGameState.round}`"
       :selected-map="gameSettingsState.selectedMap"
       :selected-mode="gameSettingsState.selectedMode"
       :round="inGameState.round"
       :score="inGameState.score"
-      :countdown="countdown"
+      :time-per-round="inGameState.timePerRound"
+      @on-countdown-finish="onCountdownFinished"
     />
-    <RoomNumberDialog
+    <RoomNumberDialogComponent
       v-if="
         gameSettingsState.selectedMode === 'multiplayer' &&
           gameSettingsState.isOwner
       "
       :room-number="gameSettingsState.roomNumber"
-      :is-game-ready="state.isGameReady"
+      :is-game-ready="inGameState.isMultiplayerGameReady"
     />
     <Suspense>
-      <MyMap
-        :device="deviceState"
-        :selected-mode="gameSettingsState.selectedMode"
-        :is-owner="gameSettingsState.isOwner"
-        :random-lat-lng="inGameState.randomLatLng"
-        :round="inGameState.round"
-        :is-make-guess-button-clicked="inGameState.isMakeGuessButtonClicked"
-        @updateSelectedLatLng="(val: google.maps.LatLng) => saveSelectedLatLng(val)"
-        @onClickHideMapButton="saveIsMakeGuessButtonClicked(false)"
-      />
+      <MapWrapperComponent>
+        <MapComponent
+          ref="mapRef"
+          :is-visible="inGameState.isMapVisible"
+          :is-showing-result="inGameState.isShowingResult"
+          :selected-mode="gameSettingsState.selectedMode"
+          :random-lat-lng="inGameState.randomLatLng"
+          :selected-lat-lng="inGameState.selectedLatLng"
+          :selected-lat-lng-arr="inGameState.selectedLatLngArr"
+          :game-history="inGameState.gameHistory"
+          @updateSelectedLatLng="(val: google.maps.LatLng) => inGameState.selectedLatLng = val"
+        />
+      </MapWrapperComponent>
     </Suspense>
-    <FlatButton
+    <IconButtonComponent
+      v-if="deviceState <= DEVICE_TYPES.MOBLE_PORTRAIT"
+      v-show="inGameState.isMapVisible && !inGameState.isShowingResult"
+      :icon="'close'"
+      :style="{
+        zIndex: '3',
+        position: 'absolute',
+        bottom: '280px',
+        left: '20px',
+      }"
+      :size="16"
+      @click="inGameState.isMapVisible = false"
+    />
+    <FlatButtonComponent
       :text="'GUESS'"
       :style="{
         zIndex: 1,
@@ -80,12 +94,16 @@
         bottom: '12px',
         left: '12px',
       }"
-      :disabled="isGuessButtonDisabled"
+      :disabled="
+        inGameState.selectedLatLng === null ||
+          (gameSettingsState.selectedMode === 'multiplayer' &&
+            !inGameState.isThisRoundReady)
+      "
       @click="onClickGuessButton"
     />
-    <FlatButton
+    <FlatButtonComponent
       v-if="deviceState <= DEVICE_TYPES.MOBLE_PORTRAIT"
-      v-show="!inGameState.isMakeGuessButtonClicked"
+      v-show="!inGameState.isMapVisible"
       :text="'MAKE GUESS'"
       :style="{
         zIndex: 1,
@@ -93,9 +111,9 @@
         bottom: '12px',
         left: '12px',
       }"
-      @click="saveIsMakeGuessButtonClicked(true)"
+      @click="inGameState.isMapVisible = true"
     />
-    <IconButton
+    <IconButtonComponent
       :icon="'my_location'"
       :style="{
         zIndex: 1,
@@ -103,9 +121,9 @@
         right: '12px',
         bottom: '228px',
       }"
-      @click="resetPanoramaLocation"
+      @click="streetViewRef?.resetStreetView"
     />
-    <IconButton
+    <IconButtonComponent
       :icon="'zoom_in'"
       :style="{
         zIndex: 1,
@@ -113,9 +131,9 @@
         right: '12px',
         bottom: '164px',
       }"
-      @click="zoomInPanorama"
+      @click="streetViewRef?.zoomIn"
     />
-    <IconButton
+    <IconButtonComponent
       :icon="'zoom_out'"
       :style="{
         zIndex: 1,
@@ -123,251 +141,396 @@
         right: '12px',
         bottom: '100px',
       }"
-      @click="zoomOutPanorama"
+      @click="streetViewRef?.zoomOut"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import { reactive, computed, onMounted } from "vue";
+import { onMounted, onUnmounted, ref, nextTick } from "vue";
 import { useRouter } from "vue-router";
 import {
   get,
   set,
   ref as dbRef,
   onValue,
-  off,
   remove,
   child,
   update,
+  onDisconnect,
+  Unsubscribe,
+  DatabaseReference,
 } from "firebase/database";
-
-import StreetView from "@/components/game/StreetView.vue";
-import MyMap from "@/components/game/MyMap.vue";
-import ScoreBoard from "@/components/game/ScoreBoard.vue";
-import ResultModal from "@/components/game/ResultModal.vue";
-import RoomNumberDialog from "@/components/game/RoomNumberDialog.vue";
-import MyOverlay from "@/components/game/MyOverlay.vue";
-import FlatButton from "@/components/shared/FlatButton.vue";
-import IconButton from "@/components/shared/IconButton.vue";
+import StreetViewComponent from "@/components/game/StreetViewComponent.vue";
+import MapComponent from "@/components/game/MapComponent.vue";
+import ScoreBoardComponent from "@/components/game/ScoreBoardComponent.vue";
+import ResultModalComponent from "@/components/game/ResultModalComponent.vue";
+import RoomNumberDialogComponent from "@/components/game/RoomNumberDialogComponent.vue";
+import OverlayComponent from "@/components/game/OverlayComponent.vue";
+import FlatButtonComponent from "@/components/shared/FlatButtonComponent.vue";
+import IconButtonComponent from "@/components/shared/IconButtonComponent.vue";
 import { database } from "@/firebase";
-import { GameHistory, Summary } from "@/types";
 import { DEVICE_TYPES } from "@/constants";
 import { storeToRefs } from "pinia";
 import { useGameSettingsStore } from "@/stores/gameSettings";
 import { useInGameStore } from "@/stores/inGame";
 import { useDeviceStore } from "@/stores/device";
-import { Loader } from "@googlemaps/js-api-loader";
-
-const loader = new Loader({
-  apiKey: import.meta.env.VITE_API_KEY,
-  version: "weekly",
-});
-const { LatLng } = await loader.importLibrary("core");
+import StreetViewWrapperComponent from "@/components/game/StreetViewWrapperComponent.vue";
+import MapWrapperComponent from "@/components/game/MapWrapperComponent.vue";
 
 const deviceStore = useDeviceStore();
 const { deviceState } = storeToRefs(deviceStore);
-
 const gameSettingsStore = useGameSettingsStore();
 const { gameSettingsState } = storeToRefs(gameSettingsStore);
-
 const inGameStore = useInGameStore();
-const { inGameState, distance } = storeToRefs(inGameStore);
-const {
-  saveRandomLatLng,
-  saveSelectedLatLng,
-  savePanorama,
-  resetPanoramaLocation,
-  zoomInPanorama,
-  zoomOutPanorama,
-  saveIsMakeGuessButtonClicked,
-  saveIsThisRoundReady,
-  saveIsNextRoundReady,
-  saveScore,
-  saveIsShowingResult,
-  saveIsShowingSummary,
-  saveIsWaitingForOtherPlayers,
-  saveHasTimerStarted,
-  updateGameHistory,
-  proceedToNextRound,
-  resetInGameState,
-  updateDistanceByPlayerArr,
-  updateSelectedLatLngArr,
-} = inGameStore;
+const { inGameState, distance, sortedDistance, sortedScore, message } =
+  storeToRefs(inGameStore);
+
+const scoreBoardRef = ref<InstanceType<typeof ScoreBoardComponent> | null>(
+  null
+);
+const mapRef = ref<InstanceType<typeof MapComponent> | null>(null);
+const streetViewRef = ref<InstanceType<typeof StreetViewComponent> | null>(
+  null
+);
 
 const router = useRouter();
 
-const state = reactive<{
-  isGameReady: boolean;
-  isEndingMultiplayerGame: boolean;
-  remainingTime: number;
-  multiplayerGameSummary: Array<Summary>;
-  overlayMsg: string;
-}>({
-  isGameReady: false,
-  isEndingMultiplayerGame: false,
-  remainingTime: 0,
-  multiplayerGameSummary: [],
-  overlayMsg: "Waiting for other players to get ready..",
-});
+let roomRef: DatabaseReference;
 
-const isGuessButtonDisabled = computed<boolean>(
-  () =>
-    inGameState.value.selectedLatLng === null ||
-    (gameSettingsState.value.selectedMode === "multiplayer" &&
-      !inGameState.value.isThisRoundReady)
-);
+if (gameSettingsState.value.selectedMode === "multiplayer") {
+  roomRef = dbRef(database, `${gameSettingsState.value.roomNumber}`);
+}
 
-const countdown = computed<string>(() => {
-  let min: string | number = Math.floor(state.remainingTime / 60);
-  let sec: string | number = state.remainingTime % 60;
-  if (min < 10) {
-    min = `0${min}`;
+const unsubscribeArr = ref<Unsubscribe[]>([]);
+
+const retrieveRoomConfig = async (): Promise<void> => {
+  try {
+    const [time, size] = await Promise.all([
+      get(child(roomRef, "time")),
+      get(child(roomRef, "size")),
+    ]);
+    inGameState.value.timePerRound = time.val();
+    inGameState.value.size = size.val();
+  } catch (err) {
+    console.log(`retrieveRoomConfig error: ${err}`);
   }
-  if (sec < 10) {
-    sec = `0${sec}`;
-  }
-  return `${min}:${sec}`;
-});
-
-const saveStreetView = async (latLng: google.maps.LatLng): Promise<void> => {
-  return await set(
-    dbRef(
-      database,
-      `${gameSettingsState.value.roomNumber}/streetView/round${inGameState.value.round}`
-    ),
-    {
-      lat: latLng.lat(),
-      lng: latLng.lng(),
-    }
-  );
 };
 
-const startTimer = (): void => {
-  if (!inGameState.value.isWaitingForOtherPlayers) {
-    if (state.remainingTime > 0) {
-      setTimeout(() => {
-        state.remainingTime -= 1;
-        startTimer();
-      }, 1000);
-    } else {
-      if (!inGameState.value.selectedLatLng) {
-        const latLng = new LatLng({
-          lat: 37.86926,
-          lng: -122.254811,
-        });
-        saveSelectedLatLng(latLng);
-      }
-      onClickGuessButton();
-    }
+const retrievePlayerInfo = async (): Promise<void> => {
+  try {
+    const playerInfo = await get(child(roomRef, "playerName"));
+    playerInfo.forEach((playerName) => {
+      inGameState.value.players.set(playerName.key as string, playerName.val());
+    });
+  } catch (err) {
+    console.log(`retrievePlayerInfo error: ${err}`);
   }
+};
+
+const saveRandomLatLng = (latLng: google.maps.LatLng) => {
+  if (gameSettingsState.value.selectedMode === "single") {
+    mapRef.value?.attachListener();
+  }
+  inGameState.value.randomLatLng = latLng;
+};
+
+const saveStreetView = async (latLng: google.maps.LatLng): Promise<void> => {
+  try {
+    await set(child(roomRef, `streetView/round${inGameState.value.round}`), {
+      lat: latLng.lat(),
+      lng: latLng.lng(),
+    });
+  } catch (err) {
+    console.log(`saveStreetView error: ${err}`);
+  }
+};
+
+const listenRoomStatus = () => {
+  const unsubscribeRoomStatusVal = onValue(
+    child(roomRef, "active"),
+    async (snapshot) => {
+      if (!snapshot.val()) {
+        unsubscribeRoomStatusVal();
+        onEndMultiplayerGame();
+      }
+    }
+  );
+  unsubscribeArr.value.push(unsubscribeRoomStatusVal);
+};
+
+const listenCurrentRound = () => {
+  const unsubscribeCurrentRound = onValue(
+    child(roomRef, `round${inGameState.value.round}`),
+    async (snapshot) => {
+      if (snapshot.size === inGameState.value.size) {
+        inGameState.value.isMultiplayerGameReady = true;
+        inGameState.value.isThisRoundReady = true;
+
+        if (inGameState.value.round === 1) {
+          await retrievePlayerInfo();
+        }
+
+        if (
+          !inGameState.value.hasTimerStarted &&
+          !inGameState.value.isWaitingForOtherPlayers
+        ) {
+          inGameState.value.hasTimerStarted = true;
+
+          await nextTick();
+
+          mapRef.value?.attachListener();
+          scoreBoardRef.value?.startCountdown();
+        }
+        unsubscribeCurrentRound();
+      }
+    }
+  );
+  unsubscribeArr.value.push(unsubscribeCurrentRound);
+};
+
+const joinCurrentRound = async (): Promise<void> => {
+  try {
+    const snapshot = await get(
+      child(roomRef, `streetView/round${inGameState.value.round}`)
+    );
+
+    if (!snapshot.hasChild(gameSettingsState.value.playerId)) {
+      await update(child(roomRef, `round${inGameState.value.round}`), {
+        [gameSettingsState.value.playerId]: 0,
+      });
+    }
+  } catch (err) {
+    console.log(`joinCurrentRound error: ${err}`);
+  }
+};
+
+const retrieveCurrentRoundStreetView = async (): Promise<void> => {
+  try {
+    const snapshot = await get(
+      child(roomRef, `streetView/round${inGameState.value.round}`)
+    );
+    const lat = snapshot.child("lat").val();
+    const lng = snapshot.child("lng").val();
+    const randomLatLng = new google.maps.LatLng(lat, lng);
+    inGameState.value.randomLatLng = randomLatLng;
+    streetViewRef.value?.loadStreetView(inGameState.value.randomLatLng);
+  } catch (err) {
+    console.log(`retrieveCurrentRoundStreetView error: ${err}`);
+  }
+};
+
+const retrieveDistance = async (): Promise<void> => {
+  try {
+    const distances = await get(
+      child(roomRef, `round${inGameState.value.round}`)
+    );
+    distances.forEach((distance) => {
+      const playerName = inGameState.value.players.get(distance.key as string);
+      inGameState.value.distanceByPlayerArr.push({
+        playerName: playerName as string,
+        distance: distance.val(),
+      });
+    });
+  } catch (err) {
+    console.log(`retrieveDistance error: ${err}`);
+  }
+};
+
+const retrieveFinalScore = async (): Promise<void> => {
+  try {
+    const scores = await get(child(roomRef, "score"));
+    scores.forEach((score) => {
+      const playerName = inGameState.value.players.get(score.key as string);
+      inGameState.value.multiplayerGameSummary.push({
+        playerName: playerName as string,
+        score: score.val(),
+      });
+    });
+  } catch (err) {
+    console.log(`retrieveFinalScore error: ${err}`);
+  }
+};
+
+const listenGuesses = () => {
+  const unsubscribeGuesses = onValue(
+    child(roomRef, "guess"),
+    async (snapshot) => {
+      if (snapshot.size === inGameState.value.size) {
+        snapshot.forEach((childSnapshot) => {
+          const lat = childSnapshot.child("lat").val();
+          const lng = childSnapshot.child("lng").val();
+          const latlng = new google.maps.LatLng(lat, lng);
+          inGameState.value.selectedLatLngArr.push(latlng);
+        });
+
+        await retrieveDistance();
+
+        inGameState.value.isWaitingForOtherPlayers = false;
+        inGameState.value.isShowingResult = true;
+        mapRef.value?.showResult();
+        listenNextStreetView();
+
+        if (inGameState.value.round === 5) {
+          await retrieveFinalScore();
+          listenPlayerStatus();
+        }
+
+        remove(child(roomRef, "guess"));
+      }
+    }
+  );
+  unsubscribeArr.value.push(unsubscribeGuesses);
+};
+
+const listenFirstStreetView = () => {
+  const unsubscribeFirstStreetView = onValue(
+    child(roomRef, "streetView/round1"),
+    async (snapshot) => {
+      if (snapshot.exists()) {
+        await retrieveCurrentRoundStreetView();
+        unsubscribeFirstStreetView();
+      }
+    }
+  );
+  unsubscribeArr.value.push(unsubscribeFirstStreetView);
+};
+
+const listenNextStreetView = () => {
+  const unsubscribeNextStreetView = onValue(
+    child(roomRef, `streetView/round${inGameState.value.round + 1}`),
+    async (snapshot) => {
+      if (snapshot.exists()) {
+        inGameState.value.isNextRoundReady = true;
+        unsubscribeNextStreetView();
+      }
+    }
+  );
+  unsubscribeArr.value.push(unsubscribeNextStreetView);
+};
+
+const onCountdownFinished = () => {
+  if (!inGameState.value.selectedLatLng) {
+    const latLng = new google.maps.LatLng({
+      lat: 37.86926,
+      lng: -122.254811,
+    });
+    inGameState.value.selectedLatLng = latLng;
+  }
+  onClickGuessButton();
 };
 
 const onClickGuessButton = async (): Promise<void> => {
-  saveScore(distance.value as number);
-  if (gameSettingsState.value.selectedMode !== "multiplayer") {
-    saveIsShowingResult(true);
-  } else {
-    // Multiplayer game
-    saveIsWaitingForOtherPlayers(true);
-    try {
-      await update(
-        dbRef(
-          database,
-          `${gameSettingsState.value.roomNumber}/round${inGameState.value.round}`
-        ),
-        {
+  try {
+    inGameState.value.score += distance.value as number;
+    mapRef.value?.removeListener();
+
+    if (gameSettingsState.value.selectedMode !== "multiplayer") {
+      inGameState.value.isShowingResult = true;
+      mapRef.value?.showResult();
+    } else {
+      inGameState.value.isWaitingForOtherPlayers = true;
+      scoreBoardRef.value?.stopCountdown();
+
+      await Promise.all([
+        update(child(roomRef, `round${inGameState.value.round}`), {
           [gameSettingsState.value.playerId]: distance.value,
-        }
-      );
-      await set(
-        dbRef(
-          database,
-          `${gameSettingsState.value.roomNumber}/guess/${gameSettingsState.value.playerId}`
-        ),
-        {
+        }),
+        set(child(roomRef, `guess/${gameSettingsState.value.playerId}`), {
           lat: inGameState.value.selectedLatLng?.lat(),
           lng: inGameState.value.selectedLatLng?.lng(),
-        }
-      );
-      await update(
-        dbRef(database, `${gameSettingsState.value.roomNumber}/score`),
-        {
+        }),
+        update(child(roomRef, "score"), {
           [gameSettingsState.value.playerId]: inGameState.value.score,
-        }
-      );
-    } catch (err) {
-      console.log(`onClickGuessButton error: ${err}`);
+        }),
+      ]);
     }
+  } catch (err) {
+    console.log(`onClickGuessButton error: ${err}`);
   }
 };
 
 const onClickNextRoundButton = async (): Promise<void> => {
-  if (inGameState.value.isMakeGuessButtonClicked) {
-    // Hide map for mobile devices
-    saveIsMakeGuessButtonClicked(false);
-  }
+  try {
+    const gameHistory = {
+      randomLatLng: inGameState.value.randomLatLng as google.maps.LatLng,
+      selectedLatLng: inGameState.value.selectedLatLng as google.maps.LatLng,
+    };
+    inGameState.value.gameHistory.push(gameHistory);
+    inGameState.value.round++;
+    inGameState.value.isThisRoundReady = false;
+    inGameState.value.isNextRoundReady = false;
+    inGameState.value.hasTimerStarted = false;
+    inGameState.value.isShowingResult = false;
+    inGameState.value.isMapVisible = false;
+    inGameState.value.randomLatLng = null;
+    inGameState.value.selectedLatLng = null;
+    inGameState.value.selectedLatLngArr = [];
+    inGameState.value.distanceByPlayerArr = [];
 
-  const gameHistory: GameHistory = {
-    randomLatLng: inGameState.value.randomLatLng as google.maps.LatLng,
-    selectedLatLng: inGameState.value.selectedLatLng as google.maps.LatLng,
-  };
-  updateGameHistory(gameHistory);
-  proceedToNextRound();
+    mapRef.value?.removeMarkers();
+    mapRef.value?.removePolyline();
 
-  // Multiplayer game
-  if (
-    gameSettingsState.value.selectedMode === "multiplayer" &&
-    !gameSettingsState.value.isOwner
-  ) {
-    try {
-      await set(
-        dbRef(
-          database,
-          `/${gameSettingsState.value.roomNumber}/round${inGameState.value.round}`
-        ),
-        {
-          [gameSettingsState.value.playerId]: 0,
-        }
-      );
-      const snapshot = await get(
-        child(
-          dbRef(database),
-          `/${gameSettingsState.value.roomNumber}/streetView/round${inGameState.value.round}`
-        )
-      );
-      const randomLat = snapshot.child("lat").val();
-      const randomLng = snapshot.child("lng").val();
-      const randomLatLng = new LatLng(randomLat, randomLng);
-      saveRandomLatLng(randomLatLng);
-    } catch (err) {
-      console.log(`onClickNextRoundButton error: ${err}`);
+    if (
+      gameSettingsState.value.selectedMode === "multiplayer" &&
+      !gameSettingsState.value.isOwner
+    ) {
+      listenCurrentRound();
+      await Promise.all([joinCurrentRound(), retrieveCurrentRoundStreetView()]);
+    } else if (gameSettingsState.value.selectedMode === "multiplayer") {
+      listenCurrentRound();
+      await joinCurrentRound();
+      streetViewRef.value?.loadStreetView();
+    } else {
+      streetViewRef.value?.loadStreetView();
     }
+  } catch (err) {
+    console.log(`onClickNextButton error: ${err}`);
   }
+};
+
+const onClickViewSummaryButton = () => {
+  inGameState.value.isShowingSummary = true;
+  mapRef.value?.showSummary();
+};
+
+const listenPlayerStatus = () => {
+  const unsubscribePlayerStatus = onValue(
+    child(roomRef, "hasDone"),
+    async (snapshot) => {
+      if (snapshot.size === inGameState.value.size) {
+        await update(roomRef, {
+          active: false,
+        });
+      }
+    }
+  );
+  unsubscribeArr.value.push(unsubscribePlayerStatus);
 };
 
 const endMultiplayerGame = async (): Promise<void> => {
   try {
-    await update(
-      dbRef(database, `/${gameSettingsState.value.roomNumber}/hasDone`),
-      {
-        [gameSettingsState.value.playerId]: true,
-      }
-    );
-    saveIsWaitingForOtherPlayers(true);
+    await update(child(roomRef, "hasDone"), {
+      [gameSettingsState.value.playerId]: true,
+    });
+    inGameState.value.isWaitingForOtherPlayers = true;
   } catch (err) {
     console.log(`endMultiplayerGame error: ${err}`);
   }
 };
 
+const onClickPlayAgainButton = (): void => {
+  inGameStore.$reset();
+  mapRef.value?.removeMarkers();
+  mapRef.value?.removePolyline();
+  streetViewRef.value?.loadStreetView();
+};
+
 const onEndMultiplayerGame = (): void => {
-  // Multiplayer game
-  state.overlayMsg = "Disconnecting from this game..";
-  state.isEndingMultiplayerGame = true;
-  off(dbRef(database, `/${gameSettingsState.value.roomNumber}`));
+  inGameState.value.isEndingMultiplayerGame = true;
 
   if (gameSettingsState.value.roomNumber !== "") {
-    remove(dbRef(database, `/${gameSettingsState.value.roomNumber}`));
+    remove(roomRef);
 
     setTimeout(() => {
       router.back();
@@ -375,135 +538,30 @@ const onEndMultiplayerGame = (): void => {
   }
 };
 
-onMounted(() => {
-  const { roomNumber, playerId } = gameSettingsState.value;
-
+onMounted(async () => {
   if (gameSettingsState.value.selectedMode === "multiplayer") {
-    onValue(dbRef(database, `/${roomNumber}`), async (snapshot) => {
-      try {
-        if (
-          !snapshot.child("active").exists() ||
-          !snapshot.child("active").val()
-        ) {
-          // Exit the game when the game finished
-          onEndMultiplayerGame();
-        } else {
-          // Put the player into the current round's node
-          if (
-            !snapshot
-              .child(`round${inGameState.value.round}`)
-              .hasChild(playerId)
-          ) {
-            await update(
-              dbRef(database, `/${roomNumber}/round${inGameState.value.round}`),
-              {
-                [playerId]: 0,
-              }
-            );
-            if (!gameSettingsState.value.isOwner) {
-              const randomLat = snapshot
-                .child(`streetView/round${inGameState.value.round}/lat`)
-                .val();
-              const randomLng = snapshot
-                .child(`streetView/round${inGameState.value.round}/lng`)
-                .val();
-              const randomLatLng = new LatLng(randomLat, randomLng);
-              saveRandomLatLng(randomLatLng);
-            }
-          }
-          if (
-            snapshot.child(`round${inGameState.value.round}`).size ===
-            snapshot.child("size").val()
-          ) {
-            // Hide RoomNumberDialog when all players proceed to this round
-            state.isGameReady = true;
-            // Enable guess button when all players are put into the current round's node
-            saveIsThisRoundReady(true);
+    await retrieveRoomConfig();
 
-            // Start a timer
-            if (!inGameState.value.hasTimerStarted) {
-              saveHasTimerStarted(true);
+    listenRoomStatus();
+    listenGuesses();
+    listenCurrentRound();
 
-              state.remainingTime = snapshot.child("time").val() * 60;
-              startTimer();
-            }
-          }
-          if (
-            snapshot.child("streetView").size ===
-            inGameState.value.round + 1
-          ) {
-            // Allow other players to proceed to the next round after the owner load a StreetView first
-            saveIsNextRoundReady(true);
-          }
+    if (!gameSettingsState.value.isOwner) {
+      listenFirstStreetView();
+    }
 
-          if (snapshot.child("guess").size === snapshot.child("size").val()) {
-            // Show the result when all players finished guessing locations
-            snapshot.child("guess").forEach((childSnapshot) => {
-              const lat = childSnapshot.child("lat").val();
-              const lng = childSnapshot.child("lng").val();
-              const latlng = new LatLng(lat, lng);
-              const playerName = snapshot
-                .child("playerName")
-                .child(childSnapshot.key as string)
-                .val();
-              const distance = snapshot
-                .child(
-                  `round${inGameState.value.round}/${
-                    childSnapshot.key as string
-                  }`
-                )
-                .val();
-              updateSelectedLatLngArr(latlng);
-              updateDistanceByPlayerArr({
-                playerName: playerName,
-                distance: distance,
-              });
-            });
-            saveIsWaitingForOtherPlayers(false);
-            saveIsShowingResult(true);
+    await joinCurrentRound();
 
-            if (inGameState.value.round === 5) {
-              // Summary
-              snapshot.child("score").forEach((childSnapshot) => {
-                const playerName = snapshot
-                  .child("playerName")
-                  .child(childSnapshot.key as string)
-                  .val();
-                const score = childSnapshot.val();
-                state.multiplayerGameSummary.push({
-                  playerName: playerName,
-                  score: score,
-                });
-              });
-            }
-            // Remove guess node every time the round is done
-            remove(dbRef(database, `/${roomNumber}/guess`));
-          }
+    onDisconnect(child(roomRef, "active")).set(false);
+  }
+});
 
-          if (snapshot.child("hasDone").size === snapshot.child("size").val()) {
-            update(dbRef(database, `${roomNumber}`), {
-              active: false,
-            });
-          }
-          // Disconnect the game when the player pressed the back button
-          window.addEventListener("popstate", () => {
-            update(dbRef(database, `${roomNumber}`), {
-              active: false,
-            });
-            off(dbRef(database, `${roomNumber}`));
-          });
-          // Disconnect the game when the player refreshed the window
-          window.addEventListener("beforeunload", () => {
-            update(dbRef(database, `${roomNumber}`), {
-              active: false,
-            });
-            off(dbRef(database, `${roomNumber}`));
-          });
-        }
-      } catch (err) {
-        console.log(`onValue error: ${err}`);
-      }
+onUnmounted(async () => {
+  if (roomRef !== undefined) {
+    unsubscribeArr.value.forEach((unsubscribe) => {
+      unsubscribe();
     });
+    await set(child(roomRef, "active"), false);
   }
 });
 </script>
@@ -511,10 +569,10 @@ onMounted(() => {
 <style module lang="scss">
 .page {
   position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   overflow: hidden;
-  top: 0;
-  left: 0;
 }
 </style>

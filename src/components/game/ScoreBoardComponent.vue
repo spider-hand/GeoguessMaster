@@ -39,11 +39,12 @@
 </template>
 
 <script setup lang="ts">
-import { PropType } from "vue";
+import { PropType, watch } from "vue";
 import { MapTypes, ModeTypes } from "@/types";
 import { MAP_OPTIONS } from "@/constants";
+import useCountdown from "@/composables/game/useCountdown";
 
-defineProps({
+const props = defineProps({
   selectedMap: {
     type: String as PropType<MapTypes>,
     required: true,
@@ -60,28 +61,44 @@ defineProps({
     type: Number,
     required: true,
   },
-  countdown: {
-    type: String,
+  timePerRound: {
+    type: Number,
     required: true,
-    default: "",
   },
 });
+
+const { startCountdown, stopCountdown, remainingTime, countdown } =
+  useCountdown(props.timePerRound);
+
+const emit = defineEmits<{
+  onCountdownFinish: [];
+}>();
+
+watch(
+  () => remainingTime.value,
+  (newVal) => {
+    if (newVal === 0) {
+      emit("onCountdownFinish");
+    }
+  }
+);
+
+defineExpose({ startCountdown, stopCountdown });
 </script>
 
 <style module lang="scss">
 .score-board {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: row;
-  z-index: 1;
-  box-sizing: border-box;
   position: absolute;
   top: 12px;
   left: 12px;
+  z-index: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
   max-width: calc(100% - 24px);
-  border-radius: 12px;
   background: var(--color-brand-gradient);
+  border-radius: 12px;
 }
 
 .score-board__wrapper {
@@ -89,12 +106,14 @@ defineProps({
 }
 
 .score-board__text {
-  @include mainText;
+  @include main-text;
+
   color: white;
 }
 
 .score-board__label {
   @include label;
+
   color: white;
 }
 </style>

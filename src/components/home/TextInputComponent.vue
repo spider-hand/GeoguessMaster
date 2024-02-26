@@ -1,10 +1,12 @@
 <template>
-  <div :class="$style['input']">
+  <div :class="$style['text-input']">
     <label
       :for="name"
       :class="[
-        disabled ? $style['input__label--disabled'] : $style['input__label'],
-        errorMsg && $style['input__label--error'],
+        $style['text-input__label'],
+        ,
+        disabled && $style['text-input__label--disabled'],
+        errorMsg && $style['text-input__label--error'],
       ]"
     >
       {{ label }}
@@ -14,8 +16,9 @@
       maxlength="20"
       :name="name"
       :class="[
-        disabled ? $style['text-input--disabled'] : $style['text-input'],
-        errorMsg && $style['text-input--error'],
+        $style['text-input__body'],
+        disabled && $style['text-input__body--disabled'],
+        errorMsg && $style['text-input__body--error'],
       ]"
       :placeholder="placeholder"
       :disabled="disabled"
@@ -23,8 +26,8 @@
     >
     <span
       v-if="errorMsg"
-      :class="$style['input__error']"
-      data-test="error-msg"
+      :class="$style['text-input__error']"
+      data-testid="error-msg"
     >
       <img
         src="@/assets/images/material-symbols/error.svg"
@@ -38,6 +41,8 @@
 </template>
 
 <script setup lang="ts">
+import { PropType } from "vue";
+
 defineProps({
   label: {
     type: String,
@@ -58,7 +63,7 @@ defineProps({
     required: false,
   },
   errorMsg: {
-    type: String,
+    type: [String, null] as PropType<string | null>,
     required: false,
     default: null,
   },
@@ -70,40 +75,38 @@ defineEmits<{
 </script>
 
 <style module lang="scss">
-.input {
+.text-input {
   display: flex;
   flex-direction: column;
 }
 
-.input__label {
+.text-input__label {
   margin-bottom: 4px;
   font-size: 12px;
   font-weight: 400;
   color: var(--color-surface-secondary);
 
   &--disabled {
-    @extend .input__label;
     color: var(--color-surface-light) !important;
   }
 
   &--error {
-    @extend .input__label;
     color: var(--color-red-primary);
   }
 }
 
-.text-input {
-  border: none;
-  border-bottom: 2px solid var(--color-surface-secondary);
+.text-input__body {
   width: 100%;
-  line-height: 150%;
   font-size: 16px;
   font-weight: 500;
+  line-height: 150%;
   color: var(--color-surface-primary);
+  border: none;
+  border-bottom: 2px solid var(--color-surface-secondary);
 
   &:focus-visible {
-    box-shadow: none;
     outline: 0;
+    box-shadow: none;
   }
 
   &::placeholder {
@@ -111,9 +114,8 @@ defineEmits<{
   }
 
   &--disabled {
-    @extend .text-input;
-    border-bottom-color: var(--color-surface-light) !important;
     color: var(--color-surface-light) !important;
+    border-bottom-color: var(--color-surface-light) !important;
 
     &::placeholder {
       color: var(--color-surface-light) !important;
@@ -121,9 +123,8 @@ defineEmits<{
   }
 
   &--error {
-    @extend .text-input;
-    border-bottom-color: var(--color-red-primary);
     color: var(--color-red-primary);
+    border-bottom-color: var(--color-red-primary);
 
     &::placeholder {
       color: var(--color-red-primary);
@@ -131,7 +132,7 @@ defineEmits<{
   }
 }
 
-.input__error {
+.text-input__error {
   display: flex;
   align-items: center;
   font-size: 12px;

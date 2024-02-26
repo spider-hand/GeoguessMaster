@@ -15,7 +15,7 @@ interface GameSettingsState {
 }
 
 export const useGameSettingsStore = defineStore("gameSettings", () => {
-  const defaultState: GameSettingsState = {
+  const gameSettingsState = ref<GameSettingsState>({
     selectedMap: "world",
     selectedMode: "single",
     selectedSize: 2,
@@ -25,8 +25,7 @@ export const useGameSettingsStore = defineStore("gameSettings", () => {
     isOwner: true,
     roomNumber: "",
     isStartingGame: false,
-  };
-  const gameSettingsState = ref<GameSettingsState>(defaultState);
+  });
 
   const isReadyForMultiplayerGame = computed<boolean>(() => {
     if (gameSettingsState.value.isStartingGame) return false;
@@ -42,58 +41,8 @@ export const useGameSettingsStore = defineStore("gameSettings", () => {
     }
   });
 
-  const resetGameSettingsState = () => {
-    gameSettingsState.value = { ...defaultState };
-  };
-
-  const changeSelectedMap = (val: MapTypes) => {
-    gameSettingsState.value.selectedMap = val;
-  };
-
-  const changeSelectedMode = (val: ModeTypes) => {
-    gameSettingsState.value.selectedMode = val;
-  };
-
-  const changeSelectedSize = (val: number) => {
-    gameSettingsState.value.selectedSize = val;
-  };
-
-  const changeSelectedTime = (val: number) => {
-    gameSettingsState.value.selectedTime = val;
-  };
-
-  const changePlayerName = (val: string) => {
-    gameSettingsState.value.playerName = val;
-  };
-
-  const savePlayerId = (val: string) => {
-    gameSettingsState.value.playerId = val;
-  };
-
-  const switchIsOwner = (val: boolean) => {
-    gameSettingsState.value.isOwner = val;
-  };
-
-  const changeRoomNumber = (val: string) => {
-    gameSettingsState.value.roomNumber = val;
-  };
-
-  const clickStartButton = () => {
-    gameSettingsState.value.isStartingGame = true;
-  };
-
   return {
     gameSettingsState,
     isReadyForMultiplayerGame,
-    resetGameSettingsState,
-    changeSelectedMap,
-    changeSelectedMode,
-    changeSelectedSize,
-    changeSelectedTime,
-    changePlayerName,
-    savePlayerId,
-    switchIsOwner,
-    changeRoomNumber,
-    clickStartButton,
   };
 });

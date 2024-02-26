@@ -15,12 +15,10 @@ export const getDeviceType = (): DeviceTypes => {
   }
 };
 
-export const getRandomLatLng = (
-  LatLng: typeof google.maps.LatLng
-): google.maps.LatLng => {
+export const getRandomLatLng = (): google.maps.LatLng => {
   const lat = Math.random() * 170 - 85;
   const lng = Math.random() * 360 - 180;
-  return new LatLng(lat, lng);
+  return new google.maps.LatLng(lat, lng);
 };
 
 // @see https://stackoverflow.com/a/71135980/11043317

@@ -3,38 +3,38 @@
     <div :class="$style['create-game-form__section']">
       <button
         :class="$style['create-game-form__select']"
-        @click="state.isSelectingMap = true"
+        @click="isSelectingMap = true"
       >
         <span :class="$style['create-game-form__select-label']">Map</span>
         <span :class="$style['create-game-form__select-value']">{{
           MAP_OPTIONS.get(gameSettingsState.selectedMap)
         }}</span>
       </button>
-      <SelectBoxDialog
-        v-show="state.isSelectingMap"
+      <SelectBoxDialogComponent
+        v-show="isSelectingMap"
         :options="MAP_OPTIONS"
         @onChangeOption="onChangeSelectedMap"
-        @close="state.isSelectingMap = false"
+        @close="isSelectingMap = false"
       />
     </div>
     <div :class="$style['create-game-form__section']">
       <button
         :class="$style['create-game-form__select']"
-        @click="state.isSelectingMode = true"
+        @click="isSelectingMode = true"
       >
         <span :class="$style['create-game-form__select-label']">Mode</span>
         <span :class="$style['create-game-form__select-value']">{{
           MODE_OPTIONS.get(gameSettingsState.selectedMode)
         }}</span>
       </button>
-      <SelectBoxDialog
-        v-show="state.isSelectingMode"
+      <SelectBoxDialogComponent
+        v-show="isSelectingMode"
         :options="MODE_OPTIONS"
         @onChangeOption="onChangeSelectedMode"
-        @close="state.isSelectingMode = false"
+        @close="isSelectingMode = false"
       />
     </div>
-    <IconButton
+    <IconButtonComponent
       v-if="deviceState <= DEVICE_TYPES.TABLET_PORTRAIT"
       ref="createRoomButtonRef"
       :icon="'travel_explore'"
@@ -42,10 +42,10 @@
       @click="
         gameSettingsState.selectedMode === 'single'
           ? router.push('game')
-          : (state.isShowingRoomCreateDialog = true)
+          : (isShowingRoomCreateDialog = true)
       "
     />
-    <FlatButton
+    <FlatButtonComponent
       v-else
       ref="createRoomButtonRef"
       :style="{ position: 'absolute', right: '12px' }"
@@ -55,30 +55,30 @@
       @click="
         gameSettingsState.selectedMode === 'single'
           ? router.push('game')
-          : (state.isShowingRoomCreateDialog = true)
+          : (isShowingRoomCreateDialog = true)
       "
     />
-    <CreateRoomDialog
-      :is-showing-dialog="state.isShowingRoomCreateDialog"
-      :is-room-found="state.isRoomFound"
+    <CreateRoomDialogComponent
+      :is-showing-dialog="isShowingRoomCreateDialog"
+      :is-room-found="isRoomFound"
       :selected-size="gameSettingsState.selectedSize"
       :selected-time="gameSettingsState.selectedTime"
       :player-name="gameSettingsState.playerName"
       :is-owner="gameSettingsState.isOwner"
       :room-number="gameSettingsState.roomNumber"
       :is-ready-for-multiplayer-game="isReadyForMultiplayerGame"
-      @onChangeSize="changeSelectedSize"
-      @onChangeTime="changeSelectedTime"
-      @onChangePlayerName="changePlayerName"
-      @onChangeIsOwner="switchIsOwner"
-      @onChangeRoomNumber="changeRoomNumber"
+      @onChangeSize="(val) => (gameSettingsState.selectedSize = val)"
+      @onChangeTime="(val) => (gameSettingsState.selectedTime = val)"
+      @onChangePlayerName="(val) => (gameSettingsState.playerName = val)"
+      @onChangeIsOwner="(val) => (gameSettingsState.isOwner = val)"
+      @onChangeRoomNumber="(val) => (gameSettingsState.roomNumber = val)"
       @onClickStartMultiplayerGameButton="startMultiplayerGame"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from "vue";
+import { ref } from "vue";
 import { useGameSettingsStore } from "@/stores/gameSettings";
 import { useRouter } from "vue-router";
 import {
@@ -93,10 +93,10 @@ import {
 import { onClickOutside } from "@vueuse/core";
 import { database } from "@/firebase";
 import { DEVICE_TYPES, MAP_OPTIONS, MODE_OPTIONS } from "@/constants";
-import CreateRoomDialog from "./CreateRoomDialog.vue";
-import FlatButton from "@/components/shared/FlatButton.vue";
-import IconButton from "@/components/shared/IconButton.vue";
-import SelectBoxDialog from "./SelectBoxDialog.vue";
+import CreateRoomDialogComponent from "./CreateRoomDialogComponent.vue";
+import FlatButtonComponent from "../shared/FlatButtonComponent.vue";
+import IconButtonComponent from "../shared/IconButtonComponent.vue";
+import SelectBoxDialogComponent from "./SelectBoxDialogComponent.vue";
 import { MapTypes, ModeTypes } from "@/types";
 import { storeToRefs } from "pinia";
 import { useDeviceStore } from "@/stores/device";
@@ -107,17 +107,6 @@ const { deviceState } = storeToRefs(deviceStore);
 const gameSettingsStore = useGameSettingsStore();
 const { gameSettingsState, isReadyForMultiplayerGame } =
   storeToRefs(gameSettingsStore);
-const {
-  changeSelectedMap,
-  changeSelectedMode,
-  changeSelectedSize,
-  changeSelectedTime,
-  changePlayerName,
-  switchIsOwner,
-  changeRoomNumber,
-  savePlayerId,
-  clickStartButton,
-} = gameSettingsStore;
 
 const router = useRouter();
 
@@ -132,35 +121,28 @@ onClickOutside(createRoomButtonRef, (event) => {
     }
   });
   if (!isRoomCreateDialogClicked) {
-    state.isShowingRoomCreateDialog = false;
+    isShowingRoomCreateDialog.value = false;
   }
 });
 
-const state = reactive<{
-  isSelectingMap: boolean;
-  isSelectingMode: boolean;
-  isShowingRoomCreateDialog: boolean;
-  isRoomFound: boolean;
-}>({
-  isSelectingMap: false,
-  isSelectingMode: false,
-  isShowingRoomCreateDialog: false,
-  isRoomFound: true,
-});
+const isSelectingMap = ref(false);
+const isSelectingMode = ref(false);
+const isShowingRoomCreateDialog = ref(false);
+const isRoomFound = ref(true);
 
 const onChangeSelectedMap = (option: string): void => {
-  state.isSelectingMap = false;
-  changeSelectedMap(option as MapTypes);
+  isSelectingMap.value = false;
+  gameSettingsState.value.selectedMap = option as MapTypes;
 };
 
 const onChangeSelectedMode = (option: string): void => {
-  state.isSelectingMode = false;
-  changeSelectedMode(option as ModeTypes);
+  isSelectingMode.value = false;
+  gameSettingsState.value.selectedMode = option as ModeTypes;
 };
 
 const startMultiplayerGame = async (): Promise<void> => {
   try {
-    clickStartButton();
+    gameSettingsState.value.isStartingGame = true;
 
     if (gameSettingsState.value.isOwner) {
       let randomNumber: number;
@@ -169,52 +151,56 @@ const startMultiplayerGame = async (): Promise<void> => {
         randomNumber = Math.floor(Math.random() * 9999);
         snapshot = await get(child(dbRef(database), `${randomNumber}`));
       } while (snapshot.exists());
-      changeRoomNumber(randomNumber.toString());
+      gameSettingsState.value.roomNumber = randomNumber.toString();
+      const roomRef = dbRef(database, gameSettingsState.value.roomNumber);
+
       const playerNameRef = await push(
-        dbRef(database, `${randomNumber}/playerName`),
+        child(roomRef, "playerName"),
         gameSettingsState.value.playerName
       );
-      savePlayerId(playerNameRef.key as string);
 
-      await update(dbRef(database, `${randomNumber}`), {
+      gameSettingsState.value.playerId = playerNameRef.key as string;
+
+      await update(roomRef, {
         active: true,
         size: gameSettingsState.value.selectedSize,
         time: gameSettingsState.value.selectedTime,
         createdAt: serverTimestamp(),
       });
-      router.push("game");
     } else {
       const roomNumber = gameSettingsState.value.roomNumber;
-      const snapshot = await get(child(dbRef(database), `${roomNumber}`));
+      const roomRef = dbRef(database, roomNumber);
+      const snapshot = await get(roomRef);
+      
       if (snapshot.exists()) {
         const playerNameRef = await push(
-          dbRef(database, `${roomNumber}/playerName`),
+          child(roomRef, "playerName"),
           gameSettingsState.value.playerName
         );
-        savePlayerId(playerNameRef.key as string);
-        changeSelectedTime(snapshot.child("time").val());
-
-        router.push("game");
+        gameSettingsState.value.playerId = playerNameRef.key as string;
+        gameSettingsState.value.selectedTime = snapshot.child("time").val();
       } else {
-        state.isRoomFound = false;
+        isRoomFound.value = false;
+        return;
       }
     }
+    router.push("game");
   } catch (err) {
-    console.log(`StartMultiplayerGame error: ${err}`);
+    console.log(`startMultiplayerGame error: ${err}`);
   }
 };
 </script>
 
 <style module lang="scss">
 .create-game-form {
+  position: relative;
   display: flex;
   align-items: center;
-  position: relative;
-  box-shadow: var(--color-shadow-bold);
-  border-radius: 100px;
   width: 100%;
   height: 64px;
-  background-color: #ffffff;
+  background-color: #fff;
+  border-radius: 100px;
+  box-shadow: var(--color-shadow-bold);
 
   @media #{$mobile-landscape} {
     width: 640px;
@@ -226,18 +212,17 @@ const startMultiplayerGame = async (): Promise<void> => {
 }
 
 .create-game-form__select {
+  position: relative;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  flex-direction: column;
-  box-sizing: border-box;
-  position: relative;
+  height: 100%;
+  padding: 0 24px;
+  cursor: pointer;
+  background-color: white;
   border: none;
   border-radius: 32px;
-  padding: 0 24px;
-  height: 100%;
-  background-color: white;
-  cursor: pointer;
 
   &:hover {
     background-color: var(--color-surface-superlight);

@@ -7,9 +7,9 @@
 
 <script setup lang="ts">
 import { MapTypes, ModeTypes } from "@/types";
-import { onMounted, watch, ref, PropType } from "vue";
+import { onMounted, ref, PropType } from "vue";
 import { getRandomLatLng } from "@/utils";
-import { Loader } from "@googlemaps/js-api-loader";
+import useStreetView from "@/composables/game/useStreetView";
 
 const props = defineProps({
   selectedMap: {
@@ -37,61 +37,20 @@ const props = defineProps({
 
 const emit = defineEmits<{
   updateRandomLatLng: [latLng: google.maps.LatLng];
-  savePanorama: [panorama: google.maps.StreetViewPanorama];
   saveStreetView: [streetView: google.maps.LatLng];
 }>();
 
-const loader = new Loader({
-  apiKey: import.meta.env.VITE_API_KEY,
-  version: "weekly",
-});
-const libraries = await Promise.all([
-  loader.importLibrary("core"),
-  loader.importLibrary("streetView"),
-]);
-const { LatLng } = libraries[0];
-const { StreetViewService, StreetViewPanorama } = libraries[1];
-
-let panorama: google.maps.StreetViewPanorama;
+const panorama = ref<google.maps.StreetViewPanorama | null>(null);
 const streetviewRef = ref<HTMLElement>();
-
-watch(
-  () => props.round,
-  (newVal: number, oldVal: number) => {
-    if (oldVal + 1 === newVal || (oldVal === 5 && newVal === 1)) {
-      if (
-        props.selectedMode !== "multiplayer" ||
-        (props.selectedMode === "multiplayer" && props.isOwner)
-      ) {
-        loadStreetView();
-      }
-    }
-  }
-);
-
-watch(
-  () => props.randomLatLng,
-  (newVal: google.maps.LatLng | null, oldVal: google.maps.LatLng | null) => {
-    if (
-      oldVal === null &&
-      newVal &&
-      props.selectedMode === "multiplayer" &&
-      !props.isOwner
-    ) {
-      // Load a decided street view the owner loaded earlier in multiplayer game
-      loadStreetView(newVal);
-    }
-  }
-);
+const { zoomIn, zoomOut } = useStreetView(panorama);
 
 const loadStreetView = (
   decidedLatLng: google.maps.LatLng | null = null
 ): void => {
-  const service = new StreetViewService();
+  const service = new google.maps.StreetViewService();
   service.getPanorama(
     {
-      location:
-        decidedLatLng !== null ? decidedLatLng : getRandomLatLng(LatLng),
+      location: decidedLatLng !== null ? decidedLatLng : getRandomLatLng(),
       preference: google.maps.StreetViewPreference.NEAREST,
       radius: 100000,
       source: google.maps.StreetViewSource.OUTDOOR,
@@ -112,8 +71,10 @@ const checkStreetView = (
     data.location.latLng !== null
   ) {
     if (streetviewRef.value) {
-      panorama = new StreetViewPanorama(streetviewRef.value as HTMLElement);
-      panorama.setOptions({
+      panorama.value = new google.maps.StreetViewPanorama(
+        streetviewRef.value as HTMLElement
+      );
+      panorama.value.setOptions({
         zoomControl: false,
         addressControl: false,
         fullscreenControl: false,
@@ -121,13 +82,12 @@ const checkStreetView = (
         motionTrackingControl: false,
         showRoadLabels: false,
       });
-      panorama.setPano(data.location.pano);
-      panorama.setPov({
+      panorama.value.setPano(data.location.pano);
+      panorama.value.setPov({
         heading: 270,
         pitch: 0,
       });
       emit("updateRandomLatLng", data.location.latLng);
-      emit("savePanorama", panorama);
 
       if (props.selectedMode === "multiplayer" && props.isOwner) {
         emit("saveStreetView", data.location.latLng);
@@ -138,16 +98,21 @@ const checkStreetView = (
   }
 };
 
+const resetStreetView = () => {
+  if (props.randomLatLng !== null) {
+    panorama.value?.setPosition(props.randomLatLng);
+  }
+};
+
 onMounted(() => {
   if (props.selectedMode !== "multiplayer") {
     loadStreetView();
-  } else {
-    // Multiplayer mode
-    if (props.isOwner) {
-      loadStreetView();
-    }
+  } else if (props.isOwner) {
+    loadStreetView();
   }
 });
+
+defineExpose({ zoomIn, zoomOut, resetStreetView, loadStreetView });
 </script>
 
 <style module lang="scss">
@@ -155,7 +120,7 @@ onMounted(() => {
   position: absolute;
   top: 0;
   left: 0;
-  height: 100%;
   width: 100%;
+  height: 100%;
 }
 </style>

@@ -1,30 +1,27 @@
 <template>
-  <Suspense>
-    <router-view />
-  </Suspense>
+  <router-view />
 </template>
 
 <script setup lang="ts">
-import { Suspense, onMounted } from "vue";
+import { onMounted } from "vue";
 import { getDeviceType } from "@/utils";
 import { useDeviceStore } from "./stores/device";
+import { storeToRefs } from "pinia";
 
 const deviceStore = useDeviceStore();
-const { saveDeviceType } = deviceStore;
+const { deviceState } = storeToRefs(deviceStore);
 
 const onWindowResize = (): void => {
-  saveDeviceType(getDeviceType());
+  deviceState.value = getDeviceType();
 };
 
 onMounted(() => {
-  saveDeviceType(getDeviceType());
+  deviceState.value = getDeviceType();
   window.addEventListener("resize", onWindowResize);
 });
 </script>
 
 <style lang="scss">
-@import "./src/assets/styles/_fonts.scss";
-
 :root {
   --color-brand-primary: #{$color-brand-primary};
   --color-brand-light: #{$color-brand-light};
@@ -40,18 +37,22 @@ onMounted(() => {
   --color-shadow-bold: #{$color-shadow-bold};
 }
 
+* {
+  box-sizing: border-box;
+}
+
 body {
+  margin: 0;
   overflow: hidden;
   overscroll-behavior: contain;
+  font-family: Poppins, sans-serif;
   user-select: none;
-  margin: 0;
-  font-family: "Poppins", sans-serif;
 }
 
 textarea,
 input,
 button {
-  font-family: "Poppins", sans-serif;
+  font-family: Poppins, sans-serif;
 }
 
 button,

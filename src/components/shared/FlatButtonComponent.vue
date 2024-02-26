@@ -25,25 +25,24 @@ defineProps({
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
-  border: none;
-  border-radius: 100px;
-  box-sizing: border-box;
-  padding: 4px 20px;
   min-width: 180px;
   height: 48px;
-  background: var(--color-brand-gradient);
+  padding: 4px 20px;
   font-size: 16px;
   font-weight: 600;
   color: white;
+  background: var(--color-brand-gradient);
+  border: none;
+  border-radius: 100px;
+  transition: all 0.2s ease;
 
   &:active {
     transform: scale(0.98);
   }
 
   &:disabled {
-    opacity: 0.5;
     cursor: not-allowed;
+    opacity: 0.5;
   }
 }
 </style>

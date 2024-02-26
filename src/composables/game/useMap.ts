@@ -1,11 +1,6 @@
 import { Ref, onMounted, shallowRef } from "vue";
 
-export const useMap = (
-  Map: typeof google.maps.Map,
-  Marker: typeof google.maps.Marker,
-  Polyline: typeof google.maps.Polyline,
-  mapRef: Ref<HTMLElement | undefined>
-) => {
+export const useMap = (mapRef: Ref<HTMLElement | undefined>) => {
   const map = shallowRef<google.maps.Map>();
   const markers = shallowRef<google.maps.Marker[]>([]);
   const polylines = shallowRef<google.maps.Polyline[]>([]);
@@ -18,7 +13,7 @@ export const useMap = (
   };
 
   const putMarker = (position: google.maps.LatLng): void => {
-    const marker = new Marker({
+    const marker = new google.maps.Marker({
       position: position,
       map: map.value,
     });
@@ -29,7 +24,7 @@ export const useMap = (
     from: google.maps.LatLng,
     to: google.maps.LatLng
   ): void => {
-    const polyline = new Polyline({
+    const polyline = new google.maps.Polyline({
       path: [from, to],
       strokeColor: "hsl(0, 100%, 63%)",
     });
@@ -46,7 +41,7 @@ export const useMap = (
 
   onMounted(() => {
     if (mapRef.value) {
-      map.value = new Map(mapRef.value as HTMLElement, {
+      map.value = new google.maps.Map(mapRef.value as HTMLElement, {
         center: { lat: 37.86926, lng: -122.254811 },
         zoom: 1,
         fullscreenControl: false,

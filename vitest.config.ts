@@ -13,6 +13,11 @@ export default defineConfig({
     coverage: {
       provider: "istanbul",
     },
+    css: {
+      modules: {
+        classNameStrategy: "non-scoped",
+      },
+    },
   },
   resolve: {
     alias: [

@@ -1,4 +1,4 @@
-import { DistanceByPlayer, GameHistory } from "@/types";
+import { DistanceByPlayer, GameHistory, Summary } from "@/types";
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 
@@ -6,39 +6,48 @@ interface InGameState {
   randomLatLng: google.maps.LatLng | null;
   selectedLatLng: google.maps.LatLng | null;
   selectedLatLngArr: Array<google.maps.LatLng>;
-  panorama: google.maps.StreetViewPanorama | null;
   gameHistory: Array<GameHistory>;
   distanceByPlayerArr: Array<DistanceByPlayer>;
+  multiplayerGameSummary: Array<Summary>;
   score: number;
   round: number;
+  timePerRound: number;
+  size: number;
+  players: Map<string, string>;
   hasTimerStarted: boolean;
+  isMultiplayerGameReady: boolean;
   isThisRoundReady: boolean;
   isNextRoundReady: boolean;
   isWaitingForOtherPlayers: boolean;
   isShowingResult: boolean;
   isShowingSummary: boolean;
-  isMakeGuessButtonClicked: boolean;
+  isEndingMultiplayerGame: boolean;
+  isMapVisible: boolean;
 }
 
 export const useInGameStore = defineStore("inGame", () => {
-  const defaultState: InGameState = {
+  const inGameState = ref<InGameState>({
     randomLatLng: null,
     selectedLatLng: null,
     selectedLatLngArr: [],
-    panorama: null,
     gameHistory: [],
     distanceByPlayerArr: [],
+    multiplayerGameSummary: [],
     score: 0,
     round: 1,
+    timePerRound: 5,
+    size: 0,
+    players: new Map(),
     hasTimerStarted: false,
+    isMultiplayerGameReady: false,
     isThisRoundReady: false,
     isNextRoundReady: false,
     isWaitingForOtherPlayers: false,
     isShowingResult: false,
     isShowingSummary: false,
-    isMakeGuessButtonClicked: false,
-  };
-  const inGameState = ref<InGameState>(defaultState);
+    isEndingMultiplayerGame: false,
+    isMapVisible: false,
+  });
 
   const distance = computed<number | null>(() => {
     if (inGameState.value.randomLatLng && inGameState.value.selectedLatLng) {
@@ -53,133 +62,35 @@ export const useInGameStore = defineStore("inGame", () => {
     }
   });
 
-  const resetInGameState = () => {
-    inGameState.value = { ...defaultState };
-  };
+  const sortedDistance = computed<Array<DistanceByPlayer>>(() => {
+    return [...inGameState.value.distanceByPlayerArr].sort(
+      (x, y) => x.distance - y.distance
+    );
+  });
 
-  const saveRandomLatLng = (val: google.maps.LatLng) => {
-    inGameState.value.randomLatLng = val;
-  };
+  const sortedScore = computed<Array<Summary>>(() => {
+    return [...inGameState.value.multiplayerGameSummary].sort(
+      (x, y) => x.score - y.score
+    );
+  });
 
-  const saveSelectedLatLng = (val: google.maps.LatLng) => {
-    inGameState.value.selectedLatLng = val;
-  };
-
-  const updateSelectedLatLngArr = (val: google.maps.LatLng) => {
-    inGameState.value.selectedLatLngArr.push(val);
-  };
-
-  const resetSelectedLatLngArr = () => {
-    inGameState.value.selectedLatLngArr = [];
-  };
-
-  const savePanorama = (val: google.maps.StreetViewPanorama) => {
-    inGameState.value.panorama = val;
-  };
-
-  const resetPanoramaLocation = () => {
-    if (inGameState.value.panorama !== null) {
-      inGameState.value.panorama.setPosition(inGameState.value.randomLatLng);
+  const message = computed<string>(() => {
+    if (inGameState.value.isEndingMultiplayerGame) {
+      return "Disconnecting from this game..";
+    } else if (inGameState.value.isWaitingForOtherPlayers) {
+      return "Waiting for other players to make a guess..";
+    } else if (!inGameState.value.isThisRoundReady) {
+      return "Waiting for other players to get ready..";
+    } else {
+      return "";
     }
-  };
-
-  const zoomInPanorama = () => {
-    if (inGameState.value.panorama !== null) {
-      const current = inGameState.value.panorama.getZoom();
-      inGameState.value.panorama.setZoom(current + 1);
-    }
-  };
-
-  const zoomOutPanorama = () => {
-    if (inGameState.value.panorama !== null) {
-      const current = inGameState.value.panorama.getZoom();
-      inGameState.value.panorama.setZoom(current - 1);
-    }
-  };
-
-  const updateGameHistory = (val: GameHistory) => {
-    inGameState.value.gameHistory = [...inGameState.value.gameHistory, val];
-  };
-
-  const updateDistanceByPlayerArr = (val: DistanceByPlayer) => {
-    inGameState.value.distanceByPlayerArr = [
-      ...inGameState.value.distanceByPlayerArr,
-      val,
-    ];
-  };
-
-  const resetDistanceByPlayerArr = () => {
-    inGameState.value.distanceByPlayerArr = [];
-  };
-
-  const saveScore = (val: number) => {
-    inGameState.value.score += val;
-  };
-
-  const saveHasTimerStarted = (val: boolean) => {
-    inGameState.value.hasTimerStarted = val;
-  };
-
-  const saveIsShowingResult = (val: boolean) => {
-    inGameState.value.isShowingResult = val;
-  };
-
-  const saveIsShowingSummary = (val: boolean) => {
-    inGameState.value.isShowingSummary = val;
-  };
-
-  const proceedToNextRound = () => {
-    inGameState.value.round += 1;
-    inGameState.value.isThisRoundReady = false;
-    inGameState.value.isNextRoundReady = false;
-    inGameState.value.hasTimerStarted = false;
-    inGameState.value.isShowingResult = false;
-    inGameState.value.isMakeGuessButtonClicked = false;
-    inGameState.value.randomLatLng = null;
-    inGameState.value.selectedLatLng = null;
-    inGameState.value.selectedLatLngArr = [];
-    inGameState.value.distanceByPlayerArr = [];
-  };
-
-  const saveIsThisRoundReady = (val: boolean) => {
-    inGameState.value.isThisRoundReady = val;
-  };
-
-  const saveIsNextRoundReady = (val: boolean) => {
-    inGameState.value.isNextRoundReady = val;
-  };
-
-  const saveIsWaitingForOtherPlayers = (val: boolean) => {
-    inGameState.value.isWaitingForOtherPlayers = val;
-  };
-
-  const saveIsMakeGuessButtonClicked = (val: boolean) => {
-    inGameState.value.isMakeGuessButtonClicked = val;
-  };
+  });
 
   return {
     inGameState,
     distance,
-    resetInGameState,
-    saveRandomLatLng,
-    saveSelectedLatLng,
-    updateSelectedLatLngArr,
-    resetSelectedLatLngArr,
-    savePanorama,
-    resetPanoramaLocation,
-    zoomInPanorama,
-    zoomOutPanorama,
-    updateGameHistory,
-    updateDistanceByPlayerArr,
-    resetDistanceByPlayerArr,
-    saveScore,
-    saveHasTimerStarted,
-    saveIsShowingResult,
-    saveIsShowingSummary,
-    proceedToNextRound,
-    saveIsThisRoundReady,
-    saveIsNextRoundReady,
-    saveIsWaitingForOtherPlayers,
-    saveIsMakeGuessButtonClicked,
+    sortedDistance,
+    sortedScore,
+    message,
   };
 });

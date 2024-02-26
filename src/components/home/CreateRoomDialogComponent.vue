@@ -8,25 +8,22 @@
       <div>
         <div
           :class="[
-            !isOwner
-              ? $style['create-room-dialog__text--disabled']
-              : $style['create-room-dialog__text'],
+            $style['create-room-dialog__text'],
+            !isOwner && $style['create-room-dialog__text--disabled'],
           ]"
         >
           Size
         </div>
         <div
           :class="[
-            !isOwner
-              ? $style['create-room-dialog__helper-text--disabled']
-              : $style['create-room-dialog__helper-text'],
+            $style['create-room-dialog__helper-text'],
+            !isOwner && $style['create-room-dialog__helper-text--disabled'],
           ]"
         >
           2-5 people
         </div>
       </div>
-      <MySpace />
-      <MyCounter
+      <CounterComponent
         :min="2"
         :max="5"
         :count="selectedSize"
@@ -38,9 +35,8 @@
       <div>
         <span
           :class="[
-            !isOwner
-              ? $style['create-room-dialog__text--disabled']
-              : $style['create-room-dialog__text'],
+            $style['create-room-dialog__text'],
+            !isOwner && $style['create-room-dialog__text--disabled'],
           ]"
         >
           Time per round
@@ -48,16 +44,14 @@
         <br>
         <span
           :class="[
-            !isOwner
-              ? $style['create-room-dialog__helper-text--disabled']
-              : $style['create-room-dialog__helper-text'],
+            $style['create-room-dialog__helper-text'],
+            !isOwner && $style['create-room-dialog__helper-text--disabled'],
           ]"
         >
           1-10 minutes
         </span>
       </div>
-      <MySpace />
-      <MyCounter
+      <CounterComponent
         :min="1"
         :max="10"
         :count="selectedTime"
@@ -66,7 +60,7 @@
       />
     </div>
     <div :class="$style['create-room-dialog__form']">
-      <TextInput
+      <TextInputComponent
         label="Player Name"
         name="player-name"
         placeholder="Your Player Name"
@@ -77,24 +71,23 @@
       <div>
         <span :class="$style['create-room-dialog__text']">Are you a host?</span>
       </div>
-      <MySpace />
-      <MySwitch
+      <SwitchComponent
         :ans="isOwner"
         @onChangeValue="(val: boolean) => $emit('onChangeIsOwner', val)"
       />
     </div>
     <div :class="$style['create-room-dialog__form']">
-      <TextInput
+      <TextInputComponent
         label="Room Number"
         name="room-number"
         placeholder="Room Number"
         :disabled="isOwner"
         :error-msg="roomCannnotBeFoundError"
-        @onChangeValue="(val: string) => emit('onChangeRoomNumber', val)"
+        @onChangeValue="(val: string) => $emit('onChangeRoomNumber', val)"
       />
     </div>
     <div :class="$style['create-room-dialog__footer']">
-      <FlatButton
+      <FlatButtonComponent
         :text="'START'"
         :disabled="!isReadyForMultiplayerGame"
         @click="$emit('onClickStartMultiplayerGameButton')"
@@ -105,12 +98,10 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-
-import MyCounter from "@/components/home/MyCounter.vue";
-import MySwitch from "@/components/home/MySwitch.vue";
-import TextInput from "@/components/home/TextInput.vue";
-import FlatButton from "@/components/shared/FlatButton.vue";
-import MySpace from "@/components/shared/MySpace.vue";
+import CounterComponent from "./CounterComponent.vue";
+import SwitchComponent from "./SwitchComponent.vue";
+import TextInputComponent from "./TextInputComponent.vue";
+import FlatButtonComponent from "../shared/FlatButtonComponent.vue";
 
 const props = defineProps({
   isShowingDialog: {
@@ -147,7 +138,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits<{
+defineEmits<{
   onChangeSize: [val: number];
   onChangeTime: [val: number];
   onChangePlayerName: [val: string];
@@ -163,18 +154,18 @@ const roomCannnotBeFoundError = computed<string | undefined>(() =>
 
 <style module lang="scss">
 .create-room-dialog {
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  box-sizing: border-box;
   position: absolute;
   top: calc(100% + 12px);
   right: 0;
-  padding: 12px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   width: 100%;
-  box-shadow: var(--color-shadow-bold);
-  border-radius: 20px;
+  padding: 24px;
   background-color: white;
+  border-radius: 20px;
+  box-shadow: var(--color-shadow-bold);
+  gap: 18px;
 
   @media #{$tablet-landscape} {
     width: 80%;
@@ -183,29 +174,29 @@ const roomCannnotBeFoundError = computed<string | undefined>(() =>
 
 .create-room-dialog__form {
   display: flex;
-  align-items: center;
   flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
   width: 100%;
-  height: 48px;
-  padding: 12px;
+  padding: 0 12px;
 }
 
 .create-room-dialog__text {
-  @include mainText;
+  @include main-text;
+
   color: var(--color-surface-primary);
 
   &--disabled {
-    @extend .create-room-dialog__text;
     color: var(--color-surface-light);
   }
 }
 
 .create-room-dialog__helper-text {
   @include label;
+
   color: var(--color-surface-secondary);
 
   &--disabled {
-    @extend .create-room-dialog__helper-text;
     color: var(--color-surface-light);
   }
 }
@@ -213,7 +204,6 @@ const roomCannnotBeFoundError = computed<string | undefined>(() =>
 .create-room-dialog__footer {
   display: flex;
   align-items: center;
-  margin-top: 12px;
   width: 100%;
 }
 </style>
