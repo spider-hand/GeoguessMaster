@@ -13,6 +13,7 @@ interface InGameState {
   round: number;
   timePerRound: number;
   size: number;
+  players: Map<string, string>;
   hasTimerStarted: boolean;
   isMultiplayerGameReady: boolean;
   isThisRoundReady: boolean;
@@ -36,6 +37,7 @@ export const useInGameStore = defineStore("inGame", () => {
     round: 1,
     timePerRound: 5,
     size: 0,
+    players: new Map(),
     hasTimerStarted: false,
     isMultiplayerGameReady: false,
     isThisRoundReady: false,

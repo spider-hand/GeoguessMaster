@@ -217,6 +217,17 @@ const retrieveRoomConfig = async (): Promise<void> => {
   }
 };
 
+const retrievePlayerInfo = async (): Promise<void> => {
+  try {
+    const playerInfo = await get(child(roomRef, "playerName"));
+    playerInfo.forEach((playerName) => {
+      inGameState.value.players.set(playerName.key as string, playerName.val());
+    });
+  } catch (err) {
+    console.log(`retrievePlayerInfo error: ${err}`);
+  }
+};
+
 const saveRandomLatLng = (latLng: google.maps.LatLng) => {
   if (gameSettingsState.value.selectedMode === "single") {
     mapRef.value?.attachListener();
@@ -255,6 +266,10 @@ const listenCurrentRound = () => {
       if (snapshot.size === inGameState.value.size) {
         inGameState.value.isMultiplayerGameReady = true;
         inGameState.value.isThisRoundReady = true;
+
+        if (inGameState.value.round === 1) {
+          await retrievePlayerInfo();
+        }
 
         if (
           !inGameState.value.hasTimerStarted &&
@@ -305,6 +320,38 @@ const retrieveCurrentRoundStreetView = async (): Promise<void> => {
   }
 };
 
+const retrieveDistance = async (): Promise<void> => {
+  try {
+    const distances = await get(
+      child(roomRef, `round${inGameState.value.round}`)
+    );
+    distances.forEach((distance) => {
+      const playerName = inGameState.value.players.get(distance.key as string);
+      inGameState.value.distanceByPlayerArr.push({
+        playerName: playerName as string,
+        distance: distance.val(),
+      });
+    });
+  } catch (err) {
+    console.log(`retrieveDistance error: ${err}`);
+  }
+};
+
+const retrieveFinalScore = async (): Promise<void> => {
+  try {
+    const scores = await get(child(roomRef, "score"));
+    scores.forEach((score) => {
+      const playerName = inGameState.value.players.get(score.key as string);
+      inGameState.value.multiplayerGameSummary.push({
+        playerName: playerName as string,
+        score: score.val(),
+      });
+    });
+  } catch (err) {
+    console.log(`retrieveFinalScore error: ${err}`);
+  }
+};
+
 const listenGuesses = () => {
   const unsubscribeGuesses = onValue(
     child(roomRef, "guess"),
@@ -314,34 +361,18 @@ const listenGuesses = () => {
           const lat = childSnapshot.child("lat").val();
           const lng = childSnapshot.child("lng").val();
           const latlng = new google.maps.LatLng(lat, lng);
-
-          // TODO:
-          const playerName = "Test";
-          const distance = 10000;
-
           inGameState.value.selectedLatLngArr.push(latlng);
-          inGameState.value.distanceByPlayerArr.push({
-            playerName: playerName,
-            distance: distance,
-          });
         });
+
+        await retrieveDistance();
+
         inGameState.value.isWaitingForOtherPlayers = false;
         inGameState.value.isShowingResult = true;
         mapRef.value?.showResult();
         listenNextStreetView();
 
         if (inGameState.value.round === 5) {
-          const scoreSnapshot = await get(child(roomRef, "score"));
-          scoreSnapshot.forEach((scoreChildSnapshot) => {
-            // TODO:
-            const playerName = "Test";
-            const score = scoreChildSnapshot.val();
-            inGameState.value.multiplayerGameSummary.push({
-              playerName: playerName,
-              score: score,
-            });
-          });
-
+          await retrieveFinalScore();
           listenPlayerStatus();
         }
 
