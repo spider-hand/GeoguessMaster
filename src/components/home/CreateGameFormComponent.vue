@@ -152,39 +152,41 @@ const startMultiplayerGame = async (): Promise<void> => {
         snapshot = await get(child(dbRef(database), `${randomNumber}`));
       } while (snapshot.exists());
       gameSettingsState.value.roomNumber = randomNumber.toString();
+      const roomRef = dbRef(database, gameSettingsState.value.roomNumber);
 
       const playerNameRef = await push(
-        dbRef(database, `${randomNumber}/playerName`),
+        child(roomRef, "playerName"),
         gameSettingsState.value.playerName
       );
 
       gameSettingsState.value.playerId = playerNameRef.key as string;
 
-      await update(dbRef(database, `${randomNumber}`), {
+      await update(roomRef, {
         active: true,
         size: gameSettingsState.value.selectedSize,
         time: gameSettingsState.value.selectedTime,
         createdAt: serverTimestamp(),
       });
-      router.push("game");
     } else {
       const roomNumber = gameSettingsState.value.roomNumber;
-      const snapshot = await get(child(dbRef(database), `${roomNumber}`));
+      const roomRef = dbRef(database, roomNumber);
+      const snapshot = await get(roomRef);
+      
       if (snapshot.exists()) {
         const playerNameRef = await push(
-          dbRef(database, `${roomNumber}/playerName`),
+          child(roomRef, "playerName"),
           gameSettingsState.value.playerName
         );
         gameSettingsState.value.playerId = playerNameRef.key as string;
         gameSettingsState.value.selectedTime = snapshot.child("time").val();
-
-        router.push("game");
       } else {
         isRoomFound.value = false;
+        return;
       }
     }
+    router.push("game");
   } catch (err) {
-    console.log(`StartMultiplayerGame error: ${err}`);
+    console.log(`startMultiplayerGame error: ${err}`);
   }
 };
 </script>

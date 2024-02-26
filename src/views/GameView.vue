@@ -159,6 +159,7 @@ import {
   update,
   onDisconnect,
   Unsubscribe,
+  DatabaseReference,
 } from "firebase/database";
 import StreetViewComponent from "@/components/game/StreetViewComponent.vue";
 import MapComponent from "@/components/game/MapComponent.vue";
@@ -195,8 +196,26 @@ const streetViewRef = ref<InstanceType<typeof StreetViewComponent> | null>(
 
 const router = useRouter();
 
-const roomRef = dbRef(database, `/${gameSettingsState.value.roomNumber}`);
+let roomRef: DatabaseReference;
+
+if (gameSettingsState.value.selectedMode === "multiplayer") {
+  roomRef = dbRef(database, `${gameSettingsState.value.roomNumber}`);
+}
+
 const unsubscribeArr = ref<Unsubscribe[]>([]);
+
+const retrieveRoomConfig = async (): Promise<void> => {
+  try {
+    const [time, size] = await Promise.all([
+      get(child(roomRef, "time")),
+      get(child(roomRef, "size")),
+    ]);
+    inGameState.value.timePerRound = time.val();
+    inGameState.value.size = size.val();
+  } catch (err) {
+    console.log(`retrieveRoomConfig error: ${err}`);
+  }
+};
 
 const saveRandomLatLng = (latLng: google.maps.LatLng) => {
   if (gameSettingsState.value.selectedMode === "single") {
@@ -233,8 +252,7 @@ const listenCurrentRound = () => {
   const unsubscribeCurrentRound = onValue(
     child(roomRef, `round${inGameState.value.round}`),
     async (snapshot) => {
-      // TODO:
-      if (snapshot.size === 2) {
+      if (snapshot.size === inGameState.value.size) {
         inGameState.value.isMultiplayerGameReady = true;
         inGameState.value.isThisRoundReady = true;
 
@@ -242,8 +260,6 @@ const listenCurrentRound = () => {
           !inGameState.value.hasTimerStarted &&
           !inGameState.value.isWaitingForOtherPlayers
         ) {
-          // TODO:
-          inGameState.value.timePerRound = 1;
           inGameState.value.hasTimerStarted = true;
 
           await nextTick();
@@ -293,8 +309,7 @@ const listenGuesses = () => {
   const unsubscribeGuesses = onValue(
     child(roomRef, "guess"),
     async (snapshot) => {
-      // TODO:
-      if (snapshot.size === 2) {
+      if (snapshot.size === inGameState.value.size) {
         snapshot.forEach((childSnapshot) => {
           const lat = childSnapshot.child("lat").val();
           const lng = childSnapshot.child("lng").val();
@@ -386,16 +401,18 @@ const onClickGuessButton = async (): Promise<void> => {
       inGameState.value.isWaitingForOtherPlayers = true;
       scoreBoardRef.value?.stopCountdown();
 
-      await update(child(roomRef, `round${inGameState.value.round}`), {
-        [gameSettingsState.value.playerId]: distance.value,
-      });
-      await set(child(roomRef, `guess/${gameSettingsState.value.playerId}`), {
-        lat: inGameState.value.selectedLatLng?.lat(),
-        lng: inGameState.value.selectedLatLng?.lng(),
-      });
-      await update(child(roomRef, "score"), {
-        [gameSettingsState.value.playerId]: inGameState.value.score,
-      });
+      await Promise.all([
+        update(child(roomRef, `round${inGameState.value.round}`), {
+          [gameSettingsState.value.playerId]: distance.value,
+        }),
+        set(child(roomRef, `guess/${gameSettingsState.value.playerId}`), {
+          lat: inGameState.value.selectedLatLng?.lat(),
+          lng: inGameState.value.selectedLatLng?.lng(),
+        }),
+        update(child(roomRef, "score"), {
+          [gameSettingsState.value.playerId]: inGameState.value.score,
+        }),
+      ]);
     }
   } catch (err) {
     console.log(`onClickGuessButton error: ${err}`);
@@ -428,8 +445,7 @@ const onClickNextRoundButton = async (): Promise<void> => {
       !gameSettingsState.value.isOwner
     ) {
       listenCurrentRound();
-      await joinCurrentRound();
-      await retrieveCurrentRoundStreetView();
+      await Promise.all([joinCurrentRound(), retrieveCurrentRoundStreetView()]);
     } else if (gameSettingsState.value.selectedMode === "multiplayer") {
       listenCurrentRound();
       await joinCurrentRound();
@@ -451,8 +467,7 @@ const listenPlayerStatus = () => {
   const unsubscribePlayerStatus = onValue(
     child(roomRef, "hasDone"),
     async (snapshot) => {
-      // TODO:
-      if (snapshot.size === 2) {
+      if (snapshot.size === inGameState.value.size) {
         await update(roomRef, {
           active: false,
         });
@@ -494,6 +509,8 @@ const onEndMultiplayerGame = (): void => {
 
 onMounted(async () => {
   if (gameSettingsState.value.selectedMode === "multiplayer") {
+    await retrieveRoomConfig();
+
     listenRoomStatus();
     listenGuesses();
     listenCurrentRound();
@@ -509,10 +526,12 @@ onMounted(async () => {
 });
 
 onUnmounted(async () => {
-  unsubscribeArr.value.forEach((unsubscribe) => {
-    unsubscribe();
-  });
-  await set(child(roomRef, "active"), false);
+  if (gameSettingsState.value.selectedMode === "multiplayer") {
+    unsubscribeArr.value.forEach((unsubscribe) => {
+      unsubscribe();
+    });
+    await set(child(roomRef, "active"), false);
+  }
 });
 </script>
 
