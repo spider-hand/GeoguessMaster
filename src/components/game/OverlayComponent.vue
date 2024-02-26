@@ -25,7 +25,6 @@ defineProps({
   top: 0;
   left: 0;
   z-index: 4;
-  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -33,10 +32,10 @@ defineProps({
   width: 100%;
   height: 100%;
   background-color: rgb(0 0 0 / 50%);
+  gap: 24px;
 }
 
 .overlay__text {
-  margin-bottom: 24px;
   font-size: 24px;
   font-weight: 500;
   color: white;

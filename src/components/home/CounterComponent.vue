@@ -80,7 +80,6 @@ const disabledDecrement = computed<boolean>(
 }
 
 .counter__button {
-  box-sizing: border-box;
   width: 36px;
   height: 36px;
   font-size: 20px;

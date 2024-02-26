@@ -31,13 +31,7 @@
       <span :class="$style['page__title']">Let's explore the world &#128526;</span>
     </div>
     <footer :class="$style['page__footer']">
-      <span
-        :style="{
-          color: 'var(--color-surface-primary)',
-          fontSize: '12px',
-          fontWeight: 500,
-        }"
-      >
+      <span>
         All rights reserved. Copyright © {{ new Date().getFullYear() }}
         <strong>GeoguessMaster</strong>
       </span>
@@ -72,7 +66,6 @@ const { deviceState } = storeToRefs(deviceStore);
   position: relative;
   top: 0;
   left: 0;
-  box-sizing: border-box;
   display: flex;
   align-items: center;
   width: 100%;
@@ -103,7 +96,6 @@ const { deviceState } = storeToRefs(deviceStore);
   position: relative;
   top: 0;
   left: 0;
-  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -133,7 +125,6 @@ const { deviceState } = storeToRefs(deviceStore);
   position: relative;
   top: 0;
   left: 0;
-  box-sizing: border-box;
   display: flex;
   align-items: center;
   width: 100%;
@@ -142,6 +133,12 @@ const { deviceState } = storeToRefs(deviceStore);
 
   @media #{$tablet-landscape} {
     height: 36px;
+  }
+
+  > span {
+    color: var(--color-surface-primary);
+    font-size: 12px;
+    font-weight: 500;
   }
 }
 </style>

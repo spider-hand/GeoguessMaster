@@ -34,7 +34,6 @@ defineProps({
 
 <style module lang="scss">
 .icon-button {
-  box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: center;

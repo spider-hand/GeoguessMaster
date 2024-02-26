@@ -213,7 +213,6 @@ const startMultiplayerGame = async (): Promise<void> => {
 
 .create-game-form__select {
   position: relative;
-  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   align-items: center;

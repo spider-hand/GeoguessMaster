@@ -37,6 +37,10 @@ onMounted(() => {
   --color-shadow-bold: #{$color-shadow-bold};
 }
 
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   overflow: hidden;

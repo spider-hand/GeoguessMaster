@@ -92,7 +92,6 @@ defineExpose({ startCountdown, stopCountdown });
   top: 12px;
   left: 12px;
   z-index: 1;
-  box-sizing: border-box;
   display: flex;
   flex-direction: row;
   align-items: center;

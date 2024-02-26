@@ -157,15 +157,15 @@ const roomCannnotBeFoundError = computed<string | undefined>(() =>
   position: absolute;
   top: calc(100% + 12px);
   right: 0;
-  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 100%;
-  padding: 12px 24px;
+  padding: 24px;
   background-color: white;
   border-radius: 20px;
   box-shadow: var(--color-shadow-bold);
+  gap: 18px;
 
   @media #{$tablet-landscape} {
     width: 80%;
@@ -178,8 +178,7 @@ const roomCannnotBeFoundError = computed<string | undefined>(() =>
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  height: 48px;
-  padding: 12px;
+  padding: 0 12px;
 }
 
 .create-room-dialog__text {
@@ -206,6 +205,5 @@ const roomCannnotBeFoundError = computed<string | undefined>(() =>
   display: flex;
   align-items: center;
   width: 100%;
-  margin-top: 12px;
 }
 </style>

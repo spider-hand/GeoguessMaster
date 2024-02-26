@@ -7,7 +7,6 @@
       <span
         v-if="distance !== null"
         :class="$style['result-modal__text']"
-        :style="{ marginBottom: '24px' }"
       >You are <strong>{{ isShowingSummary ? score : distance }}</strong>km away {{ isShowingSummary ? "in total " : ""
       }}{{ isShowingSummary ? "&#127881;" : "&#128640;" }}</span>
       <FlatButtonComponent
@@ -15,13 +14,13 @@
         :text="'NEXT ROUND'"
         @click="$emit('onClickNextRoundButton')"
       />
-      <div v-else>
+      <div
+        v-else
+        :class="$style['result-modal__button-group']"
+      >
         <FlatButtonComponent
           v-if="isShowingSummary"
           :text="'PLAY AGAIN'"
-          :style="{
-            marginBottom: '12px',
-          }"
           @click="$emit('onClickPlayAgainButton')"
         />
         <FlatButtonComponent
@@ -46,10 +45,6 @@
           v-for="(item, index) in distanceByPlayerArr"
           :key="index"
           :class="$style['result-modal__text']"
-          :style="{
-            marginBottom:
-              index !== distanceByPlayerArr.length - 1 ? '12px' : '24px',
-          }"
         >
           <strong>{{ item.playerName }}</strong> is
           <strong>{{ item.distance }}</strong>km away
@@ -63,10 +58,6 @@
           v-for="(item, index) in multiplayerGameSummary"
           :key="index"
           :class="$style['result-modal__text']"
-          :style="{
-            marginBottom:
-              index !== multiplayerGameSummary.length - 1 ? '12px' : '24px',
-          }"
         >
           <strong>{{ item.playerName }}</strong> is
           <strong>{{ item.score }}</strong>km away in total
@@ -154,7 +145,6 @@ const emit = defineEmits<{
   bottom: 0;
   left: 0;
   z-index: 3;
-  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -170,11 +160,19 @@ const emit = defineEmits<{
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 24px;
+}
+
+.result-modal__button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .result-modal__text-wrapper {
   display: flex;
   flex-direction: column;
+  gap: 12px;
 }
 
 .result-modal__text {

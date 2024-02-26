@@ -57,7 +57,6 @@ defineEmits<{
 
 .switch__option {
   position: absolute;
-  box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: center;
