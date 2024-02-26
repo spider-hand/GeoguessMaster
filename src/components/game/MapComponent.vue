@@ -143,6 +143,12 @@ defineExpose({
       transform: scale(1);
       opacity: 1;
     }
+
+    &--with-result {
+      transition: 0s;
+      opacity: 1;
+      transform: scale(1);
+    }
   }
 }
 </style>
