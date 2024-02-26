@@ -43,9 +43,10 @@ export default defineConfig({
     preprocessorOptions: {
       scss: {
         additionalData: `
-          @import "./src/assets/styles/_breakpoints.scss"; 
-          @import "./src/assets/styles/_colors.scss"; 
-          @import "./src/assets/styles/_mixin.scss";
+          @import "./src/assets/styles/breakpoints.scss"; 
+          @import "./src/assets/styles/colors.scss"; 
+          @import "./src/assets/styles/mixin.scss";
+          @import "./src/assets/styles/fonts";
         `,
       },
     },

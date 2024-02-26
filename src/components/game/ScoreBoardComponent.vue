@@ -88,18 +88,18 @@ defineExpose({ startCountdown, stopCountdown });
 
 <style module lang="scss">
 .score-board {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: row;
-  z-index: 1;
-  box-sizing: border-box;
   position: absolute;
   top: 12px;
   left: 12px;
+  z-index: 1;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
   max-width: calc(100% - 24px);
-  border-radius: 12px;
   background: var(--color-brand-gradient);
+  border-radius: 12px;
 }
 
 .score-board__wrapper {
@@ -107,12 +107,14 @@ defineExpose({ startCountdown, stopCountdown });
 }
 
 .score-board__text {
-  @include mainText;
+  @include main-text;
+
   color: white;
 }
 
 .score-board__label {
   @include label;
+
   color: white;
 }
 </style>

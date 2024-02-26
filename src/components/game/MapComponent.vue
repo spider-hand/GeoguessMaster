@@ -109,16 +109,16 @@ defineExpose({
 
 <style module lang="scss">
 .map {
-  transform: translateY(300px);
-  transform-origin: bottom left;
-  transition: transform 1s;
-  z-index: 3;
-  opacity: 1;
   position: absolute;
   bottom: -280px;
   left: 12px;
+  z-index: 3;
   width: 320px;
   height: 240px;
+  opacity: 1;
+  transition: transform 1s;
+  transform: translateY(300px);
+  transform-origin: bottom left;
 
   &--visible {
     transform: translateY(-352px);
@@ -140,13 +140,13 @@ defineExpose({
     transform: scale(0.75);
 
     &:hover {
-      transform: scale(1);
       opacity: 1;
+      transform: scale(1);
     }
 
     &--with-result {
-      transition: 0s;
       opacity: 1;
+      transition: 0s;
       transform: scale(1);
     }
   }

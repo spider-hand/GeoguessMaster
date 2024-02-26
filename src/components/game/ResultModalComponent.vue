@@ -148,27 +148,28 @@ const emit = defineEmits<{
 
 <style module lang="scss">
 .result-modal {
-  @include pagePadding;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  box-sizing: border-box;
-  padding-top: 24px;
-  padding-bottom: 24px;
-  z-index: 3;
+  @include page-padding;
+
   position: absolute;
   bottom: 0;
   left: 0;
+  z-index: 3;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   width: 100%;
   height: 240px;
+  padding-top: 24px;
+  padding-bottom: 24px;
   background-color: white;
 }
 
 .result-modal__container {
   display: flex;
-  align-items: center;
   flex-direction: column;
+  align-items: center;
 }
 
 .result-modal__text-wrapper {

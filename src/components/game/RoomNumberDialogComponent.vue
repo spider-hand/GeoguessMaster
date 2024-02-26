@@ -30,19 +30,19 @@ defineProps({
 
 <style module lang="scss">
 .room-number-dialog {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  z-index: 5;
-  transition: transform 1s;
-  box-sizing: border-box;
   position: absolute;
-  padding: 12px 24px;
   top: 12px;
   right: 12px;
-  border-radius: 12px;
+  z-index: 5;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
   background: var(--color-brand-gradient);
+  border-radius: 12px;
+  transition: transform 1s;
 
   &--animated {
     transform: translateY(-200px);
@@ -51,12 +51,14 @@ defineProps({
 
 .room-number-dialog__label {
   @include label;
+
   width: 100%;
   color: white;
 }
 
 .room-number-dialog__text {
-  @include mainText;
+  @include main-text;
+
   width: 100%;
   color: white;
 }

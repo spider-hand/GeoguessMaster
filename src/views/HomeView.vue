@@ -58,22 +58,23 @@ const { deviceState } = storeToRefs(deviceStore);
 
 <style module lang="scss">
 .page {
-  overflow: hidden;
   position: absolute;
-  width: 100%;
-  height: 100%;
   top: 0;
   left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
 
 .page__header {
-  @include pagePadding;
-  display: flex;
-  align-items: center;
-  box-sizing: border-box;
+  @include page-padding;
+
   position: relative;
   top: 0;
   left: 0;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
   width: 100%;
   height: 60px;
 
@@ -97,17 +98,18 @@ const { deviceState } = storeToRefs(deviceStore);
 }
 
 .page__container {
-  @include pagePadding;
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  box-sizing: border-box;
+  @include page-padding;
+
   position: relative;
   top: 0;
   left: 0;
-  padding-top: 48px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   width: 100%;
   height: calc(100% - 84px); // header + footer
+  padding-top: 48px;
 
   @media #{$tablet-landscape} {
     height: calc(100% - 120px);
@@ -126,16 +128,17 @@ const { deviceState } = storeToRefs(deviceStore);
 }
 
 .page__footer {
-  @include pagePadding;
-  display: flex;
-  align-items: center;
-  box-sizing: border-box;
+  @include page-padding;
+
   position: relative;
   top: 0;
   left: 0;
-  padding: 0 12px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
   width: 100%;
   height: 24px;
+  padding: 0 12px;
 
   @media #{$tablet-landscape} {
     height: 36px;

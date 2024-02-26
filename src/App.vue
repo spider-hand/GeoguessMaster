@@ -22,8 +22,6 @@ onMounted(() => {
 </script>
 
 <style lang="scss">
-@import "./src/assets/styles/_fonts.scss";
-
 :root {
   --color-brand-primary: #{$color-brand-primary};
   --color-brand-light: #{$color-brand-light};
@@ -40,17 +38,17 @@ onMounted(() => {
 }
 
 body {
+  margin: 0;
   overflow: hidden;
   overscroll-behavior: contain;
+  font-family: Poppins, sans-serif;
   user-select: none;
-  margin: 0;
-  font-family: "Poppins", sans-serif;
 }
 
 textarea,
 input,
 button {
-  font-family: "Poppins", sans-serif;
+  font-family: Poppins, sans-serif;
 }
 
 button,

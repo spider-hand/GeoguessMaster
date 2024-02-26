@@ -45,30 +45,30 @@ defineEmits<{
 
 <style module lang="scss">
 .switch {
+  position: relative;
   display: flex;
   flex-direction: row;
   align-items: center;
-  position: relative;
-  border-radius: 100px;
-  height: 36px;
   width: 150px;
+  height: 36px;
   background-color: var(--color-surface-light);
+  border-radius: 100px;
 }
 
 .switch__option {
+  position: absolute;
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: center;
-  position: absolute;
-  box-sizing: border-box;
-  border: none;
-  border-radius: 24px;
-  padding: 4px 24px;
   height: 28px;
+  padding: 4px 24px;
   font-size: 12px;
   font-weight: 500;
   color: var(--color-surface-primary);
   cursor: pointer;
+  border: none;
+  border-radius: 24px;
 
   &--left {
     left: 4px;

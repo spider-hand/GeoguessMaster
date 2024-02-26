@@ -193,14 +193,14 @@ const startMultiplayerGame = async (): Promise<void> => {
 
 <style module lang="scss">
 .create-game-form {
+  position: relative;
   display: flex;
   align-items: center;
-  position: relative;
-  box-shadow: var(--color-shadow-bold);
-  border-radius: 100px;
   width: 100%;
   height: 64px;
-  background-color: #ffffff;
+  background-color: #fff;
+  border-radius: 100px;
+  box-shadow: var(--color-shadow-bold);
 
   @media #{$mobile-landscape} {
     width: 640px;
@@ -212,18 +212,18 @@ const startMultiplayerGame = async (): Promise<void> => {
 }
 
 .create-game-form__select {
+  position: relative;
+  box-sizing: border-box;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  flex-direction: column;
-  box-sizing: border-box;
-  position: relative;
+  height: 100%;
+  padding: 0 24px;
+  cursor: pointer;
+  background-color: white;
   border: none;
   border-radius: 32px;
-  padding: 0 24px;
-  height: 100%;
-  background-color: white;
-  cursor: pointer;
 
   &:hover {
     background-color: var(--color-surface-superlight);

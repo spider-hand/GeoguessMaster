@@ -1,6 +1,6 @@
 @import "../../assets/styles/breakpoints";
 
-@mixin pagePadding {
+@mixin page-padding {
   padding-right: 12px;
   padding-left: 12px;
 
@@ -10,7 +10,7 @@
   }
 }
 
-@mixin mainText {
+@mixin main-text {
   font-size: 16px;
   font-weight: 500;
 }

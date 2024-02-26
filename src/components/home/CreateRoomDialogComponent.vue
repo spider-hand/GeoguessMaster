@@ -154,18 +154,18 @@ const roomCannnotBeFoundError = computed<string | undefined>(() =>
 
 <style module lang="scss">
 .create-room-dialog {
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  box-sizing: border-box;
   position: absolute;
   top: calc(100% + 12px);
   right: 0;
-  padding: 12px 24px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   width: 100%;
-  box-shadow: var(--color-shadow-bold);
-  border-radius: 20px;
+  padding: 12px 24px;
   background-color: white;
+  border-radius: 20px;
+  box-shadow: var(--color-shadow-bold);
 
   @media #{$tablet-landscape} {
     width: 80%;
@@ -174,16 +174,17 @@ const roomCannnotBeFoundError = computed<string | undefined>(() =>
 
 .create-room-dialog__form {
   display: flex;
+  flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  flex-direction: row;
   width: 100%;
   height: 48px;
   padding: 12px;
 }
 
 .create-room-dialog__text {
-  @include mainText;
+  @include main-text;
+
   color: var(--color-surface-primary);
 
   &--disabled {
@@ -193,6 +194,7 @@ const roomCannnotBeFoundError = computed<string | undefined>(() =>
 
 .create-room-dialog__helper-text {
   @include label;
+
   color: var(--color-surface-secondary);
 
   &--disabled {
@@ -203,7 +205,7 @@ const roomCannnotBeFoundError = computed<string | undefined>(() =>
 .create-room-dialog__footer {
   display: flex;
   align-items: center;
-  margin-top: 12px;
   width: 100%;
+  margin-top: 12px;
 }
 </style>

@@ -34,14 +34,14 @@ defineProps({
 
 <style module lang="scss">
 .icon-button {
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+  background: var(--color-brand-gradient);
   border: none;
   border-radius: 100px;
-  box-sizing: border-box;
-  background: var(--color-brand-gradient);
+  transition: all 0.2s ease;
 
   &:active {
     transform: scale(0.95);

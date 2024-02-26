@@ -94,17 +94,17 @@ defineEmits<{
 }
 
 .text-input {
-  border: none;
-  border-bottom: 2px solid var(--color-surface-secondary);
   width: 100%;
-  line-height: 150%;
   font-size: 16px;
   font-weight: 500;
+  line-height: 150%;
   color: var(--color-surface-primary);
+  border: none;
+  border-bottom: 2px solid var(--color-surface-secondary);
 
   &:focus-visible {
-    box-shadow: none;
     outline: 0;
+    box-shadow: none;
   }
 
   &::placeholder {
@@ -112,8 +112,8 @@ defineEmits<{
   }
 
   &--disabled {
-    border-bottom-color: var(--color-surface-light) !important;
     color: var(--color-surface-light) !important;
+    border-bottom-color: var(--color-surface-light) !important;
 
     &::placeholder {
       color: var(--color-surface-light) !important;
@@ -121,8 +121,8 @@ defineEmits<{
   }
 
   &--error {
-    border-bottom-color: var(--color-red-primary);
     color: var(--color-red-primary);
+    border-bottom-color: var(--color-red-primary);
 
     &::placeholder {
       color: var(--color-red-primary);
