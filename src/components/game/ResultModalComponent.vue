@@ -128,7 +128,7 @@ defineProps({
   },
 });
 
-const emit = defineEmits<{
+defineEmits<{
   onClickNextRoundButton: [];
   onClickViewSummaryButton: [];
   onClickPlayAgainButton: [];

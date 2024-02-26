@@ -83,7 +83,7 @@
         placeholder="Room Number"
         :disabled="isOwner"
         :error-msg="roomCannnotBeFoundError"
-        @onChangeValue="(val: string) => emit('onChangeRoomNumber', val)"
+        @onChangeValue="(val: string) => $emit('onChangeRoomNumber', val)"
       />
     </div>
     <div :class="$style['create-room-dialog__footer']">
@@ -138,7 +138,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits<{
+defineEmits<{
   onChangeSize: [val: number];
   onChangeTime: [val: number];
   onChangePlayerName: [val: string];
