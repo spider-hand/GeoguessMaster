@@ -8,12 +8,11 @@
           ? $style['switch__option--selected']
           : $style['switch__option--not-selected'],
       ]"
-      data-test="yes-button"
+      data-testid="yes-button"
       @click="$emit('onChangeValue', true)"
     >
       YES
     </button>
-    <div style="flex-grow: 1" />
     <button
       :class="[
         $style['switch__option'],
@@ -22,7 +21,7 @@
           ? $style['switch__option--not-selected']
           : $style['switch__option--selected'],
       ]"
-      data-test="no-button"
+      data-testid="no-button"
       @click="$emit('onChangeValue', false)"
     >
       NO
@@ -49,6 +48,7 @@ defineEmits<{
   display: flex;
   flex-direction: row;
   align-items: center;
+  justify-content: space-between;
   width: 150px;
   height: 36px;
   background-color: var(--color-surface-light);

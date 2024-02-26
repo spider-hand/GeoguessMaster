@@ -6,7 +6,7 @@
       isVisible && $style['map--visible'],
       isShowingResult && $style['map--with-result'],
     ]"
-    data-test="my-map"
+    data-testid="map"
   />
 </template>
 

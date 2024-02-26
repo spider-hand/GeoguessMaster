@@ -6,7 +6,7 @@
         disabledDecrement && $style['counter__button--disabled'],
       ]"
       :disabled="disabledDecrement"
-      data-test="decrement-button"
+      data-testid="decrement-button"
       @click="$emit('onChangeValue', count - 1)"
     >
       -
@@ -17,7 +17,7 @@
           $style['counter__text'],
           disabled && $style['counter__text--disabled'],
         ]"
-        data-test="count-text"
+        data-testid="count-text"
       >
         {{ count }}
       </span>
@@ -28,7 +28,7 @@
         disabledIncrement && $style['counter__button--disabled'],
       ]"
       :disabled="disabledIncrement"
-      data-test="increment-button"
+      data-testid="increment-button"
       @click="$emit('onChangeValue', count + 1)"
     >
       +

@@ -1,12 +1,12 @@
 <template>
-  <div :class="$style['input']">
+  <div :class="$style['text-input']">
     <label
       :for="name"
       :class="[
-        $style['input__label'],
+        $style['text-input__label'],
         ,
-        disabled && $style['input__label--disabled'],
-        errorMsg && $style['input__label--error'],
+        disabled && $style['text-input__label--disabled'],
+        errorMsg && $style['text-input__label--error'],
       ]"
     >
       {{ label }}
@@ -16,9 +16,9 @@
       maxlength="20"
       :name="name"
       :class="[
-        $style['text-input'],
-        disabled && $style['text-input--disabled'],
-        errorMsg && $style['text-input--error'],
+        $style['text-input__body'],
+        disabled && $style['text-input__body--disabled'],
+        errorMsg && $style['text-input__body--error'],
       ]"
       :placeholder="placeholder"
       :disabled="disabled"
@@ -26,8 +26,8 @@
     >
     <span
       v-if="errorMsg"
-      :class="$style['input__error']"
-      data-test="error-msg"
+      :class="$style['text-input__error']"
+      data-testid="error-msg"
     >
       <img
         src="@/assets/images/material-symbols/error.svg"
@@ -41,6 +41,8 @@
 </template>
 
 <script setup lang="ts">
+import { PropType } from "vue";
+
 defineProps({
   label: {
     type: String,
@@ -61,7 +63,7 @@ defineProps({
     required: false,
   },
   errorMsg: {
-    type: String,
+    type: [String, null] as PropType<string | null>,
     required: false,
     default: null,
   },
@@ -73,12 +75,12 @@ defineEmits<{
 </script>
 
 <style module lang="scss">
-.input {
+.text-input {
   display: flex;
   flex-direction: column;
 }
 
-.input__label {
+.text-input__label {
   margin-bottom: 4px;
   font-size: 12px;
   font-weight: 400;
@@ -93,7 +95,7 @@ defineEmits<{
   }
 }
 
-.text-input {
+.text-input__body {
   width: 100%;
   font-size: 16px;
   font-weight: 500;
@@ -130,7 +132,7 @@ defineEmits<{
   }
 }
 
-.input__error {
+.text-input__error {
   display: flex;
   align-items: center;
   font-size: 12px;
