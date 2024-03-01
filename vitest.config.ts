@@ -7,7 +7,7 @@ export default defineConfig({
   mode: "test",
   test: {
     globals: true,
-    environment: "happy-dom",
+    environment: "jsdom",
     setupFiles: "src/__tests__/unit/setup.ts",
     exclude: [...configDefaults.exclude, "src/__tests__/unit/setup.ts"],
     coverage: {

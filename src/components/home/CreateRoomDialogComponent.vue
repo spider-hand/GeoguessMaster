@@ -1,6 +1,5 @@
 <template>
   <div
-    v-if="isShowingDialog"
     id="create-room-dialog"
     :class="$style['create-room-dialog']"
   >
@@ -104,10 +103,6 @@ import TextInputComponent from "./TextInputComponent.vue";
 import FlatButtonComponent from "../shared/FlatButtonComponent.vue";
 
 const props = defineProps({
-  isShowingDialog: {
-    type: Boolean,
-    required: true,
-  },
   isRoomFound: {
     type: Boolean,
     required: true,
@@ -159,13 +154,13 @@ const roomCannnotBeFoundError = computed<string | undefined>(() =>
   right: 0;
   display: flex;
   flex-direction: column;
+  gap: 18px;
   align-items: center;
   width: 100%;
   padding: 24px;
   background-color: white;
   border-radius: 20px;
   box-shadow: var(--color-shadow-bold);
-  gap: 18px;
 
   @media #{$tablet-landscape} {
     width: 80%;

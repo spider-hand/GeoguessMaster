@@ -159,8 +159,8 @@ defineEmits<{
 .result-modal__container {
   display: flex;
   flex-direction: column;
-  align-items: center;
   gap: 24px;
+  align-items: center;
 }
 
 .result-modal__button-group {

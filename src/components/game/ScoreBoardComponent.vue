@@ -4,7 +4,10 @@
       <div :class="$style['score-board__label']">
         Map
       </div>
-      <div :class="$style['score-board__text']">
+      <div
+        :class="$style['score-board__text']"
+        data-testid="selected-map"
+      >
         {{ MAP_OPTIONS.get(selectedMap) }}
       </div>
     </div>
@@ -12,7 +15,10 @@
       <div :class="$style['score-board__label']">
         Round
       </div>
-      <div :class="$style['score-board__text']">
+      <div
+        :class="$style['score-board__text']"
+        data-testid="round"
+      >
         {{ round }} / 5
       </div>
     </div>
@@ -20,7 +26,10 @@
       <div :class="$style['score-board__label']">
         Score
       </div>
-      <div :class="$style['score-board__text']">
+      <div
+        :class="$style['score-board__text']"
+        data-testid="score"
+      >
         {{ score }}
       </div>
     </div>
@@ -31,7 +40,10 @@
       <div :class="$style['score-board__label']">
         Time
       </div>
-      <div :class="$style['score-board__text']">
+      <div
+        :class="$style['score-board__text']"
+        data-testid="time"
+      >
         {{ countdown }}
       </div>
     </div>
@@ -74,11 +86,12 @@ const emit = defineEmits<{
   onCountdownFinish: [];
 }>();
 
-watch(
+const unwatchCountdown = watch(
   () => remainingTime.value,
   (newVal) => {
     if (newVal === 0) {
       emit("onCountdownFinish");
+      unwatchCountdown();
     }
   }
 );

@@ -1,14 +1,19 @@
 <template>
   <div :class="$style['create-game-form']">
-    <div :class="$style['create-game-form__section']">
+    <div
+      :class="$style['create-game-form__section']"
+      data-testid="select-map-form"
+    >
       <button
         :class="$style['create-game-form__select']"
+        data-testid="select-map-button"
         @click="isSelectingMap = true"
       >
         <span :class="$style['create-game-form__select-label']">Map</span>
-        <span :class="$style['create-game-form__select-value']">{{
-          MAP_OPTIONS.get(gameSettingsState.selectedMap)
-        }}</span>
+        <span
+          :class="$style['create-game-form__select-value']"
+          data-testid="selected-map"
+        >{{ MAP_OPTIONS.get(gameSettingsState.selectedMap) }}</span>
       </button>
       <SelectBoxDialogComponent
         v-show="isSelectingMap"
@@ -17,15 +22,20 @@
         @close="isSelectingMap = false"
       />
     </div>
-    <div :class="$style['create-game-form__section']">
+    <div
+      :class="$style['create-game-form__section']"
+      data-testid="select-mode-form"
+    >
       <button
         :class="$style['create-game-form__select']"
+        data-testid="select-mode-button"
         @click="isSelectingMode = true"
       >
         <span :class="$style['create-game-form__select-label']">Mode</span>
-        <span :class="$style['create-game-form__select-value']">{{
-          MODE_OPTIONS.get(gameSettingsState.selectedMode)
-        }}</span>
+        <span
+          :class="$style['create-game-form__select-value']"
+          data-testid="selected-mode"
+        >{{ MODE_OPTIONS.get(gameSettingsState.selectedMode) }}</span>
       </button>
       <SelectBoxDialogComponent
         v-show="isSelectingMode"
@@ -39,6 +49,7 @@
       ref="createRoomButtonRef"
       :icon="'travel_explore'"
       :style="{ position: 'absolute', right: '12px' }"
+      data-testid="create-room-button"
       @click="
         gameSettingsState.selectedMode === 'single'
           ? router.push('game')
@@ -59,7 +70,7 @@
       "
     />
     <CreateRoomDialogComponent
-      :is-showing-dialog="isShowingRoomCreateDialog"
+      v-show="isShowingRoomCreateDialog"
       :is-room-found="isRoomFound"
       :selected-size="gameSettingsState.selectedSize"
       :selected-time="gameSettingsState.selectedTime"
@@ -171,7 +182,7 @@ const startMultiplayerGame = async (): Promise<void> => {
       const roomNumber = gameSettingsState.value.roomNumber;
       const roomRef = dbRef(database, roomNumber);
       const snapshot = await get(roomRef);
-      
+
       if (snapshot.exists()) {
         const playerNameRef = await push(
           child(roomRef, "playerName"),
