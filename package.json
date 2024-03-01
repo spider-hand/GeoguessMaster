@@ -10,7 +10,7 @@
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore --fix src",
     "lint:style": "stylelint src/**/*.{css,scss,vue} --fix",
     "prepare": "husky install",
-    "test": "vitest run --coverage"
+    "test": "vitest run --coverage --watch=false"
   },
   "dependencies": {
     "@googlemaps/js-api-loader": "^1.16.2",
@@ -58,6 +58,7 @@
     }
   },
   "lint-staged": {
-    "*.{ts,vue}": "eslint --fix"
+    "*.{ts,vue}": "eslint --fix",
+    "*.{css,scss,vue}": "stylelint --fix"
   }
 }
