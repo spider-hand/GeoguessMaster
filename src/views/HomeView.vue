@@ -136,9 +136,9 @@ const { deviceState } = storeToRefs(deviceStore);
   }
 
   > span {
-    color: var(--color-surface-primary);
     font-size: 12px;
     font-weight: 500;
+    color: var(--color-surface-primary);
   }
 }
 </style>

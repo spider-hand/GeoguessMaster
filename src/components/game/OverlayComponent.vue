@@ -27,12 +27,12 @@ defineProps({
   z-index: 4;
   display: flex;
   flex-direction: column;
+  gap: 24px;
   align-items: center;
   justify-content: center;
   width: 100%;
   height: 100%;
   background-color: rgb(0 0 0 / 50%);
-  gap: 24px;
 }
 
 .overlay__text {
