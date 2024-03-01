@@ -1,6 +1,5 @@
 <template>
   <div
-    v-if="isShowingDialog"
     id="create-room-dialog"
     :class="$style['create-room-dialog']"
   >
@@ -104,10 +103,6 @@ import TextInputComponent from "./TextInputComponent.vue";
 import FlatButtonComponent from "../shared/FlatButtonComponent.vue";
 
 const props = defineProps({
-  isShowingDialog: {
-    type: Boolean,
-    required: true,
-  },
   isRoomFound: {
     type: Boolean,
     required: true,
