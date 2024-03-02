@@ -7,89 +7,80 @@
       <span
         v-if="distance !== null"
         :class="$style['result-modal__text']"
-      >You are <strong>{{ isShowingSummary ? score : distance }}</strong>km away {{ isShowingSummary ? "in total " : ""
-      }}{{ isShowingSummary ? "&#127881;" : "&#128640;" }}</span>
-      <FlatButtonComponent
-        v-if="round < 5"
-        :text="'NEXT ROUND'"
-        @click="$emit('onClickNextRoundButton')"
+        v-html="resultText"
       />
+      <button
+        v-if="round < 5"
+        :class="$style['result-modal__button']"
+        @click="$emit('onClickNextRoundButton')"
+      >
+        NEXT ROUND
+      </button>
       <div
         v-else
         :class="$style['result-modal__button-group']"
       >
-        <FlatButtonComponent
+        <button
           v-if="isShowingSummary"
-          :text="'PLAY AGAIN'"
+          :class="$style['result-modal__button']"
           @click="$emit('onClickPlayAgainButton')"
-        />
-        <FlatButtonComponent
-          :text="isShowingSummary ? 'EXIT' : 'VIEW SUMMARY'"
+        >
+          PLAY AGAIN
+        </button>
+        <button
+          :class="$style['result-modal__button']"
           @click="
             isShowingSummary
               ? $emit('onClickExitButton')
               : $emit('onClickViewSummaryButton')
           "
-        />
+        >
+          {{ exitButtonText }}
+        </button>
       </div>
     </div>
     <div
       v-else
       :class="$style['result-modal__container']"
     >
-      <div
-        v-if="!isShowingSummary"
-        :class="$style['result-modal__text-wrapper']"
-      >
-        <span
-          v-for="(item, index) in distanceByPlayerArr"
-          :key="index"
-          :class="$style['result-modal__text']"
-        >
-          <strong>{{ item.playerName }}</strong> is
-          <strong>{{ item.distance }}</strong>km away
-        </span>
-      </div>
-      <div
+      <span
+        v-if="isShowingSummary"
+        :class="$style['result-modal__text']"
+        v-html="multiplayerSummaryText"
+      />
+      <span
         v-else
-        :class="$style['result-modal__text-wrapper']"
-      >
-        <span
-          v-for="(item, index) in multiplayerGameSummary"
-          :key="index"
-          :class="$style['result-modal__text']"
-        >
-          <strong>{{ item.playerName }}</strong> is
-          <strong>{{ item.score }}</strong>km away in total
-          {{ index === 0 ? "&#127941;" : "" }}
-        </span>
-      </div>
-      <FlatButtonComponent
+        :class="$style['result-modal__text']"
+        v-html="multiplayerResultText"
+      />
+      <button
         v-if="round < 5"
-        :text="'NEXT ROUND'"
+        :class="$style['result-modal__button']"
         :disabled="!isOwner && !isNextRoundReady"
         @click="$emit('onClickNextRoundButton')"
-      />
-      <div v-else>
-        <FlatButtonComponent
-          :text="isShowingSummary ? 'EXIT' : 'VIEW SUMMARY'"
-          @click="
-            isShowingSummary
-              ? $emit('endMultiplayerGame')
-              : $emit('onClickViewSummaryButton')
-          "
-        />
-      </div>
+      >
+        NEXT ROUND
+      </button>
+      <button
+        v-else
+        :class="$style['result-modal__button']"
+        @click="
+          isShowingSummary
+            ? $emit('endMultiplayerGame')
+            : $emit('onClickViewSummaryButton')
+        "
+      >
+        {{ exitButtonText }}
+      </button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { Summary, DistanceByPlayer, ModeTypes } from "@/types";
-import { PropType } from "vue";
-import FlatButtonComponent from "../shared/FlatButtonComponent.vue";
+import { PropType, computed } from "vue";
 
-defineProps({
+const props = defineProps({
   selectedMode: {
     type: String as PropType<ModeTypes>,
     required: true,
@@ -126,6 +117,47 @@ defineProps({
     type: Array as PropType<Summary[]>,
     required: true,
   },
+});
+
+const resultText = computed(() => {
+  if (props.isShowingSummary) {
+    return `You are <strong>${props.score}</strong>km away in total &#127881;`;
+  } else {
+    return `You are <strong>${props.distance}</strong>km away &#128640;`;
+  }
+});
+
+const multiplayerResultText = computed(() => {
+  let text = "";
+
+  for (let i = 0; i < props.distanceByPlayerArr.length; i++) {
+    text += `<strong>${
+      props.distanceByPlayerArr[i].playerName
+    }</strong> is <strong>${
+      props.distanceByPlayerArr[i].distance
+    }</strong>km away${i === 0 ? "&#127941;" : ""}<br>`;
+  }
+
+  return text;
+});
+
+const multiplayerSummaryText = computed(() => {
+  let text = "";
+
+  for (let i = 0; i < props.multiplayerGameSummary.length; i++) {
+    text += `<strong>${
+      props.multiplayerGameSummary[i].playerName
+    }</strong> is <strong>${
+      props.multiplayerGameSummary[i].score
+    }</strong>km away in total${i === 0 ? "&#127941;" : ""}<br>`;
+  }
+
+  return text;
+});
+
+const exitButtonText = computed(() => {
+  if (props.isShowingSummary) return "EXIT";
+  else return "VIEW SUMMARY";
 });
 
 defineEmits<{
@@ -169,15 +201,14 @@ defineEmits<{
   gap: 12px;
 }
 
-.result-modal__text-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
 .result-modal__text {
   font-size: 16px;
   font-weight: 500;
   color: var(--color-surface-primary);
+  line-height: 2;
+}
+
+.result-modal__button {
+  @include flat-button;
 }
 </style>

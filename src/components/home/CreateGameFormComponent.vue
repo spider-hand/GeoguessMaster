@@ -18,7 +18,7 @@
       <SelectBoxDialogComponent
         v-show="isSelectingMap"
         :options="MAP_OPTIONS"
-        @onChangeOption="onChangeSelectedMap"
+        @on-change-option="onChangeSelectedMap"
         @close="isSelectingMap = false"
       />
     </div>
@@ -40,7 +40,7 @@
       <SelectBoxDialogComponent
         v-show="isSelectingMode"
         :options="MODE_OPTIONS"
-        @onChangeOption="onChangeSelectedMode"
+        @on-change-option="onChangeSelectedMode"
         @close="isSelectingMode = false"
       />
     </div>
@@ -56,19 +56,20 @@
           : (isShowingRoomCreateDialog = true)
       "
     />
-    <FlatButtonComponent
+    <button
       v-else
       ref="createRoomButtonRef"
-      :style="{ position: 'absolute', right: '12px' }"
-      :text="
-        gameSettingsState.selectedMode === 'single' ? 'START' : 'CREATE ROOM'
-      "
+      :class="$style['create-game-form__button']"
       @click="
         gameSettingsState.selectedMode === 'single'
           ? router.push('game')
           : (isShowingRoomCreateDialog = true)
       "
-    />
+    >
+      {{
+        gameSettingsState.selectedMode === "single" ? "START" : "CREATE ROOM"
+      }}
+    </button>
     <CreateRoomDialogComponent
       v-show="isShowingRoomCreateDialog"
       :is-room-found="isRoomFound"
@@ -78,12 +79,12 @@
       :is-owner="gameSettingsState.isOwner"
       :room-number="gameSettingsState.roomNumber"
       :is-ready-for-multiplayer-game="isReadyForMultiplayerGame"
-      @onChangeSize="(val) => (gameSettingsState.selectedSize = val)"
-      @onChangeTime="(val) => (gameSettingsState.selectedTime = val)"
-      @onChangePlayerName="(val) => (gameSettingsState.playerName = val)"
-      @onChangeIsOwner="(val) => (gameSettingsState.isOwner = val)"
-      @onChangeRoomNumber="(val) => (gameSettingsState.roomNumber = val)"
-      @onClickStartMultiplayerGameButton="startMultiplayerGame"
+      @on-change-size="(val) => (gameSettingsState.selectedSize = val)"
+      @on-change-time="(val) => (gameSettingsState.selectedTime = val)"
+      @on-change-player-name="(val) => (gameSettingsState.playerName = val)"
+      @on-change-is-owner="(val) => (gameSettingsState.isOwner = val)"
+      @on-change-room-number="(val) => (gameSettingsState.roomNumber = val)"
+      @on-click-start-multiplayer-game-button="startMultiplayerGame"
     />
   </div>
 </template>
@@ -105,7 +106,6 @@ import { onClickOutside } from "@vueuse/core";
 import { database } from "@/firebase";
 import { DEVICE_TYPES, MAP_OPTIONS, MODE_OPTIONS } from "@/constants";
 import CreateRoomDialogComponent from "./CreateRoomDialogComponent.vue";
-import FlatButtonComponent from "../shared/FlatButtonComponent.vue";
 import IconButtonComponent from "../shared/IconButtonComponent.vue";
 import SelectBoxDialogComponent from "./SelectBoxDialogComponent.vue";
 import { MapTypes, ModeTypes } from "@/types";
@@ -255,5 +255,12 @@ const startMultiplayerGame = async (): Promise<void> => {
   font-size: 16px;
   font-weight: 500;
   color: var(--color-surface-primary);
+}
+
+.create-game-form__button {
+  @include flat-button;
+
+  position: absolute;
+  right: 12px;
 }
 </style>

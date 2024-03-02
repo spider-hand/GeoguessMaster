@@ -27,7 +27,7 @@
         :max="5"
         :count="selectedSize"
         :disabled="!isOwner"
-        @onChangeValue="(val: number) => $emit('onChangeSize', val)"
+        @on-change-value="(val: number) => $emit('onChangeSize', val)"
       />
     </div>
     <div :class="$style['create-room-dialog__form']">
@@ -55,7 +55,7 @@
         :max="10"
         :count="selectedTime"
         :disabled="!isOwner"
-        @onChangeValue="(val: number) => $emit('onChangeTime', val)"
+        @on-change-value="(val: number) => $emit('onChangeTime', val)"
       />
     </div>
     <div :class="$style['create-room-dialog__form']">
@@ -63,7 +63,7 @@
         label="Player Name"
         name="player-name"
         placeholder="Your Player Name"
-        @onChangeValue="(val: string) => $emit('onChangePlayerName', val)"
+        @on-change-value="(val: string) => $emit('onChangePlayerName', val)"
       />
     </div>
     <div :class="$style['create-room-dialog__form']">
@@ -72,7 +72,7 @@
       </div>
       <SwitchComponent
         :ans="isOwner"
-        @onChangeValue="(val: boolean) => $emit('onChangeIsOwner', val)"
+        @on-change-value="(val: boolean) => $emit('onChangeIsOwner', val)"
       />
     </div>
     <div :class="$style['create-room-dialog__form']">
@@ -82,15 +82,17 @@
         placeholder="Room Number"
         :disabled="isOwner"
         :error-msg="roomCannnotBeFoundError"
-        @onChangeValue="(val: string) => $emit('onChangeRoomNumber', val)"
+        @on-change-value="(val: string) => $emit('onChangeRoomNumber', val)"
       />
     </div>
     <div :class="$style['create-room-dialog__footer']">
-      <FlatButtonComponent
-        :text="'START'"
+      <button
+        :class="$style['create-room-dialog__button']"
         :disabled="!isReadyForMultiplayerGame"
         @click="$emit('onClickStartMultiplayerGameButton')"
-      />
+      >
+        START
+      </button>
     </div>
   </div>
 </template>
@@ -100,7 +102,6 @@ import { computed } from "vue";
 import CounterComponent from "./CounterComponent.vue";
 import SwitchComponent from "./SwitchComponent.vue";
 import TextInputComponent from "./TextInputComponent.vue";
-import FlatButtonComponent from "../shared/FlatButtonComponent.vue";
 
 const props = defineProps({
   isRoomFound: {
@@ -200,5 +201,9 @@ const roomCannnotBeFoundError = computed<string | undefined>(() =>
   display: flex;
   align-items: center;
   width: 100%;
+}
+
+.create-room-dialog__button {
+  @include flat-button;
 }
 </style>

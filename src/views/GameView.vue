@@ -20,11 +20,11 @@
       :round="inGameState.round"
       :score="inGameState.score"
       :multiplayer-game-summary="sortedScore"
-      @onClickNextRoundButton="onClickNextRoundButton"
-      @onClickViewSummaryButton="onClickViewSummaryButton"
-      @onClickPlayAgainButton="onClickPlayAgainButton"
-      @onClickExitButton="router.back()"
-      @endMultiplayerGame="endMultiplayerGame"
+      @on-click-next-round-button="onClickNextRoundButton"
+      @on-click-view-summary-button="onClickViewSummaryButton"
+      @on-click-play-again-button="onClickPlayAgainButton"
+      @on-click-exit-button="router.back()"
+      @end-multiplayer-game="endMultiplayerGame"
     />
     <Suspense>
       <StreetViewWrapperComponent>
@@ -35,8 +35,8 @@
           :is-owner="gameSettingsState.isOwner"
           :random-lat-lng="inGameState.randomLatLng"
           :round="inGameState.round"
-          @updateRandomLatLng="saveRandomLatLng"
-          @saveStreetView="saveStreetView"
+          @update-random-lat-lng="saveRandomLatLng"
+          @save-street-view="saveStreetView"
         />
       </StreetViewWrapperComponent>
     </Suspense>
@@ -69,7 +69,7 @@
           :selected-lat-lng="inGameState.selectedLatLng"
           :selected-lat-lng-arr="inGameState.selectedLatLngArr"
           :game-history="inGameState.gameHistory"
-          @updateSelectedLatLng="(val: google.maps.LatLng) => inGameState.selectedLatLng = val"
+          @update-selected-lat-lng="(val: google.maps.LatLng) => inGameState.selectedLatLng = val"
         />
       </MapWrapperComponent>
     </Suspense>
@@ -77,72 +77,48 @@
       v-if="deviceState <= DEVICE_TYPES.MOBLE_PORTRAIT"
       v-show="inGameState.isMapVisible && !inGameState.isShowingResult"
       :icon="'close'"
+      :size="'sm'"
       :style="{
         zIndex: '3',
         position: 'absolute',
         bottom: '280px',
         left: '20px',
       }"
-      :size="16"
       @click="inGameState.isMapVisible = false"
     />
-    <FlatButtonComponent
-      :text="'GUESS'"
-      :style="{
-        zIndex: 1,
-        position: 'absolute',
-        bottom: '12px',
-        left: '12px',
-      }"
+    <button
+      :class="$style['page__guess-button']"
       :disabled="
         inGameState.selectedLatLng === null ||
           (gameSettingsState.selectedMode === 'multiplayer' &&
             !inGameState.isThisRoundReady)
       "
       @click="onClickGuessButton"
-    />
-    <FlatButtonComponent
+    >
+      GUESS
+    </button>
+    <button
       v-if="deviceState <= DEVICE_TYPES.MOBLE_PORTRAIT"
       v-show="!inGameState.isMapVisible"
-      :text="'MAKE GUESS'"
-      :style="{
-        zIndex: 1,
-        position: 'absolute',
-        bottom: '12px',
-        left: '12px',
-      }"
+      :class="$style['page__guess-button']"
       @click="inGameState.isMapVisible = true"
-    />
-    <IconButtonComponent
-      :icon="'my_location'"
-      :style="{
-        zIndex: 1,
-        position: 'absolute',
-        right: '12px',
-        bottom: '228px',
-      }"
-      @click="streetViewRef?.resetStreetView"
-    />
-    <IconButtonComponent
-      :icon="'zoom_in'"
-      :style="{
-        zIndex: 1,
-        position: 'absolute',
-        right: '12px',
-        bottom: '164px',
-      }"
-      @click="streetViewRef?.zoomIn"
-    />
-    <IconButtonComponent
-      :icon="'zoom_out'"
-      :style="{
-        zIndex: 1,
-        position: 'absolute',
-        right: '12px',
-        bottom: '100px',
-      }"
-      @click="streetViewRef?.zoomOut"
-    />
+    >
+      MAKE GUESS
+    </button>
+    <div :class="$style['page__button-group']">
+      <IconButtonComponent
+        :icon="'my_location'"
+        @click="streetViewRef?.resetStreetView"
+      />
+      <IconButtonComponent
+        :icon="'zoom_in'"
+        @click="streetViewRef?.zoomIn"
+      />
+      <IconButtonComponent
+        :icon="'zoom_out'"
+        @click="streetViewRef?.zoomOut"
+      />
+    </div>
   </div>
 </template>
 
@@ -167,7 +143,6 @@ import ScoreBoardComponent from "@/components/game/ScoreBoardComponent.vue";
 import ResultModalComponent from "@/components/game/ResultModalComponent.vue";
 import RoomNumberDialogComponent from "@/components/game/RoomNumberDialogComponent.vue";
 import OverlayComponent from "@/components/game/OverlayComponent.vue";
-import FlatButtonComponent from "@/components/shared/FlatButtonComponent.vue";
 import IconButtonComponent from "@/components/shared/IconButtonComponent.vue";
 import { database } from "@/firebase";
 import { DEVICE_TYPES } from "@/constants";
@@ -574,5 +549,24 @@ onUnmounted(async () => {
   width: 100%;
   height: 100%;
   overflow: hidden;
+}
+
+.page__guess-button {
+  @include flat-button;
+
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  z-index: 1;
+}
+
+.page__button-group {
+  position: absolute;
+  right: 12px;
+  bottom: 100px;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 </style>
