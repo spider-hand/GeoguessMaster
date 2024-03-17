@@ -4,21 +4,17 @@
     :class="$style['create-room-dialog']"
   >
     <div :class="$style['create-room-dialog__form']">
-      <div>
-        <div
-          :class="[
-            $style['create-room-dialog__text'],
-            !isOwner && $style['create-room-dialog__text--disabled'],
-          ]"
-        >
+      <div
+        :class="[
+          $style['create-room-dialog__form-text'],
+          !isOwner && $style['create-room-dialog__form-text--disabled'],
+        ]"
+        data-testid="size-form-text"
+      >
+        <div :class="$style['create-room-dialog__form-main-text']">
           Size
         </div>
-        <div
-          :class="[
-            $style['create-room-dialog__helper-text'],
-            !isOwner && $style['create-room-dialog__helper-text--disabled'],
-          ]"
-        >
+        <div :class="$style['create-room-dialog__form-helper-text']">
           2-5 people
         </div>
       </div>
@@ -27,35 +23,30 @@
         :max="5"
         :count="selectedSize"
         :disabled="!isOwner"
-        @on-change-value="(val: number) => $emit('onChangeSize', val)"
+        @on-change-value="(val) => $emit('onChangeSize', val)"
       />
     </div>
     <div :class="$style['create-room-dialog__form']">
-      <div>
-        <span
-          :class="[
-            $style['create-room-dialog__text'],
-            !isOwner && $style['create-room-dialog__text--disabled'],
-          ]"
-        >
+      <div
+        :class="[
+          $style['create-room-dialog__form-text'],
+          !isOwner && $style['create-room-dialog__form-text--disabled'],
+        ]"
+        data-testid="time-form-text"
+      >
+        <div :class="$style['create-room-dialog__form-main-text']">
           Time per round
-        </span>
-        <br>
-        <span
-          :class="[
-            $style['create-room-dialog__helper-text'],
-            !isOwner && $style['create-room-dialog__helper-text--disabled'],
-          ]"
-        >
+        </div>
+        <div :class="$style['create-room-dialog__form-helper-text']">
           1-10 minutes
-        </span>
+        </div>
       </div>
       <CounterComponent
         :min="1"
         :max="10"
         :count="selectedTime"
         :disabled="!isOwner"
-        @on-change-value="(val: number) => $emit('onChangeTime', val)"
+        @on-change-value="(val) => $emit('onChangeTime', val)"
       />
     </div>
     <div :class="$style['create-room-dialog__form']">
@@ -63,16 +54,16 @@
         label="Player Name"
         name="player-name"
         placeholder="Your Player Name"
-        @on-change-value="(val: string) => $emit('onChangePlayerName', val)"
+        @on-change-value="(val) => $emit('onChangePlayerName', val)"
       />
     </div>
     <div :class="$style['create-room-dialog__form']">
-      <div>
-        <span :class="$style['create-room-dialog__text']">Are you a host?</span>
+      <div :class="$style['create-room-dialog__form-text']">
+        Are you a host?
       </div>
       <SwitchComponent
         :ans="isOwner"
-        @on-change-value="(val: boolean) => $emit('onChangeIsOwner', val)"
+        @on-change-value="(val) => $emit('onChangeIsOwner', val)"
       />
     </div>
     <div :class="$style['create-room-dialog__form']">
@@ -82,13 +73,14 @@
         placeholder="Room Number"
         :disabled="isOwner"
         :error-msg="roomCannnotBeFoundError"
-        @on-change-value="(val: string) => $emit('onChangeRoomNumber', val)"
+        @on-change-value="(val) => $emit('onChangeRoomNumber', val)"
       />
     </div>
     <div :class="$style['create-room-dialog__footer']">
       <button
         :class="$style['create-room-dialog__button']"
         :disabled="!isReadyForMultiplayerGame"
+        data-testid="create-room-button"
         @click="$emit('onClickStartMultiplayerGameButton')"
       >
         START
@@ -143,8 +135,8 @@ defineEmits<{
   onClickStartMultiplayerGameButton: [];
 }>();
 
-const roomCannnotBeFoundError = computed<string | undefined>(() =>
-  !props.isRoomFound ? "The room cannot be found." : undefined
+const roomCannnotBeFoundError = computed<string | null>(() =>
+  !props.isRoomFound ? "The room cannot be found." : null
 );
 </script>
 
@@ -177,24 +169,27 @@ const roomCannnotBeFoundError = computed<string | undefined>(() =>
   padding: 0 12px;
 }
 
-.create-room-dialog__text {
-  @include main-text;
-
-  color: var(--color-surface-primary);
+.create-room-dialog__form-text {
+  display: flex;
+  flex-direction: column;
 
   &--disabled {
-    color: var(--color-surface-light);
+    > * {
+      color: var(--color-surface-light) !important;
+    }
   }
 }
 
-.create-room-dialog__helper-text {
+.create-room-dialog__form-main-text {
+  @include main-text;
+
+  color: var(--color-surface-primary);
+}
+
+.create-room-dialog__form-helper-text {
   @include label;
 
   color: var(--color-surface-secondary);
-
-  &--disabled {
-    color: var(--color-surface-light);
-  }
 }
 
 .create-room-dialog__footer {

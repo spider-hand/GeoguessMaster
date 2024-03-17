@@ -7,11 +7,13 @@
       <span
         v-if="distance !== null"
         :class="$style['result-modal__text']"
+        data-testid="single-result"
         v-html="resultText"
       />
       <button
         v-if="round < 5"
         :class="$style['result-modal__button']"
+        data-testid="single-next-round-button"
         @click="$emit('onClickNextRoundButton')"
       >
         NEXT ROUND
@@ -23,12 +25,14 @@
         <button
           v-if="isShowingSummary"
           :class="$style['result-modal__button']"
+          data-testid="single-play-again-button"
           @click="$emit('onClickPlayAgainButton')"
         >
           PLAY AGAIN
         </button>
         <button
           :class="$style['result-modal__button']"
+          data-testid="single-show-summary-button"
           @click="
             isShowingSummary
               ? $emit('onClickExitButton')
@@ -46,17 +50,20 @@
       <span
         v-if="isShowingSummary"
         :class="$style['result-modal__text']"
+        data-testid="multiplayer-summary"
         v-html="multiplayerSummaryText"
       />
       <span
         v-else
         :class="$style['result-modal__text']"
+        data-testid="multiplayer-result"
         v-html="multiplayerResultText"
       />
       <button
         v-if="round < 5"
         :class="$style['result-modal__button']"
         :disabled="!isOwner && !isNextRoundReady"
+        data-testid="multiplayer-next-round-button"
         @click="$emit('onClickNextRoundButton')"
       >
         NEXT ROUND
@@ -64,6 +71,7 @@
       <button
         v-else
         :class="$style['result-modal__button']"
+        data-testid="multiplayer-show-summary-button"
         @click="
           isShowingSummary
             ? $emit('endMultiplayerGame')
@@ -204,8 +212,8 @@ defineEmits<{
 .result-modal__text {
   font-size: 16px;
   font-weight: 500;
-  color: var(--color-surface-primary);
   line-height: 2;
+  color: var(--color-surface-primary);
 }
 
 .result-modal__button {

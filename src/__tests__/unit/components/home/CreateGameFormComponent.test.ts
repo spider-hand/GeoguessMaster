@@ -1,4 +1,4 @@
-import { describe, expect, it, beforeEach, vi, Mock, afterEach } from "vitest";
+import { describe, expect, it, beforeEach, vi, afterEach } from "vitest";
 import { VueWrapper, flushPromises, shallowMount } from "@vue/test-utils";
 import CreateGameFormComponentVue from "../../../../components/home/CreateGameFormComponent.vue";
 import SelectBoxDialogComponentVue from "../../../../components/home/SelectBoxDialogComponent.vue";
@@ -144,6 +144,24 @@ describe("CreateGameFormComponent", () => {
     ).toBe(true);
   });
 
+  it("should close a dialog to select a map", async () => {
+    await wrapper.find(selectMapButton).trigger("click");
+
+    wrapper
+      .find(selectMapForm)
+      .findComponent(SelectBoxDialogComponentVue)
+      .vm.$emit("close");
+
+    await wrapper.vm.$nextTick();
+
+    expect(
+      wrapper
+        .find(selectMapForm)
+        .findComponent(SelectBoxDialogComponentVue)
+        .isVisible()
+    ).toBe(false);
+  });
+
   it("should close a dialog to select a map after selecting a map", async () => {
     await wrapper.find(selectMapButton).trigger("click");
 
@@ -182,6 +200,24 @@ describe("CreateGameFormComponent", () => {
     ).toBe(true);
   });
 
+  it("should close a dialog to select a mode", async () => {
+    await wrapper.find(selectModeButton).trigger("click");
+
+    wrapper
+      .find(selectModeForm)
+      .findComponent(SelectBoxDialogComponentVue)
+      .vm.$emit("close");
+
+    await wrapper.vm.$nextTick();
+
+    expect(
+      wrapper
+        .find(selectModeForm)
+        .findComponent(SelectBoxDialogComponentVue)
+        .isVisible()
+    ).toBe(false);
+  });
+
   it("should close a dialog to select a mode after selecting a mode", async () => {
     await wrapper.find(selectModeButton).trigger("click");
 
@@ -198,6 +234,36 @@ describe("CreateGameFormComponent", () => {
         .findComponent(SelectBoxDialogComponentVue)
         .isVisible()
     ).toBe(false);
+  });
+
+  it("should naviagte to game page when single mode is selected", async () => {
+    wrapper
+      .find(selectModeForm)
+      .findComponent(SelectBoxDialogComponentVue)
+      .vm.$emit("onChangeOption", "single");
+
+    await wrapper.vm.$nextTick();
+
+    await wrapper.find(createRoomButton).trigger("click");
+
+    expect(routerPushMock).toHaveBeenCalledOnce();
+    expect(routerPushMock).toHaveBeenCalledWith("game");
+  });
+
+  it("should open a dialog to create a room when multiplayer mode is selected", async () => {
+    wrapper
+      .find(selectModeForm)
+      .findComponent(SelectBoxDialogComponentVue)
+      .vm.$emit("onChangeOption", "multiplayer");
+
+    await wrapper.vm.$nextTick();
+
+    await wrapper.find(createRoomButton).trigger("click");
+
+    expect(routerPushMock).not.toHaveBeenCalled();
+    expect(
+      wrapper.findComponent(CreateRoomDialogComponentVue).isVisible()
+    ).toBe(true);
   });
 
   it("should navigate to game page when creating a room and the player is an owner", async () => {
