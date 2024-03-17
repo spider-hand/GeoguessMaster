@@ -77,12 +77,12 @@
       v-if="deviceState <= DEVICE_TYPES.MOBLE_PORTRAIT"
       v-show="inGameState.isMapVisible && !inGameState.isShowingResult"
       :icon="'close'"
-      :size="'sm'"
       :style="{
         zIndex: '3',
         position: 'absolute',
-        bottom: '280px',
+        bottom: '272px',
         left: '20px',
+        padding: '4px',
       }"
       @click="inGameState.isMapVisible = false"
     />

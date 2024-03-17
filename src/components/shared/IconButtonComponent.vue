@@ -1,43 +1,23 @@
 <template>
-  <div :class="[$style['icon-button'], $style[`icon-button--${size}`]]">
+  <button :class="$style['icon-button']">
     <img
       :src="getIconUrl(icon)"
-      :width="iconSize"
-      :height="iconSize"
+      :width="24"
+      :height="24"
       :alt="`${icon} icon`"
       :class="$style['icon-button__icon']"
     >
-  </div>
+  </button>
 </template>
 
 <script setup lang="ts">
-import { PropType, computed } from "vue";
 import { getIconUrl } from "@/utils";
 
-type IconSizeTypes = "sm" | "md";
-
-const props = defineProps({
-  size: {
-    type: String as PropType<IconSizeTypes>,
-    required: false,
-    default: "md",
-  },
+defineProps({
   icon: {
     type: String,
     required: true,
   },
-});
-
-const iconSize = computed(() => {
-  switch (props.size) {
-    case "sm":
-      return "16";
-    case "md":
-      return "24";
-    default: {
-      return "24";
-    }
-  }
 });
 </script>
 
@@ -46,6 +26,7 @@ const iconSize = computed(() => {
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 12px;
   background: var(--color-brand-gradient);
   border: none;
   border-radius: 100px;
@@ -53,14 +34,6 @@ const iconSize = computed(() => {
 
   &:active {
     transform: scale(0.95);
-  }
-
-  &--sm {
-    padding: 4px;
-  }
-
-  &--md {
-    padding: 12px;
   }
 }
 </style>
