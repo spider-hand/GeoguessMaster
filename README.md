@@ -7,15 +7,21 @@
 </p>
 
 # GeoguessMaster
-Open source geoguess game.
+
+[![build](https://github.com/spider-hand/Geoguess-Master/actions/workflows/build.yml/badge.svg)](https://github.com/spider-hand/Geoguess-Master/actions/workflows/build.yml)
+[![Netlify Status](https://api.netlify.com/api/v1/badges/f06c7e0c-5c5f-445b-a9ff-7e9a07a8cd8f/deploy-status)](https://app.netlify.com/sites/elated-elion-cc4c99/deploys)
+[![codecov](https://codecov.io/gh/spider-hand/GeoguessMaster/graph/badge.svg?token=QU5VAMBJIX)](https://codecov.io/gh/spider-hand/GeoguessMaster)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+
+Open source geoguess game
 
 https://geoguessmaster.net/
 
 ## Features and Highlights
-- Free
+- Free and no ads
 - Multiplayer game in real time
-- Filter maps by a specific country (For now Japan is the only option because other regions cannot be filtered accurately.)
-- PWA
+- Probably the first geoguess game which implemented multiplayer mode (Even the official didn't have the feature back then)
+- PWA (Mobile friendly)
 
 ## Implementation
 Vue.js, TypeScript, SCSS, Firebase Realtime Database
