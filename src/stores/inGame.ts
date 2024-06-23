@@ -5,7 +5,7 @@ import { computed, ref } from "vue";
 interface InGameState {
   randomLatLng: google.maps.LatLng | null;
   selectedLatLng: google.maps.LatLng | null;
-  selectedLatLngArr: Array<google.maps.LatLng>;
+  selectedLatLngMap: Map<string, google.maps.LatLng>;
   gameHistory: Array<GameHistory>;
   distanceByPlayerArr: Array<DistanceByPlayer>;
   multiplayerGameSummary: Array<Summary>;
@@ -29,7 +29,7 @@ export const useInGameStore = defineStore("inGame", () => {
   const inGameState = ref<InGameState>({
     randomLatLng: null,
     selectedLatLng: null,
-    selectedLatLngArr: [],
+    selectedLatLngMap: new Map(),
     gameHistory: [],
     distanceByPlayerArr: [],
     multiplayerGameSummary: [],

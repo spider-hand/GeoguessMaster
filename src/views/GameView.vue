@@ -67,7 +67,8 @@
           :selected-mode="gameSettingsState.selectedMode"
           :random-lat-lng="inGameState.randomLatLng"
           :selected-lat-lng="inGameState.selectedLatLng"
-          :selected-lat-lng-arr="inGameState.selectedLatLngArr"
+          :selected-lat-lng-map="inGameState.selectedLatLngMap"
+          :own-colour="gameSettingsState.playerId ? stringToColour(gameSettingsState.playerId) : 'hsl(0, 100%, 63%)'"
           :game-history="inGameState.gameHistory"
           @update-selected-lat-lng="(val: google.maps.LatLng) => inGameState.selectedLatLng = val"
         />
@@ -146,6 +147,7 @@ import OverlayComponent from "@/components/game/OverlayComponent.vue";
 import IconButtonComponent from "@/components/shared/IconButtonComponent.vue";
 import { database } from "@/firebase";
 import { DEVICE_TYPES } from "@/constants";
+import { stringToColour } from "@/utils";
 import { storeToRefs } from "pinia";
 import { useGameSettingsStore } from "@/stores/gameSettings";
 import { useInGameStore } from "@/stores/inGame";
@@ -336,7 +338,7 @@ const listenGuesses = () => {
           const lat = childSnapshot.child("lat").val();
           const lng = childSnapshot.child("lng").val();
           const latlng = new google.maps.LatLng(lat, lng);
-          inGameState.value.selectedLatLngArr.push(latlng);
+          inGameState.value.selectedLatLngMap.set(childSnapshot.key ?? "", latlng);
         });
 
         await retrieveDistance();
@@ -440,7 +442,7 @@ const onClickNextRoundButton = async (): Promise<void> => {
     inGameState.value.isMapVisible = false;
     inGameState.value.randomLatLng = null;
     inGameState.value.selectedLatLng = null;
-    inGameState.value.selectedLatLngArr = [];
+    inGameState.value.selectedLatLngMap = new Map();
     inGameState.value.distanceByPlayerArr = [];
 
     mapRef.value?.removeMarkers();

@@ -14,6 +14,7 @@
 import { ref, PropType } from "vue";
 import { useMap } from "@/composables/game/useMap";
 import { GameHistory, ModeTypes } from "@/types";
+import { stringToColour } from "@/utils";
 
 const props = defineProps({
   isVisible: {
@@ -38,9 +39,13 @@ const props = defineProps({
     default: null,
     required: false,
   },
-  selectedLatLngArr: {
-    type: Array<google.maps.LatLng>,
+  selectedLatLngMap: {
+    type: Map<string, google.maps.LatLng>,
     required: true,
+  },
+  ownColour: {
+    type: String,
+    required: true
   },
   gameHistory: {
     type: Array<GameHistory>,
@@ -59,7 +64,7 @@ const { map, removeMarkers, removePolyline, putMarker, drawPolyline } =
 const attachListener = (): void => {
   map.value?.addListener("click", (e: google.maps.MapMouseEvent) => {
     removeMarkers();
-    putMarker(e.latLng as google.maps.LatLng);
+    putMarker(e.latLng as google.maps.LatLng, "guess", props.ownColour);
     emit("updateSelectedLatLng", e.latLng as google.maps.LatLng);
   });
 };
@@ -69,31 +74,35 @@ const removeListener = (): void => {
 };
 
 const showResult = (): void => {
+  removeMarkers();
   if (
     props.selectedMode === "single" &&
     props.randomLatLng !== null &&
     props.selectedLatLng !== null
   ) {
-    putMarker(props.randomLatLng);
-    putMarker(props.selectedLatLng);
-    drawPolyline(props.randomLatLng, props.selectedLatLng);
+    putMarker(props.randomLatLng, "actual", props.ownColour);
+    putMarker(props.selectedLatLng, "guess", props.ownColour);
+    drawPolyline(props.randomLatLng, props.selectedLatLng, props.ownColour);
   } else if (
     props.selectedMode === "multiplayer" &&
     props.randomLatLng !== null
   ) {
-    putMarker(props.randomLatLng);
-    props.selectedLatLngArr.forEach((latLng) => {
-      putMarker(latLng);
-      drawPolyline(props.randomLatLng as google.maps.LatLng, latLng);
+    putMarker(props.randomLatLng, "actual", "hsl(0, 100%, 63%)");
+    props.selectedLatLngMap.forEach((latLng, playerId) => {
+      const colour = stringToColour(playerId);
+      if (latLng.equals(props.selectedLatLng)) putMarker(latLng, "guess", colour);
+      else putMarker(latLng, "otherPlayer", colour);
+      drawPolyline(props.randomLatLng as google.maps.LatLng, latLng, colour);
     });
   }
 };
 
 const showSummary = (): void => {
+  removeMarkers();
   props.gameHistory.forEach((e) => {
-    putMarker(e.randomLatLng);
-    putMarker(e.selectedLatLng);
-    drawPolyline(e.randomLatLng, e.selectedLatLng);
+    putMarker(e.randomLatLng, "actual", props.ownColour);
+    putMarker(e.selectedLatLng, "guess", props.ownColour);
+    drawPolyline(e.randomLatLng, e.selectedLatLng, props.ownColour);
   });
 };
 
