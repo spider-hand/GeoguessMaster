@@ -18,7 +18,7 @@ See the instruction in the link above.
 See the instructions in the link above.
 
 ### STEP4. Set up environment variables
-Create files named `.env.development.local` in this project to put environment variables. 
+Create files named `.env.development.local` in this project to put environment variables.
 The files should look like this. (Replace the values with yours you created at STEP 2 and 3.)
 
 `.env.development.local`
@@ -27,7 +27,10 @@ NODE_ENV=development
 BASE_URL=http://localhost:8080/
 VITE_API_KEY=YOUR_GOOGLE_MAPS_API_KEY
 VITE_FIREBASE_API_KEY=YOUR_FIREBASE_API_KEY
+VITE_FIREBASE_AUTH_DOMAIN=YOUR_FIREBASE_AUTH_DOMAIN
+VITE_FIREBASE_DATABASE_URL=YOUR_FIREBASE_DATABASE_URL
 VITE_FIREBASE_PROJECT_ID=YOUR_FIREBASE_PROJECT_ID
+VITE_FIREBASE_STORAGE_BUCKET=YOUR_STORAGE_BUCKET
 VITE_FIREBASE_MESSAGING_SENDER_ID=YOUR_FIREBASE_MESSAGING_SENDER_ID
 VITE_FIREBASE_APP_ID=YOUR_FIREBASE_APP_ID
 VITE_FIREBASE_MEASUREMENT_ID=YOUR_FIREBASE_MEASUREMENT_ID
