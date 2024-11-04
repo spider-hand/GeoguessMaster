@@ -7,15 +7,12 @@
 </p>
 
 # GeoguessMaster
-
-[![build](https://github.com/spider-hand/Geoguess-Master/actions/workflows/build.yml/badge.svg)](https://github.com/spider-hand/Geoguess-Master/actions/workflows/build.yml)
-[![Netlify Status](https://api.netlify.com/api/v1/badges/f06c7e0c-5c5f-445b-a9ff-7e9a07a8cd8f/deploy-status)](https://app.netlify.com/sites/elated-elion-cc4c99/deploys)
-[![codecov](https://codecov.io/gh/spider-hand/GeoguessMaster/graph/badge.svg?token=QU5VAMBJIX)](https://codecov.io/gh/spider-hand/GeoguessMaster)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
 Open source geoguess game
 
-https://geoguessmaster.net/
+The website has been renewed and this repository is not maintained.  
+👉 [New website](https://geoguesscloud.com/)
 
 ## Features and Highlights
 - Free and no ads
